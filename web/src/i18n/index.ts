@@ -113,6 +113,8 @@ const UI = {
     treeError: "could not read the tree link",
     treeAdded: "New in this set",
     treeTaken: "Already taken",
+    treeRemoved: "Refund",
+    treeRemovedHint: "Taken in the previous set, not in this one",
     treeHint: "Hover a node to see it. Scroll to zoom, drag to move.",
   },
   ru: {
@@ -222,6 +224,8 @@ const UI = {
     treeError: "не удалось разобрать ссылку на дерево",
     treeAdded: "Новое в этом наборе",
     treeTaken: "Уже взято",
+    treeRemoved: "Снять",
+    treeRemovedHint: "Было в прошлом наборе, в этом нет",
     treeHint: "Наведите на ноду, чтобы увидеть её. Колесо — масштаб, перетаскивание — сдвиг.",
   },
 } satisfies Record<Lang, Record<string, string>>;

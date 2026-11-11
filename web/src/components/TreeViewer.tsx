@@ -14,6 +14,7 @@ interface Rendered {
   nodes: SkillTree.NodeLookup;
   focus: { x: number; y: number; width: number; height: number };
   masteries: Record<string, string>;
+  removedCount: number;
 }
 
 /** Дерево пассивок: текущий набор, новые относительно предыдущего ноды подсвечены. */
@@ -64,6 +65,7 @@ export function TreeViewer({
         nodes,
         focus,
         masteries: delta.masteries,
+        removedCount: delta.nodesRemoved.length,
         style: style({
           styleId,
           backgroundColor: "transparent",
@@ -114,6 +116,11 @@ export function TreeViewer({
           <div className="tree-legend">
             <span><i style={{ background: "var(--tree-added)" }} /> {t("treeAdded")}</span>
             <span><i style={{ background: "var(--tree-active)" }} /> {t("treeTaken")}</span>
+            {rendered.removedCount > 0 && (
+              <span title={t("treeRemovedHint")}>
+                <i style={{ background: "var(--tree-removed)" }} /> {t("treeRemoved")}
+              </span>
+            )}
           </div>
           <NodeInfo rendered={rendered} nodeId={hovered} />
         </>
