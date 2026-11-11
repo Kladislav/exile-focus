@@ -1,0 +1,17 @@
+.holder {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: var(--size-3);
+}
+
+.left {
+  flex-grow: 1;
+  flex-basis: 8rem;
+}
+
+.right {
+  flex-grow: 1;
+  flex-basis: 8rem;
+  text-align: right;
+}

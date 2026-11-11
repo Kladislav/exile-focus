@@ -1,0 +1,13 @@
+.editor {
+  flex-grow: 1;
+  overflow-y: scroll;
+  font-family: "Consolas", monospace;
+}
+
+.editorDiv {
+  min-height: 100%;
+}
+
+.editorTextArea {
+  outline: inherit;
+}

@@ -1,0 +1,17 @@
+.default {
+  color: var(--on-secondary);
+  font-weight: var(--font-heavy);
+}
+
+.rewardNote {
+  color: var(--on-secondary);
+}
+
+.noWrap {
+  display: inline-block;
+  white-space: pre;
+}
+
+.gemError {
+  width: 100%;
+}

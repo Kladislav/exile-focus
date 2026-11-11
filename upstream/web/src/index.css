@@ -1,0 +1,97 @@
+:root {
+  color-scheme: dark;
+  --primary: #161616;
+  --secondary: #222222;
+  --on-primary: #d4d4d4;
+  --on-secondary: #f5f5f5;
+  --highlight-primary: #242424;
+  --highlight-secondary: #404040;
+  --accent-primary: #808080;
+  --accent-secondary: #505050;
+  --toastify-color-dark: var(--secondary);
+  --border-width: 0.0625rem;
+  --border-radius: 0.25rem;
+  --size-1: 0.125rem;
+  --size-2: 0.25rem;
+  --size-3: 0.5rem;
+  --size-4: 1rem;
+  --size-5: 1.5rem;
+  --line-height: 1em;
+  --font-heavy: 700;
+  /* Fractional pixel rounding varies between browsers, lower-bound picked based on Firefox */
+  --navbar-height: calc(var(--line-height) + 1.125rem);
+  --actbar-height: 2.75rem;
+}
+
+*,
+::after,
+::before {
+  box-sizing: inherit;
+  font: inherit;
+  user-select: inherit;
+  color: unset;
+  background: unset;
+  border: unset;
+  line-height: var(--line-height);
+  padding: 0;
+  margin: 0;
+  scroll-margin: var(--navbar-height);
+}
+
+*:focus-visible {
+  outline-offset: calc(var(--size-1) * -1);
+  outline-style: solid;
+  outline-color: var(--on-primary);
+  outline-width: var(--size-1);
+}
+
+html {
+  box-sizing: border-box;
+  background-color: var(--primary);
+  color: var(--on-primary);
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 1em;
+  font-weight: 400;
+  overflow-y: scroll;
+  user-select: none;
+}
+
+hr {
+  border-style: solid;
+  border-width: var(--border-width);
+  color: var(--accent-primary);
+  background-color: var(--accent-primary);
+  align-self: stretch;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+  position: relative;
+  max-width: 1280px;
+  min-height: 100vh;
+  padding-left: var(--size-2);
+  padding-right: var(--size-2);
+  padding-bottom: var(--size-2);
+}
+
+.inlineIcon {
+  vertical-align: sub;
+  width: auto;
+  height: 1em;
+  margin-inline: var(--size-1);
+}
+
+.inlineIcon:last-child {
+  margin-inline: var(--size-1) 0;
+}
+
+.inlineIcon:first-child {
+  margin-inline: 0 var(--size-1);
+}
+
+a:link,
+a:visited {
+  color: var(--on-primary);
+}
