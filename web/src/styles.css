@@ -774,8 +774,24 @@ button.log:hover {
 .term-trial {
   color: var(--c-trial);
 }
-.term-dir {
+/* Направление: заметный значок-клавиша, нейтральный к грамматике фразы. */
+.dir-chip {
+  display: inline-grid;
+  place-items: center;
+  width: 1.45em;
+  height: 1.45em;
+  margin: 0 0.15em;
+  vertical-align: -0.35em;
+  border-radius: 6px;
   color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  cursor: help;
+}
+
+.dir-chip svg {
+  width: 0.95em;
+  height: 0.95em;
 }
 
 .term-level {

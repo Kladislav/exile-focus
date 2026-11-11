@@ -66,6 +66,9 @@ function Quest({ fragment, i18n }: { fragment: Fragments.QuestFragment; i18n: I1
 
 type Rendered = { head?: ReactNode; tail?: ReactNode };
 
+/** Направления по экрану (как в гайдах): 0 — вверх, дальше по часовой через 45°. */
+const DIR_KEYS = ["dirUp", "dirUpRight", "dirRight", "dirDownRight", "dirDown", "dirDownLeft", "dirLeft", "dirUpLeft"] as const;
+
 function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.AnyFragment): Rendered {
   if (typeof f === "string") {
     const context = next && typeof next !== "string" && next.type === "waypoint_get" ? "waypoint" : undefined;
@@ -148,8 +151,8 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
     case "dir":
       return {
         head: (
-          <span className="term term-dir" title={`${f.dirIndex * 45}°`}>
-            <ArrowUp className="term-icon" style={{ transform: `rotate(${f.dirIndex * 45}deg)` }} />
+          <span className="dir-chip" title={t(DIR_KEYS[f.dirIndex % 8])} aria-label={t(DIR_KEYS[f.dirIndex % 8])}>
+            <ArrowUp strokeWidth={2.75} style={{ transform: `rotate(${f.dirIndex * 45}deg)` }} />
           </span>
         ),
       };

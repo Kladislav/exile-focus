@@ -18,13 +18,12 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const hints = useSettings((s) => s.hints);
   const i18n = useI18n();
   const listRef = useRef<HTMLDivElement>(null);
-  const firstScroll = useRef(true);
   const selectStep = useCallback((index: number) => setPointer(index), [setPointer]);
 
   // Клик, клавиши или автопрогресс: текущий шаг уезжает наверх, под заголовок акта.
   useLayoutEffect(() => {
-    scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "smooth");
-    firstScroll.current = false;
+    // Плавная прокрутка мешает: при игре нужно сразу видеть шаг.
+    scrollToCurrent(listRef.current, "instant");
   }, [pointer, route]);
 
   // Шрифт догружается позже первого рендера и сдвигает строки.
@@ -192,5 +191,5 @@ function GemRow({ gem, i18n }: { gem: RouteData.GemStep; i18n: I18n }) {
 /** Прокрутка к началу акта (из полосы прогресса). */
 export function useScrollToAct() {
   return (sectionIndex: number) =>
-    document.getElementById(`act-${sectionIndex}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document.getElementById(`act-${sectionIndex}`)?.scrollIntoView({ behavior: "instant", block: "start" });
 }
