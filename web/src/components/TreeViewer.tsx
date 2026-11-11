@@ -4,7 +4,7 @@ import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useI18n } from "../i18n";
 import { buildUrlTreeDelta, calculateBounds } from "../tree/delta";
-import { buildUrlTrees, loadTree, type UrlTree } from "../tree/url-tree";
+import { buildUrlTrees, loadTree, type TreeProblem, type UrlTree } from "../tree/url-tree";
 import { SetSwitcher } from "./SetSwitcher";
 
 interface Rendered {
@@ -28,13 +28,18 @@ export function TreeViewer({
 }) {
   const { t } = useI18n();
   const [trees, setTrees] = useState<UrlTree.Data[] | null>(null);
+  const [problems, setProblems] = useState<TreeProblem[]>([]);
   const [rendered, setRendered] = useState<Rendered | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
   const styleId = `tree-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 
   useEffect(() => {
     let alive = true;
-    buildUrlTrees(buildTrees).then((list) => alive && setTrees(list));
+    buildUrlTrees(buildTrees).then((result) => {
+      if (!alive) return;
+      setTrees(result.trees);
+      setProblems(result.problems);
+    });
     return () => {
       alive = false;
     };
@@ -85,8 +90,9 @@ export function TreeViewer({
     };
   }, [trees, current, styleId]);
 
+  if (buildTrees.length === 0) return <p className="muted">{t("noTreeImported")}</p>;
   if (trees === null) return <p className="muted">…</p>;
-  if (trees.length === 0) return <p className="muted">{t("noTree")}</p>;
+  if (trees.length === 0) return <TreeProblems problems={problems} />;
 
   return (
     <div className="tree">
@@ -112,6 +118,24 @@ export function TreeViewer({
           <NodeInfo rendered={rendered} nodeId={hovered} />
         </>
       )}
+    </div>
+  );
+}
+
+function TreeProblems({ problems }: { problems: TreeProblem[] }) {
+  const { t } = useI18n();
+  return (
+    <div className="muted">
+      <p>{t("noTree")}</p>
+      <ul className="tree-problems">
+        {problems.map((p, i) => (
+          <li key={i}>
+            <b>{p.name}</b> ({p.version || "?"}):{" "}
+            {p.reason === "version" ? t("treeBadVersion") : p.reason === "empty" ? t("treeEmpty") : t("treeError")}
+            {p.detail && <code> {p.detail}</code>}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

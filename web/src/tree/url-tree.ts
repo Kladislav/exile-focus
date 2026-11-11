@@ -93,20 +93,33 @@ export async function buildUrlTree(buildTree: RouteData.BuildTree): Promise<UrlT
   };
 }
 
-/** Деревья билда одной версии, без пустых и нераспознанных. */
+export interface TreeProblem {
+  name: string;
+  version: string;
+  reason: "version" | "empty" | "error";
+  detail?: string;
+}
+
+/** Деревья билда одной версии и причины, по которым остальные пропущены. */
 export async function buildUrlTrees(buildTrees: RouteData.BuildTree[]) {
   let trees: UrlTree.Data[] = [];
+  const problems: TreeProblem[] = [];
   for (const buildTree of buildTrees) {
-    if (!hasTreeVersion(buildTree.version)) continue;
+    const base = { name: buildTree.name, version: buildTree.version };
+    if (!hasTreeVersion(buildTree.version)) {
+      problems.push({ ...base, reason: "version" });
+      continue;
+    }
     try {
       const tree = await buildUrlTree(buildTree);
       if (tree.nodes.length > 0) trees.push(tree);
+      else problems.push({ ...base, reason: "empty" });
     } catch (e) {
-      console.error(`could not process tree ${buildTree.name}: ${e}`);
+      problems.push({ ...base, reason: "error", detail: String(e) });
     }
   }
   if (trees.length > 0) trees = trees.filter((t) => t.version === trees[0].version);
-  return trees;
+  return { trees, problems };
 }
 
 function read_u16(buffer: Uint8Array, offset: number) {

@@ -13,13 +13,12 @@ interface SettingsState {
   set: (patch: Partial<Omit<SettingsState, "set">>) => void;
 }
 
-const browserLang: Lang = navigator.language?.toLowerCase().startsWith("ru") ? "ru" : "en";
-
 export const useSettings = create<SettingsState>()(
   persist(
     (set) => ({
-      uiLang: browserLang,
-      gameLang: browserLang,
+      // По умолчанию английский; выбор пользователя сохраняется.
+      uiLang: "en",
+      gameLang: "en",
       theme: "system",
       hints: "current",
       set: (patch) => set(patch),
