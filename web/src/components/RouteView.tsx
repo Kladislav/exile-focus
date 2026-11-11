@@ -9,8 +9,8 @@ import { CopyButton } from "./CopyButton";
 import { OptionalBadge } from "./OptionalBadge";
 import { renderParts } from "./Fragments";
 
-/** Доля высоты окна, на которой держим текущий шаг при прокрутке. */
-const CURRENT_STEP_OFFSET = 0.3;
+/** Зазор между заголовком акта и текущим шагом после прокрутки. */
+const CURRENT_STEP_GAP = 8;
 
 export function RouteView({ route }: { route: FocusRoute }) {
   const pointer = useProgress((s) => s.pointer);
@@ -19,26 +19,10 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const i18n = useI18n();
   const listRef = useRef<HTMLDivElement>(null);
   const firstScroll = useRef(true);
-  // Клик по шагу: строка уже под курсором. Список не прокручиваем к ней,
-  // а только гасим сдвиг от того, что подсказки у шагов появились или исчезли.
-  const clicked = useRef<{ index: number; top: number } | null>(null);
-  const selectStep = useCallback(
-    (index: number) => {
-      const el = document.querySelector<HTMLElement>(`[data-step="${index}"]`);
-      clicked.current = el ? { index, top: el.getBoundingClientRect().top } : null;
-      setPointer(index);
-    },
-    [setPointer],
-  );
+  const selectStep = useCallback((index: number) => setPointer(index), [setPointer]);
 
+  // Клик, клавиши или автопрогресс: текущий шаг уезжает наверх, под заголовок акта.
   useLayoutEffect(() => {
-    if (clicked.current) {
-      const { index, top } = clicked.current;
-      clicked.current = null;
-      const el = document.querySelector<HTMLElement>(`[data-step="${index}"]`);
-      if (el) window.scrollBy({ top: el.getBoundingClientRect().top - top, behavior: "instant" });
-      return;
-    }
     scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "smooth");
     firstScroll.current = false;
   }, [pointer, route]);
@@ -88,13 +72,19 @@ export function RouteView({ route }: { route: FocusRoute }) {
   );
 }
 
-/** Текущий шаг в верхнюю треть окна, но не выше шапки и заголовка акта. */
+/**
+ * Текущий шаг сразу под шапкой и заголовком акта. Если шаг первый в карточке
+ * зоны, поднимаем всю карточку, чтобы её верх не прятался под заголовком.
+ */
 function scrollToCurrent(list: HTMLElement | null, behavior: ScrollBehavior) {
-  const el = list?.querySelector<HTMLElement>(".step.is-current, .route-done");
-  if (!el) return;
+  const step = list?.querySelector<HTMLElement>(".step.is-current, .route-done");
+  if (!step) return;
+  const card = step.closest<HTMLElement>(".zone-card");
+  const anchor = card && card.firstElementChild === step ? card : step;
   const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
-  const offset = Math.max(window.innerHeight * CURRENT_STEP_OFFSET, header + 72);
-  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  const actHead = step.closest(".act")?.querySelector<HTMLElement>(".act-head")?.offsetHeight ?? 0;
+  const offset = header + actHead + CURRENT_STEP_GAP;
+  const top = anchor.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
