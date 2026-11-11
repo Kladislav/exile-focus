@@ -14,23 +14,6 @@ export interface SearchString {
   query: string;
 }
 
-const STAT_TEXT: Record<Lang, { movement: string }> = {
-  // "{0}% increased Movement Speed", "+{0} to maximum Life", "+{0}% to Fire Resistance"
-  en: { movement: "movement speed" },
-  // "{0}% повышение скорости передвижения", "+{0} к максимуму здоровья", "+{0}% к сопротивлению огню"
-  ru: { movement: "скорости передвижения" },
-};
-
-/** Отдельные строки, полезные любому билду (здоровье и сопротивления есть в общей строке). */
-export function commonSearchStrings(gameLang: Lang): SearchString[] {
-  const t = STAT_TEXT[gameLang];
-  return [
-    { id: "links3", query: '"-\\w-"' },
-    { id: "links4", query: '"-\\w-\\w-"' },
-    { id: "movement", query: `"${t.movement}"` },
-  ];
-}
-
 const COLOUR: Record<string, string> = { strength: "r", dexterity: "g", intelligence: "b" };
 
 function permutations(letters: string[]): string[] {
@@ -94,14 +77,19 @@ const COMBINED_PARTS: Record<Lang, { movement: string[]; life: string[]; resist:
  * скорость передвижения, здоровье, сопротивления. Сокращает куски по очереди,
  * пока строка не уложится в лимит поиска.
  */
-export function combinedSearchString(gameLang: Lang, buildLinks?: string): { query: string; withBuild: boolean } {
+export function combinedSearchString(
+  gameLang: Lang,
+  buildLinks?: string,
+  size: 3 | 4 = 3,
+): { query: string; withBuild: boolean } {
+  const anyLinks = size === 3 ? "-\\w-" : "-\\w-\\w-";
   const parts = COMBINED_PARTS[gameLang];
   // Порядок сокращения: сначала самые длинные фразы.
   const order: (keyof typeof parts)[] = ["movement", "resist", "life"];
   const make = (links: string, pick: Record<keyof typeof parts, number>) =>
     `"${[links, parts.movement[pick.movement], parts.life[pick.life], parts.resist[pick.resist]].join("|")}"`;
 
-  for (const links of [buildLinks, "-\\w-"].filter((x): x is string => !!x)) {
+  for (const links of [buildLinks, anyLinks].filter((x): x is string => !!x)) {
     const pick = { movement: 0, life: 0, resist: 0 };
     let query = make(links, pick);
     for (const key of order) {
@@ -112,5 +100,5 @@ export function combinedSearchString(gameLang: Lang, buildLinks?: string): { que
     }
     if (query.length <= SEARCH_LIMIT) return { query, withBuild: links === buildLinks };
   }
-  return { query: make("-\\w-", { movement: 1, life: parts.life.length - 1, resist: 1 }), withBuild: false };
+  return { query: make(anyLinks, { movement: 1, life: parts.life.length - 1, resist: 1 }), withBuild: false };
 }

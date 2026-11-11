@@ -2,7 +2,7 @@ import { Data, type RouteData } from "common";
 import { useMemo } from "react";
 import { gemColor } from "../assets";
 import { useI18n, type UiKey } from "../i18n";
-import { buildLinkPattern, buildSearchStrings, combinedSearchString, commonSearchStrings } from "../route/search-strings";
+import { buildLinkPattern, buildSearchStrings, combinedSearchString } from "../route/search-strings";
 import { useSettings } from "../settings";
 import { CopyButton } from "./CopyButton";
 
@@ -10,10 +10,14 @@ import { CopyButton } from "./CopyButton";
 export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] }) {
   const gameLang = useSettings((s) => s.gameLang);
   const { t, game } = useI18n();
-  const common = useMemo(() => commonSearchStrings(gameLang), [gameLang]);
   const forBuild = useMemo(() => (groups ? buildSearchStrings(groups) : []), [groups]);
+  // Две общие строки: в начале ищут 3 связанных, к середине игры — 4.
   const combined = useMemo(
-    () => combinedSearchString(gameLang, groups ? (buildLinkPattern(groups) ?? undefined) : undefined),
+    () =>
+      ([3, 4] as const).map((size) => ({
+        size,
+        ...combinedSearchString(gameLang, groups ? (buildLinkPattern(groups, size) ?? undefined) : undefined, size),
+      })),
     [gameLang, groups],
   );
 
@@ -21,9 +25,13 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
     <div className="search-strings">
       <p className="panel-hint">{t("searchHelp")}</p>
       <div className="search-combined">
-        <SearchRow label={t("searchCombined")} query={combined.query}>
-          <span className="search-gems">{combined.withBuild ? t("searchCombinedBuild") : t("searchCombinedHint")}</span>
-        </SearchRow>
+        {combined.map((c) => (
+          <SearchRow key={c.size} label={t(c.size === 3 ? "searchCombined" : "searchCombined4")} query={c.query}>
+            <span className="search-gems">
+              {t(c.withBuild ? "searchCombinedBuild" : "searchCombinedHint", c.size)}
+            </span>
+          </SearchRow>
+        ))}
       </div>
       {forBuild.length > 0 && (
         <>
@@ -42,10 +50,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           ))}
         </>
       )}
-      <h4 className="search-group">{t("searchCommon")}</h4>
-      {common.map((s) => (
-        <SearchRow key={s.id} label={t(`search_${s.id}` as UiKey)} query={s.query} />
-      ))}
     </div>
   );
 }
