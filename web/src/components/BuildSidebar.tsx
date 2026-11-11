@@ -21,7 +21,7 @@ function useSetIndex(names: string[], act: number) {
 
 export function BuildSidebar({ act }: { act: number }) {
   const { t } = useI18n();
-  const [tab, setTab] = useState<Tab>("gems");
+  const [tab, setTab] = useState<Tab>("tree");
   const gemLinks = useProgress((s) => s.gemLinks);
   const buildTrees = useProgress((s) => s.buildTrees);
 
@@ -38,11 +38,11 @@ export function BuildSidebar({ act }: { act: number }) {
   return (
     <div className="build-side">
       <div className="tabs" role="tablist">
-        <button role="tab" aria-selected={tab === "gems"} className={tab === "gems" ? "is-active" : ""} onClick={() => setTab("gems")}>
-          {t("tabGems")}
-        </button>
         <button role="tab" aria-selected={tab === "tree"} className={tab === "tree" ? "is-active" : ""} onClick={() => setTab("tree")}>
           {t("tabTree")}
+        </button>
+        <button role="tab" aria-selected={tab === "gems"} className={tab === "gems" ? "is-active" : ""} onClick={() => setTab("gems")}>
+          {t("tabGems")}
         </button>
       </div>
 
