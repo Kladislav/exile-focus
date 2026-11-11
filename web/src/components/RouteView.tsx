@@ -1,6 +1,6 @@
 import { Data, type RouteData } from "common";
 import { Check } from "lucide-react";
-import { memo, useLayoutEffect, useRef } from "react";
+import { memo, useEffect, useLayoutEffect, useRef } from "react";
 import { gemColor, gemCostIcon } from "../assets";
 import { useI18n, type I18n } from "../i18n";
 import type { FocusRoute, FocusStep } from "../route/build";
@@ -21,12 +21,14 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const firstScroll = useRef(true);
 
   useLayoutEffect(() => {
-    const el = listRef.current?.querySelector<HTMLElement>(".step.is-current, .route-done");
-    if (!el) return;
-    const top = el.getBoundingClientRect().top + window.scrollY - window.innerHeight * CURRENT_STEP_OFFSET;
-    window.scrollTo({ top: Math.max(0, top), behavior: firstScroll.current ? "instant" : "smooth" });
+    scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "smooth");
     firstScroll.current = false;
   }, [pointer, route]);
+
+  // Шрифт догружается позже первого рендера и сдвигает строки.
+  useEffect(() => {
+    document.fonts?.ready.then(() => scrollToCurrent(listRef.current, "instant"));
+  }, []);
 
   return (
     <main className="route" ref={listRef}>
@@ -57,6 +59,16 @@ export function RouteView({ route }: { route: FocusRoute }) {
       <ScrollPadding />
     </main>
   );
+}
+
+/** Текущий шаг в верхнюю треть окна, но не выше шапки и заголовка акта. */
+function scrollToCurrent(list: HTMLElement | null, behavior: ScrollBehavior) {
+  const el = list?.querySelector<HTMLElement>(".step.is-current, .route-done");
+  if (!el) return;
+  const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+  const offset = Math.max(window.innerHeight * CURRENT_STEP_OFFSET, header + 72);
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
+  window.scrollTo({ top: Math.max(0, top), behavior });
 }
 
 /** Чтобы последние шаги тоже можно было прокрутить к верхней трети окна. */

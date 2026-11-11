@@ -27,7 +27,9 @@
   --gem-int: #3a6fd8;
 
   --radius: 10px;
-  --header-h: 92px;
+  --header-h: 110px;
+  --content-w: 1080px;
+  --gutter: 24px;
   --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: light;
 }
@@ -102,7 +104,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
 }
@@ -156,27 +158,27 @@ kbd {
   display: flex;
   align-items: center;
   gap: 16px;
-  max-width: 1100px;
+  max-width: var(--content-w);
   margin: 0 auto;
-  padding: 10px 20px 6px;
+  padding: 12px var(--gutter) 8px;
 }
 
 .zone {
   display: flex;
   align-items: baseline;
   gap: 10px;
-  min-width: 0;
+  min-width: 240px;
   flex: 1;
 }
 
 .zone-act {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   white-space: nowrap;
 }
 
 .zone-name {
-  font-size: 18px;
+  font-size: 21px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
@@ -184,7 +186,7 @@ kbd {
 }
 
 .zone-level {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
 }
 
@@ -230,7 +232,7 @@ kbd {
 }
 
 .nav-label {
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .segmented {
@@ -256,7 +258,7 @@ kbd {
   border-radius: 6px;
   background: transparent;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -292,7 +294,7 @@ kbd {
   gap: 6px;
   height: 32px;
   padding: 0 10px;
-  font-size: 13px;
+  font-size: 14px;
   border-radius: 8px;
   border: 1px solid var(--border);
   background: var(--surface);
@@ -328,66 +330,90 @@ button.log:hover {
   }
 }
 
-/* ---------- Progress rail ---------- */
+/* ---------- Act progress ---------- */
 
-.rail {
+.acts {
   display: flex;
-  gap: 4px;
-  max-width: 1100px;
+  align-items: center;
+  gap: 14px;
+  max-width: var(--content-w);
   margin: 0 auto;
-  padding: 2px 20px 8px;
+  padding: 2px var(--gutter) 12px;
 }
 
-.rail-seg {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  flex-basis: 0;
-  min-width: 0;
+.acts-list {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+}
+
+.act-pill {
+  position: relative;
+  height: 30px;
   padding: 0;
-  border: none;
-  background: none;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  overflow: hidden;
   cursor: pointer;
 }
 
-.rail-bar {
-  position: relative;
-  width: 100%;
-  height: 5px;
-  border-radius: 3px;
-  background: var(--surface-2);
-  overflow: hidden;
+.act-pill:hover {
+  border-color: var(--faint);
 }
 
-.rail-fill {
+.act-pill-fill {
   position: absolute;
   inset: 0 auto 0 0;
   background: var(--accent);
-  opacity: 0.55;
+  opacity: 0.18;
   transition: width 0.3s ease;
 }
 
-.rail-seg.is-active .rail-fill {
-  opacity: 1;
+.act-pill.is-complete .act-pill-fill {
+  opacity: 0.14;
 }
 
-.rail-label {
-  font-size: 11px;
-  color: var(--faint);
+.act-pill.is-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
 }
 
-.rail-seg.is-active .rail-label {
-  color: var(--text);
+.act-pill.is-active .act-pill-fill {
+  opacity: 0.3;
+}
+
+.act-pill-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
   font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.act-pill.is-active .act-pill-label,
+.act-pill.is-complete .act-pill-label {
+  color: var(--text);
+}
+
+.acts-total {
+  min-width: 3.2em;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---------- Route list ---------- */
 
 .route {
-  max-width: 760px;
+  max-width: var(--content-w);
   margin: 0 auto;
-  padding: 8px 20px 0;
+  padding: 4px var(--gutter) 0;
 }
 
 .act {
@@ -401,9 +427,9 @@ button.log:hover {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin: 0;
-  padding: 18px 14px 8px;
-  font-size: 13px;
+  margin: 0 -12px;
+  padding: 20px 12px 8px;
+  font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -420,15 +446,15 @@ button.log:hover {
 
 .steps {
   list-style: none;
-  margin: 0;
+  margin: 0 -12px;
   padding: 0;
 }
 
 .step {
   display: grid;
-  grid-template-columns: 18px 1fr;
-  gap: 12px;
-  padding: 9px 14px;
+  grid-template-columns: 20px 1fr;
+  gap: 14px;
+  padding: 10px 12px;
   border-radius: var(--radius);
   cursor: pointer;
   transition: background 0.12s;
@@ -439,8 +465,8 @@ button.log:hover {
 }
 
 .step-marker {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   margin-top: 4px;
   border-radius: 50%;
   border: 1.5px solid var(--faint);
@@ -472,12 +498,12 @@ button.log:hover {
 }
 
 .step.is-current .step-text {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .step.is-current .step-marker {
-  border: 5px solid var(--accent);
-  margin-top: 6px;
+  border: 6px solid var(--accent);
+  margin-top: 7px;
 }
 
 .step-body {
@@ -504,8 +530,8 @@ button.log:hover {
 
 .step-hints {
   margin: 6px 0 0;
-  padding-left: 18px;
-  font-size: 14px;
+  padding-left: 20px;
+  font-size: 16px;
   color: var(--muted);
 }
 
@@ -516,7 +542,7 @@ button.log:hover {
 .route-done {
   text-align: center;
   padding: 40px 0;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
 }
 
@@ -577,7 +603,7 @@ button.log:hover {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  font-size: 15px;
+  font-size: 16px;
 }
 
 .gem {
@@ -612,7 +638,7 @@ button.log:hover {
 }
 
 .gem-note {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
@@ -665,7 +691,7 @@ button.log:hover {
   gap: 5px;
   height: 24px;
   padding: 0 7px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -837,7 +863,7 @@ select.input {
   .topbar-row {
     flex-wrap: wrap;
     gap: 6px 12px;
-    padding: 8px 16px 4px;
+    padding: 10px var(--gutter) 6px;
   }
   .zone {
     flex-basis: 100%;
@@ -849,14 +875,22 @@ select.input {
   .divider {
     display: none;
   }
-  .rail {
-    padding: 2px 16px 8px;
+  :root {
+    --gutter: 16px;
   }
-  .route {
-    padding: 4px 8px 0;
+  .acts {
+    gap: 10px;
+  }
+  .acts-list {
+    gap: 4px;
+  }
+  .act-pill {
+    height: 28px;
+  }
+  .act-pill-label svg {
+    display: none;
   }
   .step {
-    padding: 9px 10px;
     gap: 10px;
   }
 }
