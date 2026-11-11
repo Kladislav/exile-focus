@@ -501,6 +501,17 @@ button.log:hover {
   margin-bottom: 12px;
 }
 
+.search-combined {
+  padding: 4px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.search-combined .search-row {
+  border-bottom: none;
+}
+
 .search-group {
   margin: 14px 0 6px;
   font-size: 13px;

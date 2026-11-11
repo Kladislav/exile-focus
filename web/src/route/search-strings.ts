@@ -51,6 +51,12 @@ function linkQuery(colours: string[]): string | null {
   return query.length <= SEARCH_LIMIT ? query : null;
 }
 
+/** Перестановки цветов связки без кавычек ("g-r-r|r-g-r|r-r-g") или null. */
+export function buildLinkPattern(groups: RouteData.GemLinkGroup[], size = 3): string | null {
+  const s = buildSearchStrings(groups).find((x) => x.id === `build${size}`);
+  return s ? s.query.slice(1, -1) : null;
+}
+
 /**
  * Гнёзда под основную связку набора: главный гем и поддержки, цвета по атрибуту.
  * Возвращает строки для 3 и 4 связанных гнёзд, если они укладываются в лимит поиска.
@@ -70,4 +76,43 @@ export function buildSearchStrings(groups: RouteData.GemLinkGroup[]): (SearchStr
     if (query) result.push({ id: `build${size}`, query, gems: gems.slice(0, size) });
   }
   return result;
+}
+
+/**
+ * Варианты кусков текста от точного к короткому: короткие нужны, чтобы
+ * общая строка уложилась в 50 символов (особенно в русском клиенте).
+ */
+const COMBINED_PARTS: Record<Lang, { movement: string[]; life: string[]; resist: string[] }> = {
+  en: { movement: ["movement speed", "movement"], life: ["maximum life"], resist: ["resistance", "resist"] },
+  ru: {
+    movement: ["скорости передвижения", "передвиж"],
+    life: ["максимуму здоровья", "максимуму здор", "здоровья"],
+    resist: ["сопротивлению", "сопротивл"],
+  },
+};
+
+/**
+ * Одна строка «всё полезное сразу»: связанные гнёзда (цвета билда, если влезают),
+ * скорость передвижения, здоровье, сопротивления. Сокращает куски по очереди,
+ * пока строка не уложится в лимит поиска.
+ */
+export function combinedSearchString(gameLang: Lang, buildLinks?: string): { query: string; withBuild: boolean } {
+  const parts = COMBINED_PARTS[gameLang];
+  // Порядок сокращения: сначала самые длинные фразы.
+  const order: (keyof typeof parts)[] = ["movement", "resist", "life"];
+  const make = (links: string, pick: Record<keyof typeof parts, number>) =>
+    `"${[links, parts.movement[pick.movement], parts.life[pick.life], parts.resist[pick.resist]].join("|")}"`;
+
+  for (const links of [buildLinks, "-\\w-"].filter((x): x is string => !!x)) {
+    const pick = { movement: 0, life: 0, resist: 0 };
+    let query = make(links, pick);
+    for (const key of order) {
+      while (query.length > SEARCH_LIMIT && pick[key] < parts[key].length - 1) {
+        pick[key]++;
+        query = make(links, pick);
+      }
+    }
+    if (query.length <= SEARCH_LIMIT) return { query, withBuild: links === buildLinks };
+  }
+  return { query: make("-\\w-", { movement: 1, life: parts.life.length - 1, resist: 1 }), withBuild: false };
 }

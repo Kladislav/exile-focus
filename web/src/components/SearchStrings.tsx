@@ -2,7 +2,7 @@ import { Data, type RouteData } from "common";
 import { useMemo } from "react";
 import { gemColor } from "../assets";
 import { useI18n, type UiKey } from "../i18n";
-import { buildSearchStrings, commonSearchStrings } from "../route/search-strings";
+import { buildLinkPattern, buildSearchStrings, combinedSearchString, commonSearchStrings } from "../route/search-strings";
 import { useSettings } from "../settings";
 import { CopyButton } from "./CopyButton";
 
@@ -12,10 +12,19 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
   const { t, game } = useI18n();
   const common = useMemo(() => commonSearchStrings(gameLang), [gameLang]);
   const forBuild = useMemo(() => (groups ? buildSearchStrings(groups) : []), [groups]);
+  const combined = useMemo(
+    () => combinedSearchString(gameLang, groups ? (buildLinkPattern(groups) ?? undefined) : undefined),
+    [gameLang, groups],
+  );
 
   return (
     <div className="search-strings">
       <p className="panel-hint">{t("searchHelp")}</p>
+      <div className="search-combined">
+        <SearchRow label={t("searchCombined")} query={combined.query}>
+          <span className="search-gems">{combined.withBuild ? t("searchCombinedBuild") : t("searchCombinedHint")}</span>
+        </SearchRow>
+      </div>
       {forBuild.length > 0 && (
         <>
           <h4 className="search-group">{t("searchForBuild")}</h4>
