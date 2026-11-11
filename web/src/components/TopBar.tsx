@@ -1,11 +1,10 @@
 import { Data } from "common";
-import { CircleHelp, Gamepad2, Gem, Languages, Monitor, Moon, Radio, Sun, Swords } from "lucide-react";
+import { Gem, Radio, Settings, Swords } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "../i18n";
 import { connectLog, reconnectLog, useLog } from "../log/client-log";
 import type { FocusRoute } from "../route/build";
 import { areaBefore, minAreaLevel } from "../route/build";
-import { useSettings, type Lang, type Theme } from "../settings";
 import { useProgress, useUi, type Panel } from "../store";
 
 export function TopBar({ route }: { route: FocusRoute }) {
@@ -44,13 +43,9 @@ export function TopBar({ route }: { route: FocusRoute }) {
               {characterClass === "None" ? t("importBuild") : i18n.game.term(characterClass)}
             </span>
           </NavButton>
-          <NavButton panel="help" title={`${t("help")} (?)`}>
-            <CircleHelp size={18} />
+          <NavButton panel="settings" title={`${t("settings")} (S)`}>
+            <Settings size={18} />
           </NavButton>
-          <span className="divider" />
-          <LangToggle setting="uiLang" icon={<Languages size={16} />} title={t("uiLanguage")} />
-          <LangToggle setting="gameLang" icon={<Gamepad2 size={16} />} title={t("gameLanguage")} />
-          <ThemeButton />
         </div>
       </div>
     </header>
@@ -68,47 +63,6 @@ function NavButton({ panel, title, children }: { panel: Panel; title: string; ch
       onClick={() => setPanel(current === panel ? null : panel)}
     >
       {children}
-    </button>
-  );
-}
-
-function LangToggle({ setting, icon, title }: { setting: "uiLang" | "gameLang"; icon: ReactNode; title: string }) {
-  const value = useSettings((s) => s[setting]);
-  const set = useSettings((s) => s.set);
-  return (
-    <div className="segmented" title={title} role="group" aria-label={title}>
-      <span className="segmented-icon">{icon}</span>
-      {(["ru", "en"] as Lang[]).map((lang) => (
-        <button
-          key={lang}
-          className={value === lang ? "is-active" : ""}
-          aria-pressed={value === lang}
-          onClick={() => set({ [setting]: lang })}
-        >
-          {lang.toUpperCase()}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-const THEME_ORDER: Theme[] = ["system", "light", "dark"];
-const THEME_ICON = { system: Monitor, light: Sun, dark: Moon };
-
-function ThemeButton() {
-  const theme = useSettings((s) => s.theme);
-  const set = useSettings((s) => s.set);
-  const { t } = useI18n();
-  const Icon = THEME_ICON[theme];
-  const label = { system: t("themeSystem"), light: t("themeLight"), dark: t("themeDark") }[theme];
-  return (
-    <button
-      className="nav-btn"
-      title={`${t("theme")}: ${label}`}
-      aria-label={`${t("theme")}: ${label}`}
-      onClick={() => set({ theme: THEME_ORDER[(THEME_ORDER.indexOf(theme) + 1) % THEME_ORDER.length] })}
-    >
-      <Icon size={18} />
     </button>
   );
 }

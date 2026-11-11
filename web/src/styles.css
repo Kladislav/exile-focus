@@ -260,6 +260,23 @@ kbd {
   margin-left: 4px;
 }
 
+.segmented-wide {
+  display: flex;
+  width: 100%;
+  height: 36px;
+  margin: 0 0 4px;
+}
+
+.segmented-wide button {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 32px;
+  font-size: 14px;
+}
+
 .segmented-icon {
   display: inline-flex;
   padding: 0 6px 0 5px;
@@ -441,8 +458,8 @@ button.log:hover {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin: 0 -12px;
-  padding: 20px 12px 8px;
+  margin: 0;
+  padding: 20px 4px 10px;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.04em;
@@ -458,10 +475,116 @@ button.log:hover {
   font-variant-numeric: tabular-nums;
 }
 
-.steps {
+.zone-card {
   list-style: none;
-  margin: 0 -12px;
-  padding: 0;
+  margin: 0 0 10px;
+  padding: 4px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.zone-card.is-town {
+  background: color-mix(in srgb, var(--surface) 92%, var(--c-area));
+}
+
+.zone-card.is-current {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+}
+
+.zone-card.is-done {
+  background: transparent;
+}
+
+.step.is-edge .step-text {
+  font-weight: 500;
+}
+
+.step.is-optional .step-marker {
+  border-style: dashed;
+}
+
+.opt-badge {
+  position: relative;
+  display: inline-block;
+  margin-left: 10px;
+  padding: 1px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.6;
+  vertical-align: 0.15em;
+  border-radius: 999px;
+  border: 1px dashed var(--faint);
+  color: var(--muted);
+  cursor: help;
+}
+
+.opt-badge.is-build {
+  border-style: solid;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.opt-pop {
+  display: none;
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(420px, 80vw);
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(0 0 0 / 0.25);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: left;
+  white-space: normal;
+  cursor: default;
+}
+
+.opt-badge:hover .opt-pop,
+.opt-badge:focus .opt-pop,
+.opt-badge:focus-within .opt-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.opt-title {
+  font-size: 15px;
+}
+
+.opt-text {
+  color: var(--muted);
+}
+
+.opt-sub {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.opt-gems {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px 12px;
+}
+
+.opt-gem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .step {
@@ -901,6 +1024,14 @@ select.input {
 }
 
 /* ---------- Act nav (left) ---------- */
+
+.actnav,
+.build-side {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
 
 .actnav-total {
   display: flex;

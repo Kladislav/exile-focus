@@ -24,13 +24,24 @@ npm run build
 
 ## Route and data
 
-The route, its parser and game data come from
+Game data and the route parser come from
 [HeartofPhos/exile-leveling](https://github.com/HeartofPhos/exile-leveling) (MIT),
 vendored in `upstream/` as a git subtree. Do not edit files in `upstream/`;
-pull new leagues' changes with:
+pull new leagues' changes with `npm run sync-upstream`.
+
+The route itself is our fork in `web/src/route/routes/`:
+
+- removed: The Great White Beast, The Silver Locket, Essence of Umbra and Essence of the Hag rewards;
+- quests that only give gems (Intruders in Black, Sharp and Cruel, Sever the Right Hand,
+  A Fixture of Fate) are wrapped in `#ifdef OPT_<quest>`: without a build they are shown as optional,
+  with a build they are included only if they give a needed gem earlier than the rest of the route;
+- crafting recipes are filtered to the ones listed in `web/src/route/crafting.ts`.
+
+After syncing upstream, see what the author changed in the route and port it by hand:
 
 ```sh
-npm run sync-upstream
+sh scripts/route-diff.sh
+cp upstream/common/data/routes/*.txt web/src/route/routes/.upstream-base/   # once ported
 ```
 
 Our own UI lives in `web/`.

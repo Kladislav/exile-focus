@@ -1,12 +1,13 @@
 import { Data, type RouteData } from "common";
 import { Check } from "lucide-react";
-import { memo, useEffect, useLayoutEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { gemColor, gemCostIcon } from "../assets";
 import { useI18n, type I18n } from "../i18n";
 import type { FocusRoute, FocusStep } from "../route/build";
 import { useSettings, type Hints } from "../settings";
 import { useProgress } from "../store";
 import { CopyButton } from "./CopyButton";
+import { OptionalBadge } from "./OptionalBadge";
 import { renderParts } from "./Fragments";
 
 /** Доля высоты окна, на которой держим текущий шаг при прокрутке. */
@@ -19,8 +20,26 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const i18n = useI18n();
   const listRef = useRef<HTMLDivElement>(null);
   const firstScroll = useRef(true);
+  // Клик по шагу: строка уже под курсором. Список не прокручиваем к ней,
+  // а только гасим сдвиг от того, что подсказки у шагов появились или исчезли.
+  const clicked = useRef<{ index: number; top: number } | null>(null);
+  const selectStep = useCallback(
+    (index: number) => {
+      const el = document.querySelector<HTMLElement>(`[data-step="${index}"]`);
+      clicked.current = el ? { index, top: el.getBoundingClientRect().top } : null;
+      setPointer(index);
+    },
+    [setPointer],
+  );
 
   useLayoutEffect(() => {
+    if (clicked.current) {
+      const { index, top } = clicked.current;
+      clicked.current = null;
+      const el = document.querySelector<HTMLElement>(`[data-step="${index}"]`);
+      if (el) window.scrollBy({ top: el.getBoundingClientRect().top - top, behavior: "instant" });
+      return;
+    }
     scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "smooth");
     firstScroll.current = false;
   }, [pointer, route]);
@@ -40,18 +59,27 @@ export function RouteView({ route }: { route: FocusRoute }) {
               <span>{i18n.section(section.name)}</span>
               <span className="act-count">{i18n.t("stepsDone", done, section.stepCount)}</span>
             </h2>
-            <ol className="steps">
-              {route.steps.slice(section.firstStep, section.firstStep + section.stepCount).map((item) => (
-                <StepRow
-                  key={item.index}
-                  item={item}
-                  state={item.index < pointer ? "done" : item.index === pointer ? "current" : "next"}
-                  hints={hints}
-                  i18n={i18n}
-                  onSelect={setPointer}
-                />
-              ))}
-            </ol>
+            {zoneGroups(route, section.firstStep, section.stepCount).map((group) => {
+              const first = group[0].index;
+              const last = group[group.length - 1].index;
+              const state = pointer > last ? "is-done" : pointer >= first ? "is-current" : "";
+              const edge = group[0].edgeIndex;
+              const town = edge !== null && Data.Areas[route.edges[edge]]?.is_town_area;
+              return (
+                <ol key={first} className={`zone-card ${state} ${town ? "is-town" : ""}`}>
+                  {group.map((item) => (
+                    <StepRow
+                      key={item.index}
+                      item={item}
+                      state={item.index < pointer ? "done" : item.index === pointer ? "current" : "next"}
+                      hints={hints}
+                      i18n={i18n}
+                      onSelect={selectStep}
+                    />
+                  ))}
+                </ol>
+              );
+            })}
           </section>
         );
       })}
@@ -69,6 +97,16 @@ function scrollToCurrent(list: HTMLElement | null, behavior: ScrollBehavior) {
   const offset = Math.max(window.innerHeight * CURRENT_STEP_OFFSET, header + 72);
   const top = el.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top: Math.max(0, top), behavior });
+}
+
+/** Шаги акта, разбитые на блоки: каждый переход в новую зону начинает блок. */
+function zoneGroups(route: FocusRoute, first: number, count: number) {
+  const groups: FocusStep[][] = [];
+  for (const item of route.steps.slice(first, first + count)) {
+    if (item.edgeIndex !== null || groups.length === 0) groups.push([]);
+    groups[groups.length - 1].push(item);
+  }
+  return groups;
 }
 
 /** Чтобы последние шаги тоже можно было прокрутить к верхней трети окна. */
@@ -99,7 +137,8 @@ const StepRow = memo(function StepRow({
 
   return (
     <li
-      className={`step is-${state}`}
+      data-step={item.index}
+      className={`step is-${state} ${item.edgeIndex !== null ? "is-edge" : ""} ${item.optional ? "is-optional" : ""}`}
       onClick={() => state !== "current" && onSelect(item.index)}
       title={state !== "current" ? i18n.t("setCurrent") : undefined}
     >
@@ -108,7 +147,10 @@ const StepRow = memo(function StepRow({
       </span>
       <div className="step-body">
         <div className="step-main">
-          <p className="step-text">{head}</p>
+          <p className="step-text">
+            {head}
+            {item.optional && <OptionalBadge info={item.optional} i18n={i18n} />}
+          </p>
           {tail.length > 0 && <div className="step-tail">{tail}</div>}
         </div>
 

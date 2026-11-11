@@ -10,7 +10,7 @@ import { buildFocusRoute, pointerForArea } from "./route/build";
 import { HINT_ORDER, useSettings } from "./settings";
 import { useProgress, useUi, type Panel } from "./store";
 
-const PANEL_KEYS: Record<string, Panel> = { g: "gems", b: "build", "?": "help" };
+const PANEL_KEYS: Record<string, Panel> = { g: "gems", b: "build", "?": "settings", s: "settings" };
 
 function useTheme() {
   const theme = useSettings((s) => s.theme);

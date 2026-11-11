@@ -1,11 +1,11 @@
 import type { RouteData } from "common";
-import { X } from "lucide-react";
+import { Monitor, Moon, Sun, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { processPob } from "../build/pob";
 import { BuildSidebar } from "./BuildSidebar";
 import { useI18n } from "../i18n";
 import { disconnectLog, useLog } from "../log/client-log";
-import { HINT_ORDER, useSettings, type Hints } from "../settings";
+import { HINT_ORDER, useSettings, type Hints, type Lang, type Theme } from "../settings";
 import { useProgress, useUi } from "../store";
 
 const LOG_PATH = "<Steam library>\\steamapps\\common\\Path of Exile\\logs\\Client.txt";
@@ -36,8 +36,8 @@ export function Panels({ act }: { act: number }) {
       return <BuildDrawer act={act} />;
     case "build":
       return <BuildPanel />;
-    case "help":
-      return <Help />;
+    case "settings":
+      return <Settings />;
     default:
       return null;
   }
@@ -54,8 +54,6 @@ function BuildDrawer({ act }: { act: number }) {
 
 function BuildPanel() {
   const { buildData, pobCode, setBuild, setBuildData, resetAll } = useProgress();
-  const hints = useSettings((s) => s.hints);
-  const setSettings = useSettings((s) => s.set);
   const [code, setCode] = useState(pobCode ?? "");
   const [message, setMessage] = useState<string | null>(null);
   const log = useLog();
@@ -87,11 +85,6 @@ function BuildPanel() {
     setMessage(t("pobImported", game.term(pob.buildData.characterClass), pob.requiredGems.length));
   }
 
-  const hintLabels: Record<Hints, string> = {
-    current: t("hintsCurrent"),
-    all: t("hintsAll"),
-    off: t("hintsOff"),
-  };
 
   return (
     <Drawer title={t("build")}>
@@ -123,10 +116,6 @@ function BuildPanel() {
           />
           {t("leagueStart")}
         </label>
-        <label className="check">
-          <input type="checkbox" checked={buildData.library} onChange={(e) => setBuildData({ library: e.target.checked })} />
-          {t("library")}
-        </label>
         <label className="field">
           {t("bandits")}
           <select
@@ -138,16 +127,6 @@ function BuildPanel() {
             {(["Alira", "Oak", "Kraityn"] as const).map((b) => (
               <option key={b} value={b}>
                 {t("banditHelp", game.term(b))}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="field">
-          {t("hints")}
-          <select className="input" value={hints} onChange={(e) => setSettings({ hints: e.target.value as Hints })}>
-            {HINT_ORDER.map((h) => (
-              <option key={h} value={h}>
-                {hintLabels[h]}
               </option>
             ))}
           </select>
@@ -185,21 +164,73 @@ function BuildPanel() {
   );
 }
 
-function Help() {
+function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+  label,
+}: {
+  value: T;
+  options: { value: T; label: ReactNode }[];
+  onChange: (v: T) => void;
+  label: string;
+}) {
+  return (
+    <div className="segmented segmented-wide" role="group" aria-label={label}>
+      {options.map((o) => (
+        <button key={o.value} className={value === o.value ? "is-active" : ""} aria-pressed={value === o.value} onClick={() => onChange(o.value)}>
+          {o.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const LANG_OPTIONS: { value: Lang; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "ru", label: "Русский" },
+];
+
+function Settings() {
   const { t } = useI18n();
+  const settings = useSettings();
   const keys: [string, string][] = [
     ["Space / → / J", t("keyNext")],
     ["Backspace / ← / K", t("keyBack")],
     ["G", t("gemLinks")],
     ["B", t("build")],
     ["H", t("keyHints")],
-    ["?", t("keyHelp")],
+    ["?", t("keySettings")],
     ["Esc", t("keyClose")],
   ];
   const [before, after] = t("creditsText").split("{0}");
 
   return (
-    <Drawer title={t("help")}>
+    <Drawer title={t("settings")}>
+      <section className="form-section">
+        <h3>{t("uiLanguage")}</h3>
+        <Segmented label={t("uiLanguage")} value={settings.uiLang} options={LANG_OPTIONS} onChange={(uiLang) => settings.set({ uiLang })} />
+        <h3>{t("gameLanguage")}</h3>
+        <Segmented label={t("gameLanguage")} value={settings.gameLang} options={LANG_OPTIONS} onChange={(gameLang) => settings.set({ gameLang })} />
+        <h3>{t("theme")}</h3>
+        <Segmented<Theme>
+          label={t("theme")}
+          value={settings.theme}
+          options={[
+            { value: "system", label: <><Monitor size={15} /> {t("themeSystem")}</> },
+            { value: "light", label: <><Sun size={15} /> {t("themeLight")}</> },
+            { value: "dark", label: <><Moon size={15} /> {t("themeDark")}</> },
+          ]}
+          onChange={(theme) => settings.set({ theme })}
+        />
+        <h3>{t("hints")}</h3>
+        <Segmented<Hints>
+          label={t("hints")}
+          value={settings.hints}
+          options={HINT_ORDER.map((h) => ({ value: h, label: { current: t("hintsCurrent"), all: t("hintsAll"), off: t("hintsOff") }[h] }))}
+          onChange={(hints) => settings.set({ hints })}
+        />
+      </section>
       <section className="form-section">
         <h3>{t("keys")}</h3>
         <dl className="keys">
