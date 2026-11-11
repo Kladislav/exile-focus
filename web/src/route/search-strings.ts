@@ -59,23 +59,17 @@ export function buildSearchStrings(groups: RouteData.GemLinkGroup[]): (SearchStr
   return result;
 }
 
-/**
- * Варианты кусков текста от точного к короткому: короткие нужны, чтобы
- * общая строка уложилась в 50 символов (особенно в русском клиенте).
- */
-const COMBINED_PARTS: Record<Lang, { movement: string[]; life: string[]; resist: string[] }> = {
-  en: { movement: ["movement speed", "movement"], life: ["maximum life"], resist: ["resistance", "resist"] },
-  ru: {
-    movement: ["скорости передвижения", "передвиж"],
-    life: ["максимуму здоровья", "максимуму здор", "здоровья"],
-    resist: ["сопротивлению", "сопротивл"],
-  },
+/** Скорость передвижения в тексте предмета; короткий вариант — на случай длинной связки. */
+const MOVEMENT: Record<Lang, string[]> = {
+  // "{0}% increased Movement Speed"
+  en: ["movement speed", "movement"],
+  // "{0}% повышение скорости передвижения"
+  ru: ["скорости передвижения", "передвиж"],
 };
 
 /**
- * Одна строка «всё полезное сразу»: связанные гнёзда (цвета билда, если влезают),
- * скорость передвижения, здоровье, сопротивления. Сокращает куски по очереди,
- * пока строка не уложится в лимит поиска.
+ * Общая строка: связанные гнёзда (цвета билда, если влезают) и скорость передвижения.
+ * Укладывается в лимит поиска, сокращая фразу или откатываясь на любые цвета.
  */
 export function combinedSearchString(
   gameLang: Lang,
@@ -83,22 +77,11 @@ export function combinedSearchString(
   size: 3 | 4 = 3,
 ): { query: string; withBuild: boolean } {
   const anyLinks = size === 3 ? "-\\w-" : "-\\w-\\w-";
-  const parts = COMBINED_PARTS[gameLang];
-  // Порядок сокращения: сначала самые длинные фразы.
-  const order: (keyof typeof parts)[] = ["movement", "resist", "life"];
-  const make = (links: string, pick: Record<keyof typeof parts, number>) =>
-    `"${[links, parts.movement[pick.movement], parts.life[pick.life], parts.resist[pick.resist]].join("|")}"`;
-
   for (const links of [buildLinks, anyLinks].filter((x): x is string => !!x)) {
-    const pick = { movement: 0, life: 0, resist: 0 };
-    let query = make(links, pick);
-    for (const key of order) {
-      while (query.length > SEARCH_LIMIT && pick[key] < parts[key].length - 1) {
-        pick[key]++;
-        query = make(links, pick);
-      }
+    for (const movement of MOVEMENT[gameLang]) {
+      const query = `"${links}|${movement}"`;
+      if (query.length <= SEARCH_LIMIT) return { query, withBuild: links === buildLinks };
     }
-    if (query.length <= SEARCH_LIMIT) return { query, withBuild: links === buildLinks };
   }
-  return { query: make(anyLinks, { movement: 1, life: parts.life.length - 1, resist: 1 }), withBuild: false };
+  return { query: `"${anyLinks}|${MOVEMENT[gameLang][1]}"`, withBuild: false };
 }
