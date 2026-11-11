@@ -8,6 +8,7 @@ import { useProgress } from "../store";
 import { CopyButton } from "./CopyButton";
 import { OptionalBadge } from "./OptionalBadge";
 import { renderParts } from "./Fragments";
+import { scrollWindowTo } from "../scroll";
 
 /** Зазор между заголовком акта и текущим шагом после прокрутки. */
 const CURRENT_STEP_GAP = 8;
@@ -18,12 +19,14 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const hints = useSettings((s) => s.hints);
   const i18n = useI18n();
   const listRef = useRef<HTMLDivElement>(null);
+  const firstScroll = useRef(true);
   const selectStep = useCallback((index: number) => setPointer(index), [setPointer]);
 
   // Клик, клавиши или автопрогресс: текущий шаг уезжает наверх, под заголовок акта.
   useLayoutEffect(() => {
-    // Плавная прокрутка мешает: при игре нужно сразу видеть шаг.
-    scrollToCurrent(listRef.current, "instant");
+    // Первая отрисовка — сразу на место, дальше короткая анимация (scroll.ts).
+    scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "fast");
+    firstScroll.current = false;
   }, [pointer, route]);
 
   // Шрифт догружается позже первого рендера и сдвигает строки.
@@ -75,7 +78,7 @@ export function RouteView({ route }: { route: FocusRoute }) {
  * Текущий шаг сразу под шапкой и заголовком акта. Если шаг первый в карточке
  * зоны, поднимаем всю карточку, чтобы её верх не прятался под заголовком.
  */
-function scrollToCurrent(list: HTMLElement | null, behavior: ScrollBehavior) {
+function scrollToCurrent(list: HTMLElement | null, mode: "fast" | "instant") {
   const step = list?.querySelector<HTMLElement>(".step.is-current, .route-done");
   if (!step) return;
   const card = step.closest<HTMLElement>(".zone-card");
@@ -84,7 +87,7 @@ function scrollToCurrent(list: HTMLElement | null, behavior: ScrollBehavior) {
   const actHead = step.closest(".act")?.querySelector<HTMLElement>(".act-head")?.offsetHeight ?? 0;
   const offset = header + actHead + CURRENT_STEP_GAP;
   const top = anchor.getBoundingClientRect().top + window.scrollY - offset;
-  window.scrollTo({ top: Math.max(0, top), behavior });
+  scrollWindowTo(top, mode);
 }
 
 /** Шаги акта, разбитые на блоки: каждый переход в новую зону начинает блок. */
@@ -188,8 +191,12 @@ function GemRow({ gem, i18n }: { gem: RouteData.GemStep; i18n: I18n }) {
   );
 }
 
-/** Прокрутка к началу акта (из полосы прогресса). */
+/** Прокрутка к началу акта (из навигации по актам). */
 export function useScrollToAct() {
-  return (sectionIndex: number) =>
-    document.getElementById(`act-${sectionIndex}`)?.scrollIntoView({ behavior: "instant", block: "start" });
+  return (sectionIndex: number) => {
+    const el = document.getElementById(`act-${sectionIndex}`);
+    if (!el) return;
+    const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+    scrollWindowTo(el.getBoundingClientRect().top + window.scrollY - header);
+  };
 }
