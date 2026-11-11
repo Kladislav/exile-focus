@@ -1,5 +1,4 @@
 import { Data, type RouteData } from "common";
-import { Check } from "lucide-react";
 import { memo, useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { gemColor, gemCostIcon } from "../assets";
 import { useI18n, type I18n } from "../i18n";
@@ -143,9 +142,7 @@ const StepRow = memo(function StepRow({
       onClick={() => state !== "current" && onSelect(item.index)}
       title={state !== "current" ? i18n.t("setCurrent") : undefined}
     >
-      <span className="step-marker" aria-hidden>
-        {state === "done" && <Check size={14} strokeWidth={2.5} />}
-      </span>
+      <span className="step-marker" aria-hidden />
       <div className="step-body">
         <div className="step-main">
           <p className="step-text">

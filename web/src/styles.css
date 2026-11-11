@@ -503,9 +503,6 @@ button.log:hover {
   font-weight: 500;
 }
 
-.step.is-optional .step-marker {
-  border-style: dashed;
-}
 
 .opt-badge {
   position: relative;
@@ -590,11 +587,14 @@ button.log:hover {
   text-overflow: ellipsis;
 }
 
+/* Шаги внутри карточки зоны — точки на вертикальной линии маршрута.
+   --dot-y: высота центра точки (середина первой строки текста). */
 .step {
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 14px;
-  padding: 10px 12px;
+  --dot-x: 23px;
+  --dot-y: 24px;
+  --line-done: color-mix(in srgb, var(--accent) 45%, var(--surface));
+  position: relative;
+  padding: 10px 12px 10px 46px;
   border-radius: var(--radius);
   cursor: pointer;
   transition: background 0.12s;
@@ -604,14 +604,63 @@ button.log:hover {
   background: var(--surface-2);
 }
 
+/* Линия маршрута: сквозная через все шаги зоны, обрезана у первой и последней точки. */
+.step::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--dot-x) - 1px);
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.step:first-child::before {
+  top: var(--dot-y);
+}
+
+.step:last-child::before {
+  bottom: calc(100% - var(--dot-y));
+}
+
+.step:only-child::before {
+  display: none;
+}
+
+.step.is-done::before {
+  background: var(--line-done);
+}
+
+/* До текущей точки линия пройдена, после — нет. */
+.step.is-current::before {
+  background: linear-gradient(
+    to bottom,
+    var(--line-done) var(--dot-y),
+    var(--border) var(--dot-y)
+  );
+}
+
 .step-marker {
-  width: 20px;
-  height: 20px;
-  margin-top: 4px;
+  position: absolute;
+  z-index: 1;
+  left: var(--dot-x);
+  top: var(--dot-y);
+  width: 10px;
+  height: 10px;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
-  border: 1.5px solid var(--faint);
-  display: grid;
-  place-items: center;
+  border: 2px solid var(--faint);
+  background: var(--surface);
+  transition: all 0.2s ease;
+}
+
+.zone-card.is-done .step-marker,
+.zone-card.is-done .step::before {
+  opacity: 0.8;
+}
+
+.step.is-optional .step-marker {
+  border-style: dashed;
 }
 
 .step.is-done {
@@ -619,9 +668,10 @@ button.log:hover {
 }
 
 .step.is-done .step-marker {
-  border-color: transparent;
-  background: var(--surface-2);
-  color: var(--muted);
+  width: 8px;
+  height: 8px;
+  border: none;
+  background: var(--line-done);
 }
 
 .step.is-done .term,
@@ -630,8 +680,8 @@ button.log:hover {
 }
 
 .step.is-current {
+  --dot-y: 30px;
   background: var(--current-bg);
-  box-shadow: inset 3px 0 0 var(--accent);
   cursor: default;
   padding-top: 14px;
   padding-bottom: 14px;
@@ -642,8 +692,11 @@ button.log:hover {
 }
 
 .step.is-current .step-marker {
-  border: 6px solid var(--accent);
-  margin-top: 7px;
+  width: 14px;
+  height: 14px;
+  border: none;
+  background: var(--accent);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .step-body {
@@ -670,7 +723,8 @@ button.log:hover {
 
 .step-hints {
   margin: 6px 0 0;
-  padding-left: 20px;
+  padding-left: 0;
+  list-style: none;
   font-size: 16px;
   color: var(--muted);
 }
@@ -1607,6 +1661,7 @@ select.input {
     display: none;
   }
   .step {
-    gap: 10px;
+    --dot-x: 19px;
+    padding-left: 38px;
   }
 }
