@@ -78,6 +78,12 @@
         "GodName3",
         "GodName4"
       ]
+    },
+    {
+      "name": "Labyrinths",
+      "columns": [
+        "Name"
+      ]
     }
   ]
 }

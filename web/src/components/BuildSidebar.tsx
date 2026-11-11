@@ -4,9 +4,10 @@ import { gemColor } from "../assets";
 import { useI18n } from "../i18n";
 import { useProgress, useUi } from "../store";
 import { SetSwitcher, setForAct } from "./SetSwitcher";
+import { SearchStrings } from "./SearchStrings";
 import { TreeViewer } from "./TreeViewer";
 
-type Tab = "gems" | "tree";
+type Tab = "tree" | "gems" | "search";
 
 /**
  * Номер набора: по умолчанию тот, что подходит к текущему акту;
@@ -44,6 +45,9 @@ export function BuildSidebar({ act }: { act: number }) {
         <button role="tab" aria-selected={tab === "gems"} className={tab === "gems" ? "is-active" : ""} onClick={() => setTab("gems")}>
           {t("tabGems")}
         </button>
+        <button role="tab" aria-selected={tab === "search"} className={tab === "search" ? "is-active" : ""} onClick={() => setTab("search")}>
+          {t("tabSearch")}
+        </button>
       </div>
 
       {tab === "gems" &&
@@ -57,6 +61,8 @@ export function BuildSidebar({ act }: { act: number }) {
         ))}
 
       {tab === "tree" && <TreeViewer buildTrees={buildTrees} index={treeIndex} onIndex={setTreeIndex} />}
+
+      {tab === "search" && <SearchStrings groups={gemSets[gemIndex]?.[1] ?? []} />}
     </div>
   );
 }
@@ -100,12 +106,18 @@ export function BuildEmpty() {
   const { t } = useI18n();
   const setPanel = useUi((s) => s.setPanel);
   return (
-    <div className="build-side build-empty">
-      <h3>{t("buildInfo")}</h3>
-      <p>{t("buildEmptyText")}</p>
-      <button className="btn btn-primary build-empty-btn" onClick={() => setPanel("build")}>
-        {t("importPob")}
-      </button>
-    </div>
+    <>
+      <div className="build-side build-empty">
+        <h3>{t("buildInfo")}</h3>
+        <p>{t("buildEmptyText")}</p>
+        <button className="btn btn-primary build-empty-btn" onClick={() => setPanel("build")}>
+          {t("importPob")}
+        </button>
+      </div>
+      <div className="build-side search-card">
+        <h3>{t("tabSearch")}</h3>
+        <SearchStrings />
+      </div>
+    </>
   );
 }

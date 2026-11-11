@@ -471,6 +471,150 @@ button.log:hover {
   background: linear-gradient(to bottom, var(--bg) calc(100% - 14px), transparent);
 }
 
+/* ---------- Пройденный акт ---------- */
+
+.act.is-complete .act-title::before {
+  background: var(--ok);
+}
+
+.act-head-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.act-count.is-complete {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--ok);
+  border-color: color-mix(in srgb, var(--ok) 40%, transparent);
+  background: color-mix(in srgb, var(--ok) 10%, transparent);
+}
+
+.act-toggle {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.act-toggle:hover {
+  color: var(--text);
+}
+
+.act-collapsed {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 12px 16px;
+  border: 1px solid color-mix(in srgb, var(--ok) 30%, var(--border));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--ok) 6%, var(--surface));
+  color: var(--muted);
+  font-size: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.act-collapsed:hover {
+  border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+}
+
+.act-collapsed-check {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ok) 18%, transparent);
+  color: var(--ok);
+}
+
+.act-collapsed-show {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--accent);
+}
+
+/* ---------- Строки поиска ---------- */
+
+.search-card {
+  margin-top: 16px;
+}
+
+.search-card h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.search-strings .panel-hint {
+  margin-bottom: 12px;
+}
+
+.search-group {
+  margin: 14px 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-row:last-child {
+  border-bottom: none;
+}
+
+.search-main {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.search-label {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.search-query {
+  align-self: flex-start;
+  max-width: 100%;
+  font-size: 13px;
+  color: var(--accent);
+  word-break: break-all;
+}
+
+.search-gems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.search-gem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
 /* Короткая акцентная черта перед названием акта. */
 .act-title {
   display: inline-flex;
@@ -801,12 +945,16 @@ button.log:hover {
 }
 /* Направление: заметный значок-клавиша, нейтральный к грамматике фразы. */
 .dir-chip {
-  display: inline-grid;
-  place-items: center;
-  width: 1.45em;
-  height: 1.45em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4em;
+  height: 1.4em;
   margin: 0 0.15em;
-  vertical-align: -0.35em;
+  /* По середине строки: у inline-flex базовая линия берётся от содержимого. */
+  vertical-align: middle;
+  position: relative;
+  top: -0.1em;
   border-radius: 6px;
   color: var(--accent);
   background: color-mix(in srgb, var(--accent) 14%, transparent);

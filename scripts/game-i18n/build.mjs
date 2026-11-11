@@ -54,6 +54,7 @@ const TEXT_SOURCES = [
   ["Characters", "Name"],
   ["MapPins", "Name"],
   ["Quest", "Name"],
+  ["Labyrinths", "Name"],
   ["PantheonPanelLayout", "GodName1"],
   ["PantheonPanelLayout", "GodName2"],
   ["PantheonPanelLayout", "GodName3"],
@@ -97,7 +98,7 @@ for (const quest of Object.values(quests))
 for (const name of Object.keys(characters)) terms.add(name);
 for (const area of Object.values(areas)) for (const r of area.crafting_recipes) terms.add(r);
 // Общие игровые понятия, которые рендерит интерфейс.
-["Waypoint", "Portal", "Trial of Ascendancy"].forEach((t) => terms.add(t));
+["Waypoint", "Portal", "Trial of Ascendancy", "The Labyrinth", "The Cruel Labyrinth", "The Merciless Labyrinth", "The Eternal Labyrinth"].forEach((t) => terms.add(t));
 
 const text = {};
 const missing = [];

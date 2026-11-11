@@ -16,6 +16,13 @@ import type { I18n } from "../i18n";
 import { minAreaLevel } from "../route/build";
 import { CopyButton } from "./CopyButton";
 
+const LAB_NAMES: Record<Fragments.AscendFragment["version"], string> = {
+  normal: "The Labyrinth",
+  cruel: "The Cruel Labyrinth",
+  merciless: "The Merciless Labyrinth",
+  eternal: "The Eternal Labyrinth",
+};
+
 const LAB_LAYOUTS: Record<Fragments.AscendFragment["version"], string> = {
   normal: "https://www.poelab.com/gtgax",
   cruel: "https://www.poelab.com/r8aws",
@@ -133,7 +140,12 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
       return { head: <Term kind="trial" icon={Landmark}>{game.term("Trial of Ascendancy")}</Term> };
     case "ascend":
       return {
-        head: <Term kind="trial" icon={Landmark}>{t("ascend")}</Term>,
+        // Глагол — интерфейс, название лабиринта — язык игры (как «Пройти Trial of Ascendancy»).
+        head: (
+          <>
+            {t("ascendVerb")} <Term kind="trial" icon={Landmark}>{game.term(LAB_NAMES[f.version])}</Term>
+          </>
+        ),
         tail: (
           <a className="chip" href={LAB_LAYOUTS[f.version]} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
             {t("labLayout")}

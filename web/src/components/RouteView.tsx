@@ -1,5 +1,6 @@
 import { Data, type RouteData } from "common";
-import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Check } from "lucide-react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { gemColor, gemCostIcon } from "../assets";
 import { useI18n, type I18n } from "../i18n";
 import type { FocusRoute, FocusStep } from "../route/build";
@@ -23,6 +24,15 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const selectStep = useCallback((index: number) => setPointer(index), [setPointer]);
 
   const lastCard = useRef<Element | null>(null);
+  const [expandedActs, setExpandedActs] = useState<Set<number>>(() => new Set());
+  const toggleAct = useCallback((index: number) => {
+    setExpandedActs((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) next.delete(index);
+      else next.add(index);
+      return next;
+    });
+  }, []);
 
   // Клик, клавиши или автопрогресс: прокручиваем, только когда текущий шаг ушёл
   // в другую карточку зоны (или пропал с экрана). Внутри карточки список стоит.
@@ -47,13 +57,38 @@ export function RouteView({ route }: { route: FocusRoute }) {
     <main className="route" ref={listRef}>
       {route.sections.map((section, sectionIndex) => {
         const done = Math.min(Math.max(pointer - section.firstStep, 0), section.stepCount);
+        const complete = done === section.stepCount;
+        // Пройденный акт свёрнут, пока его не развернули вручную.
+        const collapsed = complete && !expandedActs.has(sectionIndex);
         return (
-          <section key={sectionIndex} className="act" id={`act-${sectionIndex}`}>
+          <section key={sectionIndex} className={`act ${complete ? "is-complete" : ""}`} id={`act-${sectionIndex}`}>
             <h2 className="act-head">
               <span className="act-title">{i18n.section(section.name)}</span>
-              <span className="act-count">{i18n.t("stepsDone", done, section.stepCount)}</span>
+              {complete ? (
+                <span className="act-head-right">
+                  {!collapsed && (
+                    <button className="act-toggle" onClick={() => toggleAct(sectionIndex)}>
+                      {i18n.t("actHideSteps")}
+                    </button>
+                  )}
+                  <span className="act-count is-complete">
+                    <Check size={14} strokeWidth={3} /> {i18n.t("actComplete")}
+                  </span>
+                </span>
+              ) : (
+                <span className="act-count">{i18n.t("stepsDone", done, section.stepCount)}</span>
+              )}
             </h2>
-            {zoneGroups(route, section.firstStep, section.stepCount).map((group) => {
+            {collapsed && (
+              <button className="act-collapsed" onClick={() => toggleAct(sectionIndex)}>
+                <span className="act-collapsed-check">
+                  <Check size={16} strokeWidth={3} />
+                </span>
+                <span>{i18n.t("stepsDone", done, section.stepCount)}</span>
+                <span className="act-collapsed-show">{i18n.t("actShowSteps")}</span>
+              </button>
+            )}
+            {!collapsed && zoneGroups(route, section.firstStep, section.stepCount).map((group) => {
               const first = group[0].index;
               const last = group[group.length - 1].index;
               const state = pointer > last ? "is-done" : pointer >= first ? "is-current" : "";
