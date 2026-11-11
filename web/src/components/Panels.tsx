@@ -72,7 +72,13 @@ function BuildPanel() {
     }
     if (!pob) return setMessage(t("pobInvalid"));
     setBuild({
-      buildData: pob.buildData,
+      // Класс берём из PoB, настройки маршрута оставляем пользовательские.
+      // Бандит "None" в PoB обычно значит «не выбран», поэтому его не применяем.
+      buildData: {
+        ...buildData,
+        characterClass: pob.buildData.characterClass,
+        bandit: pob.buildData.bandit !== "None" ? pob.buildData.bandit : buildData.bandit,
+      },
       requiredGems: pob.requiredGems,
       gemLinks: pob.gemLinks,
       buildTrees: pob.buildTrees,
