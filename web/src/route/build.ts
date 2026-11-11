@@ -52,7 +52,7 @@ export const DEFAULT_BUILD_DATA: RouteData.BuildData = {
   characterClass: "None",
   bandit: "Alira",
   leagueStart: true,
-  library: true,
+  library: false,
 };
 
 export function buildFocusRoute(

@@ -216,7 +216,7 @@ export function processPob(pobCode: string): PobData | null {
       characterClass: characterClass,
       bandit: bandit as RouteData.BuildData["bandit"],
       leagueStart: true,
-      library: true,
+      library: false,
     },
     requiredGems,
     buildTrees,
