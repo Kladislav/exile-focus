@@ -22,11 +22,20 @@ export function RouteView({ route }: { route: FocusRoute }) {
   const firstScroll = useRef(true);
   const selectStep = useCallback((index: number) => setPointer(index), [setPointer]);
 
-  // Клик, клавиши или автопрогресс: текущий шаг уезжает наверх, под заголовок акта.
+  const lastCard = useRef<Element | null>(null);
+
+  // Клик, клавиши или автопрогресс: прокручиваем, только когда текущий шаг ушёл
+  // в другую карточку зоны (или пропал с экрана). Внутри карточки список стоит.
   useLayoutEffect(() => {
-    // Первая отрисовка — сразу на место, дальше короткая анимация (scroll.ts).
-    scrollToCurrent(listRef.current, firstScroll.current ? "instant" : "fast");
+    const step = listRef.current?.querySelector(".step.is-current, .route-done");
+    const card = step?.closest(".zone-card") ?? step ?? null;
+    const first = firstScroll.current;
+    const sameCard = !first && card !== null && card === lastCard.current;
+    lastCard.current = card;
     firstScroll.current = false;
+    if (sameCard && step && isOnScreen(step)) return;
+    // Первая отрисовка — сразу на место, дальше короткая анимация (scroll.ts).
+    scrollToCurrent(listRef.current, first ? "instant" : "fast");
   }, [pointer, route]);
 
   // Шрифт догружается позже первого рендера и сдвигает строки.
@@ -89,6 +98,13 @@ function scrollToCurrent(list: HTMLElement | null, mode: "fast" | "instant") {
     const offset = header + (actHead?.offsetHeight ?? 0) + CURRENT_STEP_GAP;
     return anchor.getBoundingClientRect().top + window.scrollY - offset;
   }, mode);
+}
+
+/** Шаг виден целиком между шапкой с заголовком акта и низом окна. */
+function isOnScreen(el: Element) {
+  const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+  const rect = el.getBoundingClientRect();
+  return rect.top >= header + 40 && rect.bottom <= window.innerHeight;
 }
 
 /** Шаги акта, разбитые на блоки: каждый переход в новую зону начинает блок. */
