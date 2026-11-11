@@ -148,8 +148,6 @@ const PHRASES: Record<string, string> = {
     "Гнёзда отмечены «!» на мини-карте",
   "follow the cliff wall; skip":
     "Идите вдоль скалы; пропустите",
-  "with a dirty job":
-    "с заданием «Грязная работа»",
   "reward: take":
     "Награда: возьмите",
   ", keep it on the flask bar and use it while moving":
@@ -178,8 +176,6 @@ const PHRASES: Record<string, string> = {
     "Уходите от шквала сосулек, гейзеров и ледяной бури",
   "follow the cliff that starts at the waypoint":
     "Идите вдоль скалы, которая начинается у вейпоинта",
-  "after the kill activate the strange device to get the quest item":
-    "После убийства активируйте Странное устройство — получите квестовый предмет",
   "usually at the very end, marked with ! on the map":
     "Обычно в самом конце, отмечен «!» на карте",
   "the boss in front of it does not need to be killed":
@@ -220,8 +216,6 @@ const PHRASES: Record<string, string> = {
     "Квестодатель стоит у вейпоинта",
   "pages are marked on the map":
     "Страницы отмечены на карте",
-  "first character only: free the caged scion to unlock the class":
-    "Только для первого персонажа: освободите Дворянку из клетки, чтобы открыть класс",
   "phase 2: hide under the dome from the blood rain, or portal to town and back":
     "Вторая фаза: прячьтесь под купол от кровавого дождя или уйдите порталом в город и вернитесь",
   "look for the book icon on the map":
@@ -238,8 +232,6 @@ const PHRASES: Record<string, string> = {
     "Бой начнётся, когда встанете на платформу",
   "after this fight all resistances drop by 30%: craft the missing ones on free suffixes":
     "После боя все сопротивления снижаются на 30%: докрафтите недостающие на свободные суффиксы",
-  "afterwards lilly roth sells every basic skill and support gem":
-    "После этого Лилия Рот продаёт любые базовые камни умений и поддержки",
   "the red gate opens only if you carry the item from the queen":
     "Красные ворота откроются, только если у вас предмет с царицы",
   "kill the 3 flowers on the lower platform to make her appear":
@@ -250,8 +242,6 @@ const PHRASES: Record<string, string> = {
     "На вершине пирамиды два столба: встаньте в круг у столба, и он поедет; доведите оба до конца",
   "pull the lever, click the flame, then take the stairs on the right down to the ship":
     "Дёрните рычаг, нажмите на пламя и спуститесь по лестнице справа к кораблю",
-  "press y. major: soul of the brine king (stun immunity). minor: soul of ryslatha (life flask charges)":
-    "Клавиша Y. Старший бог: Душа Морского царя (защита от оглушения). Младший: Душа Рюслаты (заряды флаконов здоровья)",
   "it is marked on the map":
     "Отмечен на карте",
   "in the container at the end of the second level":
@@ -278,6 +268,26 @@ const PHRASES: Record<string, string> = {
     "После боя сопротивления снова снижаются на 30%: добейте стихийные до 75%",
   "from now on a death costs 10% of the current level's experience":
     "Теперь смерть стоит 10% опыта текущего уровня",
+  "with the quest":
+    "с квестом",
+  "after the kill activate":
+    "После убийства активируйте",
+  "to get the quest item":
+    "— получите квестовый предмет",
+  "first character only: free the caged":
+    "Только для первого персонажа: освободите из клетки класс",
+  "to unlock the class":
+    "— он станет доступен для игры",
+  "afterwards":
+    "После этого",
+  "sells every basic skill and support gem":
+    "продаёт любые базовые камни умений и поддержки",
+  "press y. major:":
+    "Клавиша Y. Старший бог:",
+  "(stun immunity). minor:":
+    "(защита от оглушения). Младший:",
+  "(life flask charges)":
+    "(заряды флаконов здоровья)",
 };
 
 const PATTERNS: [RegExp, string][] = [

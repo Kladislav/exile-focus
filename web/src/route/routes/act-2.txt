@@ -19,7 +19,7 @@ Get {waypoint_get}
         Kill {kill|Fidelitas, the Mourning}, take {quest_text|Baleful Gem}
             #sub Look for the long hallway
             #sub Recommended Level: 14-15
-            #sub After the kill activate the Strange Device to get the quest item
+            #sub After the kill activate {generic|Strange Device} to get the quest item
     #endif
     {logout}
     #ifdef OPT_a2q6

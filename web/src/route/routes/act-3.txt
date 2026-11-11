@@ -111,7 +111,7 @@ Get {waypoint_get}
 ➞ {enter|1_3_18_1} #The Sceptre of God
 ➞ {enter|1_3_18_2} #The Upper Sceptre of God
     #sub Stairs spawn in one of the corners
-    #sub First character only: free the caged Scion to unlock the class
+    #sub First character only: free the caged {generic|Scion} to unlock the class
 ➞ {arena|Tower Rooftop}, Kill {kill|Dominus, High Templar}
     #sub Look for barricades
     #sub Phase 2: hide under the dome from the blood rain, or portal to town and back

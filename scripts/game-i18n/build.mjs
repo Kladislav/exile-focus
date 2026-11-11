@@ -53,6 +53,11 @@ const TEXT_SOURCES = [
   ["ClientStrings", "Text"],
   ["Characters", "Name"],
   ["MapPins", "Name"],
+  ["Quest", "Name"],
+  ["PantheonPanelLayout", "GodName1"],
+  ["PantheonPanelLayout", "GodName2"],
+  ["PantheonPanelLayout", "GodName3"],
+  ["PantheonPanelLayout", "GodName4"],
 ];
 const textIndex = new Map();
 for (const [name, col] of TEXT_SOURCES) {

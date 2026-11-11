@@ -2,7 +2,7 @@
 ➞ {enter|2_6_town} #Lioneye's Watch
 ➞ {enter|2_6_1} #The Twilight Strand
 Kill {kill|Everything}
-    #sub Afterwards Lilly Roth sells every basic skill and support gem
+    #sub Afterwards {generic|Lilly Roth} sells every basic skill and support gem
 {logout}
 Hand in {quest|a6q4} #Fallen from Grace
 ➞ {enter|2_6_2} #The Coast
@@ -69,4 +69,4 @@ Talk to {generic|Weylam Roth}, sail to {enter|2_6_15} #The Brine King's Reef
 ➞ {arena|The Bring King's Throne}, kill {kill|Tsoagoth, The Brine King}
 {logout}
 Select {generic|Pantheons}
-    #sub Press Y. Major: Soul of the Brine King (stun immunity). Minor: Soul of Ryslatha (life flask charges)
+    #sub Press Y. Major: {generic|Soul of the Brine King} (stun immunity). Minor: {generic|Soul of Ryslatha} (life flask charges)

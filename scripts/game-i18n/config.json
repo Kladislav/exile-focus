@@ -68,6 +68,16 @@
         "Id",
         "Text"
       ]
+    },
+    {
+      "name": "PantheonPanelLayout",
+      "columns": [
+        "Id",
+        "GodName1",
+        "GodName2",
+        "GodName3",
+        "GodName4"
+      ]
     }
   ]
 }

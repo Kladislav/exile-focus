@@ -1106,6 +1106,7 @@
   "Metadata/Items/Gems/SkillGemPactOfLycia": "Пакт Люции"
  },
  "text": {
+  "A Dirty Job": "Грязная работа",
   "Abberath, the Cloven One": "Абберат, Раздвоенный",
   "Alira Darktongue": "Алира Мракоглас",
   "Alira's Amulet": "Амулет Алиры",
@@ -1243,7 +1244,10 @@
   "Sin": "Грех",
   "Siosa": "Сиоса",
   "Solaris, Eternal Sun": "Солярис, Вечное Солнце",
+  "Soul of Ryslatha": "Душа Рюслаты",
+  "Soul of the Brine King": "Душа Морского царя",
   "Statue of the Sisters": "Статуя Сестёр",
+  "Strange Device": "Странное устройство",
   "Sun Orb": "Сфера Солнца",
   "Tarkleigh": "Таркли",
   "Tasuni": "Тасуни",
@@ -1270,6 +1274,7 @@
   "The Sky Shrine": "Небесная святыня",
   "The Spawning Ground": "Место размножения",
   "The Staff of Purity": "Посох Чистоты",
+  "The Storm Blade": "Клинок бури",
   "The Warden's Chambers": "Палаты Смотрителя",
   "The Warden's Quarters": "Палаты Смотрителя",
   "The Weaver": "Ткачиха",
