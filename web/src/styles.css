@@ -458,21 +458,42 @@ button.log:hover {
   z-index: 5;
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: center;
   margin: 0;
   padding: 20px 4px 14px;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--text);
   /* Нижний отступ заголовка — мягкий переход: в покое он пустой,
      а уходящие под заголовок карточки плавно гаснут. */
   background: linear-gradient(to bottom, var(--bg) calc(100% - 14px), transparent);
 }
 
+/* Короткая акцентная черта перед названием акта. */
+.act-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.act-title::before {
+  content: "";
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
 .act-count {
-  font-weight: 400;
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
   text-transform: none;
   letter-spacing: 0;
   font-variant-numeric: tabular-nums;

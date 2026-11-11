@@ -41,7 +41,7 @@ export function RouteView({ route }: { route: FocusRoute }) {
         return (
           <section key={sectionIndex} className="act" id={`act-${sectionIndex}`}>
             <h2 className="act-head">
-              <span>{i18n.section(section.name)}</span>
+              <span className="act-title">{i18n.section(section.name)}</span>
               <span className="act-count">{i18n.t("stepsDone", done, section.stepCount)}</span>
             </h2>
             {zoneGroups(route, section.firstStep, section.stepCount).map((group) => {
