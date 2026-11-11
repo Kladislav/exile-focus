@@ -103,8 +103,8 @@ export function BuildEmpty() {
     <div className="build-side build-empty">
       <h3>{t("buildInfo")}</h3>
       <p>{t("buildEmptyText")}</p>
-      <button className="btn btn-primary" onClick={() => setPanel("build")}>
-        {t("importBuild")}
+      <button className="btn btn-primary build-empty-btn" onClick={() => setPanel("build")}>
+        {t("importPob")}
       </button>
     </div>
   );

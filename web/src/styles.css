@@ -1288,6 +1288,10 @@ select.input {
   color: var(--muted);
 }
 
+.build-empty-btn {
+  justify-content: center;
+}
+
 .tree-problems {
   padding-left: 18px;
   font-size: 14px;
