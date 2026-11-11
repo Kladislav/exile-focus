@@ -12,6 +12,7 @@ Get {crafting}
     #sub Go {dir|45}
 Find and take {quest_text|Ankh of Eternity}
     #sub Follow {dir|270} wall
+    #sub In a chest on a small island in the water
 ➞ {arena|Resurrection Site}
     #sub Go {dir|135}
 Talk to {generic|Clarissa}, kill {kill|Tolman}
@@ -50,6 +51,7 @@ Get {crafting}
 Kill {kill|Lunaris, Eternal Moon} & {kill|Solaris, Eternal Sun}
 ➞ {enter|2_9_1} #The Blood Aqueduct
     #sub Farm Level: 58-62
+    #sub Straight zone, good for farming: Ctrl+click the entrance and choose New to reset it
 ➞ {enter|2_9_town} #Highgate
 {waypoint|2_8_6} #The Lunaris Concourse
 ➞ {enter|2_8_5} #The Bath House
@@ -62,5 +64,6 @@ Kill {kill|Lunaris, Eternal Moon} & {kill|Solaris, Eternal Sun}
 ➞ {enter|2_8_4} #The High Gardens
     #sub Search {dir|270} side
 ➞ {arena|The Pools of Terror}, kill {kill|Yugul, Reflection of Terror}
+    #sub Drop portals on the way: after a death you come back to them from town
 {portal|use}
 Hand in {quest|a8q4} #Reflection of Terror

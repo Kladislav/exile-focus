@@ -45,4 +45,6 @@ Hand in {quest|a5q7} #Kitava's Torments
 ➞ {enter|1_5_8} #The Cathedral Rooftop
     #sub Go {dir|225}
 ➞ {arena|Cathedral Apex}, kill {kill|Kitava, the Insatiable}
+    #sub The fight starts when you step on the platform
+    #sub After this fight all resistances drop by 30%: craft the missing ones on free suffixes
 Talk to {generic|Lilly Roth}, Sail to Wraeclast

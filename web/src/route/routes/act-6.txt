@@ -2,6 +2,7 @@
 ➞ {enter|2_6_town} #Lioneye's Watch
 ➞ {enter|2_6_1} #The Twilight Strand
 Kill {kill|Everything}
+    #sub Afterwards Lilly Roth sells every basic skill and support gem
 {logout}
 Hand in {quest|a6q4} #Fallen from Grace
 ➞ {enter|2_6_2} #The Coast
@@ -9,6 +10,7 @@ Hand in {quest|a6q4} #Fallen from Grace
 Find and kill {kill|The Dishonoured Queen}, take {quest_text|Eye of Conquest}
     #sub {dir|45} corner of area, normally by a house
 ➞ {enter|2_6_5} #The Karui Fortress
+    #sub The red gate opens only if you carry the item from the queen
 ➞ {arena|Tukohama's Keep}, kill {kill|Tukohama, Karui God of War}
     #sub Go {dir|45}
 #ifdef LEAGUE_START
@@ -45,6 +47,7 @@ Get {waypoint_get}
     #sub Look for 2 pillars near {waypoint}, follow the trail
 ➞ {arena|The Spawning Ground}, kill {kill|Ryslatha, the Puppet Mistress}
     #sub Go {dir|315}
+    #sub Kill the 3 flowers on the lower platform to make her appear
 {logout}
 Hand in {quest|a6q3} #The Father of War
 Hand in {quest|a6q6} #The Puppet Mistress
@@ -54,12 +57,16 @@ Hand in {quest|a6q6} #The Puppet Mistress
     #sub Go {dir|135}
 ➞ {enter|2_6_13} #The Cavern of Anger
 Take {quest_text|The Black Flag}
+    #sub Open the chest in this zone, the flag drops from it
 ➞ {enter|2_6_14} #The Beacon
 Get {crafting}
     #sub Follow the shore
 Complete {quest_text|Pillar Push}
+    #sub Two pillars on top of the pyramid: stand in the circle next to each one to move it, push both to the end
 Light the {quest_text|Beacon}, throw in {quest_text|The Black Flag}
+    #sub Pull the lever, click the flame, then take the stairs on the right down to the ship
 Talk to {generic|Weylam Roth}, sail to {enter|2_6_15} #The Brine King's Reef
 ➞ {arena|The Bring King's Throne}, kill {kill|Tsoagoth, The Brine King}
 {logout}
 Select {generic|Pantheons}
+    #sub Press Y. Major: Soul of the Brine King (stun immunity). Minor: Soul of Ryslatha (life flask charges)

@@ -13,7 +13,9 @@ Get {waypoint_get}
     Get {crafting}
 #endif
 Find {generic|Sarcophagus} to next floor
+    #sub It is marked on the map
 Find and take {quest_text|Maligaro's Map}
+    #sub In the container at the end of the second level
 {logout}
 {waypoint|2_7_2} #The Crossroads
 ➞ {enter|2_7_5_1} #The Chamber of Sins Level 1
@@ -40,11 +42,13 @@ Open {generic|Secret Passage} ➞ {enter|2_7_6} #The Den
 ➞ {enter|2_7_7} #The Ashen Fields
 ➞ {arena|The Forest Encampment}, kill {kill|Greust, Lord of the Forest}
     #sub Go {dir|225}
+    #sub His fortress is at the end of the road
 ➞ {enter|2_7_8} #The Northern Forest
 Get {waypoint_get}
 ➞ {enter|2_7_10} #The Causeway
 Get {crafting}
 Find and take {quest_text|Kishara's Star}
+    #sub In a chest at the end of the zone
 ➞ {enter|2_7_11} #The Vaal City
 Find {waypoint_get}
 {waypoint|2_7_8} #The Northern Forest
@@ -58,6 +62,7 @@ Hand in {quest|a7q9} #Queen of Despair
 Hand in {quest|a7q6} #Kishara's Star
 {waypoint|Labyrinth_Airlock} #Aspirants' Plaza
 {ascend|cruel}
+    #sub If the character feels weak, the Labyrinth can wait
 Get {crafting|2_Labyrinth_boss_3}
 {waypoint|2_7_11} #The Vaal City
 Hand in {quest|a7q7} #Lighting the Way

@@ -25,6 +25,7 @@ Find and kill {kill|Vilenta}
 Hand in {quest|a10q6} #Vilenta's Vengeance
 {waypoint|Labyrinth_Airlock}
 {ascend|merciless}
+    #sub If the character feels weak, the Labyrinth can wait
 Get {crafting|3_Labyrinth_boss_3}
 {waypoint|2_10_2} #The Ravaged Square
 ➞ {enter|2_10_3} #The Torched Courts
@@ -45,6 +46,8 @@ Talk to {generic|Innocence}
 Get {crafting}
 Talk to {generic|Sin}
 ➞ {arena|Altar of Hunger}, kill {kill|Kitava, the Insatiable}
+    #sub After this fight resistances drop by another 30%: get elemental resistances to 75%
+    #sub From now on a death costs 10% of the current level's experience
 Talk to {generic|Sin} ➞ {enter|2_10_town} #Oriath Docks
 Talk to {generic|Lilly Roth}, Set Sail from Oriath
 ➞ {enter|2_11_endgame_town} #Karui Shores

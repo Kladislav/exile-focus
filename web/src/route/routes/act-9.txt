@@ -6,6 +6,7 @@ Get {waypoint_get}
     #sub Go {dir|90}
 Get {crafting}
 Find and take {quest_text|The Storm Blade}
+    #sub Open the chest and kill the monsters that spawn
 ➞ {enter|2_9_5} #The Foothills
     #sub Go {dir|315}
 Get {waypoint_get}
@@ -14,6 +15,7 @@ Get {waypoint_get}
 ➞ {enter|2_9_6} #The Boiling Lake
 Find and Kill {kill|The Basilisk}, take {quest_text|Basilisk Acid}
     #sub Go {dir|45} look for petrified soldiers
+    #sub Do not stand in front of its head
 Get {crafting}
 {logout}
 Talk to {generic|Sin}
@@ -48,6 +50,7 @@ Get {crafting}
     #sub Look for a sewer grate leading to {arena|Refinery Tunnels}, it is attached to the cart tracks
 Find and kill {kill|General Adus}, take {quest_text|Trarthan Powder}
     #sub Go {dir|45} follow cart tracks
+    #sub After the kill take the item from the device in the room that opens
 {logout}
 {waypoint|2_9_8} #The Quarry
 Talk to {generic|Sin}

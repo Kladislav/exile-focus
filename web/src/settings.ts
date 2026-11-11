@@ -20,10 +20,18 @@ export const useSettings = create<SettingsState>()(
       uiLang: "en",
       gameLang: "en",
       theme: "system",
-      hints: "current",
+      hints: "all",
       set: (patch) => set(patch),
     }),
-    { name: "exile-focus-settings", version: 1 },
+    {
+      name: "exile-focus-settings",
+      version: 2,
+      // v2: подсказки по умолчанию у всех шагов (раньше только у текущего).
+      migrate: (state, version) => {
+        const s = state as Partial<SettingsState>;
+        return (version < 2 ? { ...s, hints: "all" } : s) as SettingsState;
+      },
+    },
   ),
 );
 

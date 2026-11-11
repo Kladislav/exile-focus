@@ -81,8 +81,10 @@ const pick = (ids, source) =>
 
 // Термины из маршрута, которые показываются на языке игры.
 const terms = new Set();
-for (const file of fs.readdirSync(path.join(commonData, "routes"))) {
-  const src = fs.readFileSync(path.join(commonData, "routes", file), "utf8");
+// Маршрут свой (web/src/route/routes), в нём есть термины, которых нет у upstream.
+const routesDir = path.join(root, "web/src/route/routes");
+for (const file of fs.readdirSync(routesDir).filter((f) => f.endsWith(".txt"))) {
+  const src = fs.readFileSync(path.join(routesDir, file), "utf8");
   for (const m of src.matchAll(/\{(kill|arena|quest_text|generic)\|([^}]*)\}/g)) terms.add(m[2]);
 }
 for (const quest of Object.values(quests))

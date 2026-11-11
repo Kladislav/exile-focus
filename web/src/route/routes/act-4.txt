@@ -3,14 +3,17 @@
 ➞ {enter|1_4_town} #Highgate
 ➞ {enter|1_4_2} #The Dried Lake
 Find and kill {kill|Voll, Emperor of Purity}, take {quest_text|Deshret's Banner}
+    #sub Look for the book icon on the map
 Get {crafting}
 {logout}
 Break {quest_text|Deshret's Seal}
+    #sub The seal is in the upper part of town
 Hand in {quest|a4q2} #Breaking the Seal
 ➞ {enter|1_4_3_1} #The Mines Level 1
 Get {crafting}
 ➞ {enter|1_4_3_2} #The Mines Level 2
 Free {quest_text|Deshret}
+    #sub The mini-boss next to the spirit does not need to be killed
 ➞ {enter|1_4_3_3} #The Crystal Veins
 Get {crafting}
 {waypoint|1_4_town} #Highgate
@@ -18,6 +21,7 @@ Hand in {quest|a4q6} #An Indomitable Spirit
 {waypoint|1_3_town} #The Sarn Encampment
 ➞ {enter|Labyrinth_Airlock}, get {waypoint_get} #Aspirants' Plaza
 {ascend|normal}
+    #sub Good time for the first Labyrinth: around level 32–34
 Get {crafting|1_Labyrinth_boss_3}
 {waypoint|1_4_3_3} #The Crystal Veins
 ➞ {enter|1_4_5_1} #Daresso's Dream
@@ -53,3 +57,4 @@ Hand in {quest|a4q1} #The Eternal Nightmare
 ➞ {enter|1_4_7} #The Ascent
 Get {crafting}
 Activate {quest_text|The Resonator}, use {quest_text|Oriath Portal}
+    #sub The lever is marked on the map

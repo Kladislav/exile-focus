@@ -1,16 +1,21 @@
 #section Act 1
 Find and kill {kill|Hillock}
+    #sub First character: pick up the boss drops and sell them for starting currency
 ➞ {enter|1_1_town} #Lioneye's Watch
 Hand in {quest|a1q1} #Enemy at the Gate
+    #sub Check the vendors for items with the linked sockets your skills need
 ➞ {enter|1_1_2} #The Coast
 #ifdef LEAGUE_START
     Get {waypoint_get}
 #endif
 ➞ {enter|1_1_3} #The Mud Flats
+    #sub The waypoint is at the far end of the zone, next to this exit
 Find 3x{quest_text|Glyph}
     #sub Little streams connect the 3 Rhoa nests
     #sub Usually form a triangle, but will rarely form a line
+    #sub Nests are marked with ! on the minimap
 ➞ {enter|1_1_4_1} #The Submerged Passage
+    #sub Follow the cliff wall; skip {area|1_1_3a} with A Dirty Job
 #ifdef LEAGUE_START
     {waypoint|1_1_2} #The Coast
     ➞ {enter|1_1_2a} #The Tidal Island
@@ -21,6 +26,7 @@ Find 3x{quest_text|Glyph}
     {logout}
     Hand in {quest|a1q4} #Breaking Some Eggs
     Hand in {quest|a1q5} #Mercy Mission
+        #sub Reward: take {generic|Quicksilver Flask}, keep it on the flask bar and use it while moving
 #endif
 #ifndef LEAGUE_START
     {waypoint|1_1_town} #Lioneye's Watch
@@ -34,6 +40,7 @@ Find and kill {kill|The Dweller of the Deep}
     #sub Look for the large empty room
 Take the {generic|Boat} ➞ {enter|1_1_4_1} #The Submerged Passage
 ➞ {enter|1_1_5} #The Ledge
+    #sub A narrow bridge means you are heading the right way
 ➞ {enter|1_1_6} #The Climb
 ➞ {enter|1_1_7_1} #The Lower Prison
 {waypoint|1_1_town} #Lioneye's Watch
@@ -43,6 +50,7 @@ Hand in {quest|a1q2|a1q2b} #The Caged Brute
 #ifdef LEAGUE_START
     Complete {trial}
         #sub Usually {dir|45}
+        #sub The trial entrance is marked with an open book icon on the map
 #endif
 ➞ {enter|1_1_7_2} #The Upper Prison
 #ifdef LEAGUE_START
@@ -59,8 +67,12 @@ Hand in {quest|a1q2|a1q2} #The Caged Brute
 {waypoint|1_1_8} #Prisoner's Gate
 ➞ {enter|1_1_9} #The Ship Graveyard
     #sub Go down the ledge next to the road
+    #sub The waypoint is usually near the start of the zone
 Kill {kill|Captain Fairgraves}, take {quest_text|Allflame}
+    #sub {quest_text|Allflame}: click the corpse in {area|1_1_9a}, no need to kill the monster there
+    #sub Bring it to the captain near the waypoint, then fight him
 ➞ {enter|1_1_11_1} #The Cavern of Wrath
+    #sub The town vendor now sells more skill gems (level 12+)
 {waypoint|1_1_town} #Lioneye's Watch
 Hand in {quest|a1q6} #The Marooned Mariner
 Hand in {quest|a1q3} #The Siren's Cadence
@@ -70,3 +82,5 @@ Hand in {quest|a1q3} #The Siren's Cadence
 ➞ {arena|Merveil's Lair}, kill {kill|Merveil, the Siren}
     #sub Follow the water
     #sub Recommended Level: 12
+    #sub Cold resistance helps: wear 1–2 {generic|Sapphire Ring} (vendor: {generic|Iron Ring} + any blue gem)
+    #sub Dodge the icicle barrage, geysers and ice storm
