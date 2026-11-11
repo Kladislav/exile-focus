@@ -1,5 +1,5 @@
 import { Data, type RouteData } from "common";
-import { memo, useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { gemColor, gemCostIcon } from "../assets";
 import { useI18n, type I18n } from "../i18n";
 import type { FocusRoute, FocusStep } from "../route/build";
@@ -83,11 +83,12 @@ function scrollToCurrent(list: HTMLElement | null, mode: "fast" | "instant") {
   if (!step) return;
   const card = step.closest<HTMLElement>(".zone-card");
   const anchor = card && card.firstElementChild === step ? card : step;
-  const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
-  const actHead = step.closest(".act")?.querySelector<HTMLElement>(".act-head")?.offsetHeight ?? 0;
-  const offset = header + actHead + CURRENT_STEP_GAP;
-  const top = anchor.getBoundingClientRect().top + window.scrollY - offset;
-  scrollWindowTo(top, mode);
+  const actHead = step.closest(".act")?.querySelector<HTMLElement>(".act-head");
+  scrollWindowTo(() => {
+    const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+    const offset = header + (actHead?.offsetHeight ?? 0) + CURRENT_STEP_GAP;
+    return anchor.getBoundingClientRect().top + window.scrollY - offset;
+  }, mode);
 }
 
 /** Шаги акта, разбитые на блоки: каждый переход в новую зону начинает блок. */
@@ -120,7 +121,10 @@ const StepRow = memo(function StepRow({
   i18n: I18n;
   onSelect: (index: number) => void;
 }) {
-  const { head, tail } = renderParts(item.step.parts, i18n);
+  // Содержимое шага не зависит от того, выполнен ли он: кэшируем, чтобы при прыжке
+  // через акты React не пересобирал фрагменты сотен шагов.
+  const { head, tail } = useMemo(() => renderParts(item.step.parts, i18n), [item, i18n]);
+  const hintNodes = useMemo(() => item.step.subSteps.map((sub) => renderParts(sub.parts, i18n).head), [item, i18n]);
   // У выполненных шагов подсказки уже не нужны.
   const showHints = state !== "done" && (hints === "all" || (hints === "current" && state === "current"));
   const vendorNames = item.gems
@@ -146,8 +150,8 @@ const StepRow = memo(function StepRow({
 
         {showHints && item.step.subSteps.length > 0 && (
           <ul className="step-hints">
-            {item.step.subSteps.map((sub, i) => (
-              <li key={i}>{renderParts(sub.parts, i18n).head}</li>
+            {hintNodes.map((_, i) => (
+              <li key={i}>{hintNodes[i]}</li>
             ))}
           </ul>
         )}
@@ -196,7 +200,9 @@ export function useScrollToAct() {
   return (sectionIndex: number) => {
     const el = document.getElementById(`act-${sectionIndex}`);
     if (!el) return;
-    const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
-    scrollWindowTo(el.getBoundingClientRect().top + window.scrollY - header);
+    scrollWindowTo(() => {
+      const header = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--header-h")) || 0;
+      return el.getBoundingClientRect().top + window.scrollY - header;
+    });
   };
 }

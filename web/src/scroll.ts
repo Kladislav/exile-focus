@@ -1,7 +1,13 @@
 // Короткая прокрутка окна: встроенная smooth слишком медленная,
 // а мгновенная выглядит как рывок.
+//
+// Цель задаётся функцией и пересчитывается на каждом кадре: карточки зон
+// за пределами экрана браузер считает по примерной высоте
+// (content-visibility), и настоящая позиция шага уточняется по мере прокрутки.
 
 const DURATION_MS = 180;
+/** Сколько кадров после остановки доводить позицию, пока она уточняется. */
+const SETTLE_FRAMES = 12;
 
 let frame: number | null = null;
 
@@ -10,27 +16,43 @@ function cancel() {
   frame = null;
 }
 
-// Пользователь крутит сам — анимация уступает.
+// Пользователь крутит сам — прокрутка уступает.
 for (const type of ["wheel", "touchstart", "keydown"] as const) {
   window.addEventListener(type, cancel, { passive: true });
 }
 
 const easeOutCubic = (t: number) => 1 - (1 - t) ** 3;
 
-export function scrollWindowTo(top: number, mode: "fast" | "instant" = "fast") {
+function clampTop(top: number) {
+  return Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight));
+}
+
+function jump(top: number) {
+  window.scrollTo({ top, behavior: "instant" });
+}
+
+/** Доводка: пока цель сдвигается (досчитались высоты карточек), подстраиваемся. */
+function settle(getTop: () => number, framesLeft: number) {
+  const target = clampTop(getTop());
+  if (Math.abs(target - window.scrollY) >= 1) jump(target);
+  frame = framesLeft > 0 ? requestAnimationFrame(() => settle(getTop, framesLeft - 1)) : null;
+}
+
+export function scrollWindowTo(getTop: () => number, mode: "fast" | "instant" = "fast") {
   cancel();
-  const target = Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight));
   const start = window.scrollY;
-  const distance = target - start;
-  if (mode === "instant" || Math.abs(distance) < 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    window.scrollTo({ top: target, behavior: "instant" });
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (mode === "instant" || reduced) {
+    jump(clampTop(getTop()));
+    frame = requestAnimationFrame(() => settle(getTop, SETTLE_FRAMES));
     return;
   }
   const startedAt = performance.now();
   const step = (now: number) => {
     const t = Math.min(1, (now - startedAt) / DURATION_MS);
-    window.scrollTo({ top: start + distance * easeOutCubic(t), behavior: "instant" });
-    frame = t < 1 ? requestAnimationFrame(step) : null;
+    const target = clampTop(getTop());
+    jump(start + (target - start) * easeOutCubic(t));
+    frame = requestAnimationFrame(t < 1 ? step : () => settle(getTop, SETTLE_FRAMES));
   };
   frame = requestAnimationFrame(step);
 }
