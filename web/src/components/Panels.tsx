@@ -1,10 +1,11 @@
 import type { RouteData } from "common";
-import { Monitor, Moon, Sun, X } from "lucide-react";
+import { CircleAlert, CircleCheck, Download, Monitor, Moon, Radio, Route, Sun, Swords, Trash2, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { processPob } from "../build/pob";
 import { BuildSidebar } from "./BuildSidebar";
-import { useI18n } from "../i18n";
-import { disconnectLog, useLog } from "../log/client-log";
+import { count, useI18n } from "../i18n";
+import { CopyButton } from "./CopyButton";
+import { connectLog, disconnectLog, reconnectLog, useLog } from "../log/client-log";
 import { HINT_ORDER, useSettings, type Hints, type Lang, type Theme } from "../settings";
 import { useProgress, useUi } from "../store";
 
@@ -52,23 +53,31 @@ function BuildDrawer({ act }: { act: number }) {
   );
 }
 
+type ImportResult =
+  | { ok: true; characterClass: string; gems: number; sets: number; trees: number }
+  | { ok: false; reason: string }
+  | null;
+
 function BuildPanel() {
-  const { buildData, pobCode, setBuild, setBuildData, resetAll } = useProgress();
-  const [code, setCode] = useState(pobCode ?? "");
-  const [message, setMessage] = useState<string | null>(null);
-  const log = useLog();
-  const { t, game } = useI18n();
+  const { buildData, requiredGems, gemLinks, buildTrees, setBuild, setBuildData, resetAll } = useProgress();
+  const hasBuild = buildData.characterClass !== "None" && (requiredGems.length > 0 || buildTrees.length > 0);
+  const [editing, setEditing] = useState(!hasBuild);
+  const [code, setCode] = useState("");
+  const [result, setResult] = useState<ImportResult>(null);
+  const [justImported, setJustImported] = useState(false);
+  const i18n = useI18n();
+  const { t, game, ui } = i18n;
 
   function importCode() {
     const value = code.trim();
-    if (/^https?:\/\//.test(value)) return setMessage(t("pobLinkUnsupported"));
+    if (/^https?:\/\//.test(value)) return setResult({ ok: false, reason: t("pobLinkUnsupported") });
     let pob = null;
     try {
       pob = processPob(value);
     } catch {
       pob = null;
     }
-    if (!pob) return setMessage(t("pobInvalid"));
+    if (!pob) return setResult({ ok: false, reason: t("pobInvalid") });
     setBuild({
       // Класс берём из PoB, настройки маршрута оставляем пользовательские.
       // Бандит "None" в PoB обычно значит «не выбран», поэтому его не применяем.
@@ -82,85 +91,213 @@ function BuildPanel() {
       buildTrees: pob.buildTrees,
       pobCode: value,
     });
-    setMessage(t("pobImported", game.term(pob.buildData.characterClass), pob.requiredGems.length));
+    setResult({
+      ok: true,
+      characterClass: pob.buildData.characterClass,
+      gems: pob.requiredGems.length,
+      sets: new Set(pob.gemLinks.map((g) => g.title)).size,
+      trees: pob.buildTrees.length,
+    });
+    setCode("");
+    setEditing(false);
+    setJustImported(true);
+    setTimeout(() => setJustImported(false), 1600);
   }
 
+  const sets = new Set(gemLinks.map((g) => g.title)).size;
+  const bandits: { value: RouteData.BuildData["bandit"]; label: string }[] = [
+    { value: "None", label: t("banditKill") },
+    { value: "Alira", label: game.term("Alira") },
+    { value: "Kraityn", label: game.term("Kraityn") },
+    { value: "Oak", label: game.term("Oak") },
+  ];
+  const banditBonus = { None: t("banditBonusKill"), Alira: t("banditBonusAlira"), Kraityn: t("banditBonusKraityn"), Oak: t("banditBonusOak") };
 
   return (
     <Drawer title={t("build")}>
-      <section className="form-section">
-        <h3>{t("pob")}</h3>
-        <textarea
-          className="input"
-          rows={4}
-          placeholder={t("pobPlaceholder")}
-          value={code}
-          onChange={(e) => setCode(e.target.value)}
-        />
-        <div className="row">
-          <button className="btn btn-primary" onClick={importCode} disabled={!code.trim()}>
-            {t("import")}
-          </button>
-          {message && <span className="muted">{message}</span>}
-        </div>
-      </section>
+      <section className="panel-card">
+        <h3 className="panel-title">
+          <Swords size={16} /> {t("pob")}
+        </h3>
 
-      <section className="form-section">
-        <h3>{t("routeOptions")}</h3>
-        <p className="muted">{t("routeOptionsHint")}</p>
-        <label className="check">
-          <input
-            type="checkbox"
-            checked={buildData.leagueStart}
-            onChange={(e) => setBuildData({ leagueStart: e.target.checked })}
-          />
-          {t("leagueStart")}
-        </label>
-        <label className="field">
-          {t("bandits")}
-          <select
-            className="input"
-            value={buildData.bandit}
-            onChange={(e) => setBuildData({ bandit: e.target.value as RouteData.BuildData["bandit"] })}
-          >
-            <option value="None">{t("banditKill")}</option>
-            {(["Alira", "Oak", "Kraityn"] as const).map((b) => (
-              <option key={b} value={b}>
-                {t("banditHelp", game.term(b))}
-              </option>
-            ))}
-          </select>
-        </label>
-      </section>
+        {hasBuild && !editing && (
+          <div className={`build-summary ${justImported ? "is-fresh" : ""}`}>
+            <div className="build-summary-main">
+              <span className="build-class">{game.term(buildData.characterClass)}</span>
+              <span className="build-stats">
+                {[
+                  count(ui, requiredGems.length, "gem"),
+                  sets > 0 && count(ui, sets, "set"),
+                  buildTrees.length > 0 && count(ui, buildTrees.length, "tree"),
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
+              </span>
+            </div>
+            <button className="btn btn-ghost btn-sm btn-nowrap" onClick={() => { setEditing(true); setResult(null); }}>
+              {t("replaceBuild")}
+            </button>
+          </div>
+        )}
 
-      <section className="form-section">
-        <h3>Client.txt</h3>
-        <p className="muted">
-          {log.fileName ? t("logLinked", log.fileName) : t("logNotLinked")} {t("logWhere")} <code>{LOG_PATH}</code>
-        </p>
-        {log.fileName && (
-          <button className="btn" onClick={disconnectLog}>
-            {t("unlinkLog")}
-          </button>
+        {result?.ok && !editing && (
+          <div className="notice notice-ok" role="status">
+            <CircleCheck size={18} />
+            <div>
+              <b>{t("importedTitle", game.term(result.characterClass))}</b>
+              <span>{t("importedText")}</span>
+            </div>
+          </div>
+        )}
+
+        {editing && (
+          <>
+            <p className="panel-hint">{t("pobHelp")}</p>
+            <textarea
+              className="input code-input"
+              rows={3}
+              spellCheck={false}
+              autoCorrect="off"
+              autoCapitalize="off"
+              placeholder={t("pobPlaceholder")}
+              value={code}
+              onChange={(e) => {
+                setCode(e.target.value);
+                if (result && !result.ok) setResult(null);
+              }}
+            />
+            {result && !result.ok && (
+              <div className="notice notice-error" role="alert">
+                <CircleAlert size={18} />
+                <div>
+                  <b>{t("importFailed")}</b>
+                  <span>{result.reason}</span>
+                </div>
+              </div>
+            )}
+            <div className="row">
+              <button className="btn btn-primary" onClick={importCode} disabled={!code.trim()}>
+                <Download size={16} /> {t("import")}
+              </button>
+              {hasBuild && (
+                <button className="btn btn-ghost" onClick={() => { setEditing(false); setResult(null); setCode(""); }}>
+                  {t("cancel")}
+                </button>
+              )}
+            </div>
+          </>
         )}
       </section>
 
-      <section className="form-section">
-        <h3>{t("reset")}</h3>
+      <section className="panel-card">
+        <h3 className="panel-title">
+          <Route size={16} /> {t("routeOptions")}
+        </h3>
+        <label className="switch-row">
+          <span>
+            <span className="switch-label">{t("leagueStart")}</span>
+            <span className="switch-hint">{t("leagueStartHint")}</span>
+          </span>
+          <input
+            type="checkbox"
+            className="switch"
+            checked={buildData.leagueStart}
+            onChange={(e) => setBuildData({ leagueStart: e.target.checked })}
+          />
+        </label>
+        <div className="field-block">
+          <span className="switch-label">{t("bandits")}</span>
+          <Segmented
+            label={t("bandits")}
+            value={buildData.bandit}
+            options={bandits}
+            onChange={(bandit) => setBuildData({ bandit })}
+          />
+          <span className="switch-hint">{banditBonus[buildData.bandit]}</span>
+        </div>
+        <p className="panel-note">{t("routeOptionsHint")}</p>
+      </section>
+
+      <LogCard />
+
+      <div className="danger-zone">
         <button
-          className="btn btn-danger"
+          className="btn btn-ghost btn-sm btn-danger"
           onClick={() => {
             if (confirm(t("resetConfirm"))) {
               resetAll();
               setCode("");
-              setMessage(null);
+              setResult(null);
+              setEditing(true);
             }
           }}
         >
-          {t("resetAll")}
+          <Trash2 size={15} /> {t("resetAll")}
         </button>
-      </section>
+      </div>
     </Drawer>
+  );
+}
+
+function LogCard() {
+  const log = useLog();
+  const { t } = useI18n();
+  const status =
+    log.status === "connected"
+      ? { tone: "ok", text: t("logStatusOn", log.fileName ?? "Client.txt") }
+      : log.status === "needs-permission"
+        ? { tone: "warn", text: t("logStatusPermission") }
+        : log.status === "unsupported"
+          ? { tone: "off", text: t("logUnsupportedTitle") }
+          : log.status === "error"
+            ? { tone: "warn", text: t("logError") }
+            : { tone: "off", text: t("logNotLinked") };
+  return (
+    <section className="panel-card">
+      <h3 className="panel-title">
+        <Radio size={16} /> Client.txt
+      </h3>
+      <div className="log-status">
+        <span className={`status-dot status-${status.tone}`} />
+        <span>{status.text}</span>
+      </div>
+      <div className="path-box">
+        <code>
+          {/* Переносим путь только после обратных слешей, а не посреди слова. */}
+          {LOG_PATH.split("\\").map((part, i, all) => (
+            <span key={i}>
+              {part}
+              {i < all.length - 1 && (
+                <>
+                  \<wbr />
+                </>
+              )}
+            </span>
+          ))}
+        </code>
+        <CopyButton text={LOG_PATH} />
+      </div>
+      <div className="row">
+        {log.status === "connected" || log.status === "needs-permission" ? (
+          <>
+            {log.status === "needs-permission" && (
+              <button className="btn btn-primary btn-sm" onClick={reconnectLog}>
+                {t("logResume")}
+              </button>
+            )}
+            <button className="btn btn-ghost btn-sm" onClick={disconnectLog}>
+              {t("unlinkLog")}
+            </button>
+          </>
+        ) : (
+          log.status !== "unsupported" && (
+            <button className="btn btn-sm" onClick={connectLog}>
+              {t("connectLog")}
+            </button>
+          )
+        )}
+      </div>
+    </section>
   );
 }
 

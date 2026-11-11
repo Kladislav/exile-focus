@@ -44,7 +44,7 @@ const UI = {
     pobImported: "Imported {0}: {1} gems. Progress reset.",
     routeOptions: "Route options",
     routeOptionsHint: "Changing these rebuilds the route and resets progress.",
-    leagueStart: "League start (extra early-game detours)",
+    leagueStart: "League start",
     library: "Library quest in Act 3",
     bandits: "Bandits",
     banditKill: "Kill all",
@@ -89,6 +89,19 @@ const UI = {
     optionalVendor: "Sold by vendor afterwards",
     optionalVendorMany: "{0} gems, almost any you may need",
     buildInfo: "Build",
+    replaceBuild: "Replace build",
+    importedTitle: "{0} imported",
+    importedText: "Gem rewards are on the quest steps now. Progress was reset to the start of the route.",
+    importFailed: "Could not import",
+    pobHelp: "In Path of Building: Import/Export Build → Generate → Copy, then paste the code here.",
+    cancel: "Cancel",
+    leagueStartHint: "Trials of Ascendancy and the Quicksilver Flask quest along the way",
+    banditBonusKill: "+1 passive skill point",
+    banditBonusAlira: "+15% to all elemental resistances",
+    banditBonusKraityn: "+8% movement speed",
+    banditBonusOak: "+40 maximum life",
+    logStatusOn: "Reading {0}",
+    logStatusPermission: "File is linked, allow access again after reload",
     importPob: "Import Path of Building",
     buildEmptyText: "Import a Path of Building code: gem links per set and the passive tree will show up here, and gem rewards will appear on quest steps.",
     tabGems: "Gems",
@@ -140,7 +153,7 @@ const UI = {
     pobImported: "Импортирован {0}: гемов {1}. Прогресс сброшен.",
     routeOptions: "Настройки маршрута",
     routeOptionsHint: "При изменении маршрут перестраивается, прогресс сбрасывается.",
-    leagueStart: "Старт лиги (дополнительные заходы в начале)",
+    leagueStart: "Старт лиги",
     library: "Квест библиотеки в 3 акте",
     bandits: "Бандиты",
     banditKill: "Убить всех",
@@ -185,6 +198,19 @@ const UI = {
     optionalVendor: "Потом у торговца",
     optionalVendorMany: "{0} гемов, почти любой нужный",
     buildInfo: "Билд",
+    replaceBuild: "Заменить билд",
+    importedTitle: "{0}: билд импортирован",
+    importedText: "Награды гемами теперь у шагов с квестами. Прогресс сброшен на начало маршрута.",
+    importFailed: "Не удалось импортировать",
+    pobHelp: "В Path of Building: Import/Export Build → Generate → Copy, затем вставьте код сюда.",
+    cancel: "Отмена",
+    leagueStartHint: "Испытания восхождения и квест на Ртутный флакон по пути",
+    banditBonusKill: "+1 очко пассивных умений",
+    banditBonusAlira: "+15% ко всем сопротивлениям стихиям",
+    banditBonusKraityn: "+8% к скорости передвижения",
+    banditBonusOak: "+40 к максимуму здоровья",
+    logStatusOn: "Читаю {0}",
+    logStatusPermission: "Файл выбран, после перезагрузки нужно снова разрешить доступ",
     importPob: "Импорт Path of Building",
     buildEmptyText: "Импортируйте код Path of Building: здесь появятся связки гемов по наборам и дерево пассивок, а награды гемами — у шагов с квестами.",
     tabGems: "Гемы",
@@ -201,6 +227,21 @@ const UI = {
 } satisfies Record<Lang, Record<string, string>>;
 
 export type UiKey = keyof (typeof UI)["en"];
+
+const COUNT_FORMS = {
+  en: { gem: ["gem", "gems"], set: ["set", "sets"], tree: ["tree", "trees"] },
+  ru: { gem: ["гем", "гема", "гемов"], set: ["набор", "набора", "наборов"], tree: ["дерево", "дерева", "деревьев"] },
+} as const;
+
+/** «36 гемов», «4 дерева», «1 set». */
+export function count(lang: Lang, n: number, kind: keyof (typeof COUNT_FORMS)["en"]) {
+  if (lang === "en") return `${n} ${COUNT_FORMS.en[kind][n === 1 ? 0 : 1]}`;
+  const forms = COUNT_FORMS.ru[kind];
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  const form = mod10 === 1 && mod100 !== 11 ? 0 : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? 1 : 2;
+  return `${n} ${forms[form]}`;
+}
 
 export function format(template: string, ...args: (string | number)[]) {
   return template.replace(/\{(\d+)\}/g, (_, i) => String(args[Number(i)] ?? ""));
