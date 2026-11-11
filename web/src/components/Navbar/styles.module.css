@@ -1,0 +1,76 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--secondary);
+  position: sticky;
+  top: 0;
+  width: 100%;
+  max-height: 100vh;
+  z-index: 3;
+}
+
+.navHolder {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  font-size: var(--size-4);
+}
+
+.navHolder.expand {
+  flex-direction: column;
+}
+
+.navMain {
+  width: 100%;
+}
+
+.navItems {
+  display: flex;
+  flex-grow: 1;
+  flex-direction: row;
+  align-self: stretch;
+}
+
+.navItems.expand {
+  flex-direction: column;
+  background-color: var(--primary);
+}
+
+.navItem {
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
+.navItem.expand {
+  text-align: right;
+}
+
+.navElement {
+  color: var(--on-secondary);
+  font-weight: var(--font-heavy);
+  padding: var(--size-3);
+}
+
+.navIcon {
+  display: block;
+  box-sizing: content-box;
+  height: var(--line-height);
+  width: var(--line-height);
+  padding: var(--size-3);
+  cursor: pointer;
+}
+
+.navMain.expand {
+  position: absolute;
+  width: 100%;
+  top: 100%;
+}
+
+.navItems:not(.expand) > *:nth-child(n + 3) {
+  display: none;
+}
+
+.navAccordion:not(.expand) > * {
+  display: none;
+}

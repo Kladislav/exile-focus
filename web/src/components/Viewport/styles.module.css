@@ -1,0 +1,10 @@
+.viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.world {
+  position: absolute;
+  transform-origin: 0 0;
+}
