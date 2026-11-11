@@ -130,7 +130,8 @@ const StepRow = memo(function StepRow({
   onSelect: (index: number) => void;
 }) {
   const { head, tail } = renderParts(item.step.parts, i18n);
-  const showHints = hints === "all" || (hints === "current" && state === "current");
+  // У выполненных шагов подсказки уже не нужны.
+  const showHints = state !== "done" && (hints === "all" || (hints === "current" && state === "current"));
   const vendorNames = item.gems
     .filter((g) => g.rewardType === "vendor")
     .map((g) => i18n.game.gem(g.requiredGem.id));
