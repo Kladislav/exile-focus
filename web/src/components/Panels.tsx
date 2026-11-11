@@ -1,21 +1,25 @@
 import { Data, type RouteData } from "common";
 import { X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { gemColor } from "../assets";
 import { processPob } from "../build/pob";
+import { useI18n } from "../i18n";
 import { disconnectLog, useLog } from "../log/client-log";
-import type { FocusRoute } from "../route/build";
+import { HINT_ORDER, useSettings, type Hints } from "../settings";
 import { useProgress, useUi } from "../store";
-import { renderParts } from "./Fragments";
+
+const LOG_PATH = "<Steam library>\\steamapps\\common\\Path of Exile\\logs\\Client.txt";
 
 function Drawer({ title, children }: { title: string; children: ReactNode }) {
   const setPanel = useUi((s) => s.setPanel);
+  const { t } = useI18n();
   return (
     <>
       <div className="scrim" onClick={() => setPanel(null)} />
       <aside className="drawer" role="dialog" aria-label={title}>
         <header className="drawer-head">
           <h2>{title}</h2>
-          <button className="icon-btn" onClick={() => setPanel(null)} title="Close (Esc)">
+          <button className="icon-btn" onClick={() => setPanel(null)} title={`${t("close")} (Esc)`}>
             <X size={18} />
           </button>
         </header>
@@ -25,11 +29,9 @@ function Drawer({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function Panels({ route }: { route: FocusRoute }) {
+export function Panels() {
   const panel = useUi((s) => s.panel);
   switch (panel) {
-    case "list":
-      return <StepList route={route} />;
     case "gems":
       return <GemLinks />;
     case "build":
@@ -41,52 +43,12 @@ export function Panels({ route }: { route: FocusRoute }) {
   }
 }
 
-function StepList({ route }: { route: FocusRoute }) {
-  const pointer = useProgress((s) => s.pointer);
-  const setPointer = useProgress((s) => s.setPointer);
-  const setPanel = useUi((s) => s.setPanel);
-  const currentRef = useRef<HTMLLIElement>(null);
-
-  useEffect(() => {
-    currentRef.current?.scrollIntoView({ block: "center" });
-  }, []);
-
-  return (
-    <Drawer title="Route">
-      {route.sections.map((section, sectionIndex) => (
-        <section key={sectionIndex} className="list-section">
-          <h3>{section.name}</h3>
-          <ol>
-            {route.steps
-              .slice(section.firstStep, section.firstStep + section.stepCount)
-              .map((item) => (
-                <li
-                  key={item.index}
-                  ref={item.index === pointer ? currentRef : undefined}
-                  className={
-                    item.index < pointer ? "is-done" : item.index === pointer ? "is-current" : ""
-                  }
-                  onClick={() => {
-                    setPointer(item.index);
-                    setPanel(null);
-                  }}
-                >
-                  {renderParts(item.step.parts).head}
-                  {item.gems.length > 0 && <span className="list-gems">{item.gems.length} gem{item.gems.length > 1 ? "s" : ""}</span>}
-                </li>
-              ))}
-          </ol>
-        </section>
-      ))}
-    </Drawer>
-  );
-}
-
 function GemLinks() {
   const gemLinks = useProgress((s) => s.gemLinks);
+  const { t, game } = useI18n();
   return (
-    <Drawer title="Gem links">
-      {gemLinks.length === 0 && <p className="muted">Import a Path of Building code to see gem links.</p>}
+    <Drawer title={t("gemLinks")}>
+      {gemLinks.length === 0 && <p className="muted">{t("noGemLinks")}</p>}
       {groupByTitle(gemLinks).map(([title, groups]) => (
         <section key={title} className="links-group">
           <h3>{title}</h3>
@@ -97,8 +59,8 @@ function GemLinks() {
                 if (!gem) return null;
                 return (
                   <span key={j} className={`link-gem ${gem.is_support ? "is-support" : ""}`}>
-                    <span className="gem-dot" style={{ background: Data.GemColours[gem.primary_attribute] }} />
-                    {gem.name.replace(" Support", "")}
+                    <span className="gem-dot" style={{ background: gemColor(gem.primary_attribute) }} />
+                    {game.gem(gem.id)}
                   </span>
                 );
               })}
@@ -117,143 +79,145 @@ function groupByTitle(groups: RouteData.GemLinkGroup[]) {
 }
 
 function BuildPanel() {
-  const { buildData, pobCode, setBuild, setBuildData, resetAll, showSubsteps, toggleSubsteps } =
-    useProgress();
+  const { buildData, pobCode, setBuild, setBuildData, resetAll } = useProgress();
+  const hints = useSettings((s) => s.hints);
+  const setSettings = useSettings((s) => s.set);
   const [code, setCode] = useState(pobCode ?? "");
   const [message, setMessage] = useState<string | null>(null);
   const log = useLog();
+  const { t, game } = useI18n();
 
   function importCode() {
-    if (/^https?:\/\//.test(code.trim())) {
-      setMessage("Links are not supported yet: open the build in Path of Building and copy the code.");
-      return;
-    }
+    const value = code.trim();
+    if (/^https?:\/\//.test(value)) return setMessage(t("pobLinkUnsupported"));
     let pob = null;
     try {
-      pob = processPob(code.trim());
+      pob = processPob(value);
     } catch {
       pob = null;
     }
-    if (!pob) {
-      setMessage("Could not read this code.");
-      return;
-    }
-    setBuild({
-      buildData: pob.buildData,
-      requiredGems: pob.requiredGems,
-      gemLinks: pob.gemLinks,
-      pobCode: code.trim(),
-    });
-    setMessage(`Imported ${pob.buildData.characterClass}: ${pob.requiredGems.length} gems. Progress reset.`);
+    if (!pob) return setMessage(t("pobInvalid"));
+    setBuild({ buildData: pob.buildData, requiredGems: pob.requiredGems, gemLinks: pob.gemLinks, pobCode: value });
+    setMessage(t("pobImported", game.term(pob.buildData.characterClass), pob.requiredGems.length));
   }
 
+  const hintLabels: Record<Hints, string> = {
+    current: t("hintsCurrent"),
+    all: t("hintsAll"),
+    off: t("hintsOff"),
+  };
+
   return (
-    <Drawer title="Build & settings">
+    <Drawer title={t("build")}>
       <section className="form-section">
-        <h3>Path of Building</h3>
+        <h3>{t("pob")}</h3>
         <textarea
           className="input"
           rows={4}
-          placeholder="Paste PoB export code"
+          placeholder={t("pobPlaceholder")}
           value={code}
           onChange={(e) => setCode(e.target.value)}
         />
         <div className="row">
           <button className="btn btn-primary" onClick={importCode} disabled={!code.trim()}>
-            Import
+            {t("import")}
           </button>
           {message && <span className="muted">{message}</span>}
         </div>
       </section>
 
       <section className="form-section">
-        <h3>Route options</h3>
-        <p className="muted">Changing these rebuilds the route and resets progress.</p>
+        <h3>{t("routeOptions")}</h3>
+        <p className="muted">{t("routeOptionsHint")}</p>
         <label className="check">
           <input
             type="checkbox"
             checked={buildData.leagueStart}
             onChange={(e) => setBuildData({ leagueStart: e.target.checked })}
           />
-          League start (extra early-game detours)
+          {t("leagueStart")}
         </label>
         <label className="check">
-          <input
-            type="checkbox"
-            checked={buildData.library}
-            onChange={(e) => setBuildData({ library: e.target.checked })}
-          />
-          Library quest in Act 3
+          <input type="checkbox" checked={buildData.library} onChange={(e) => setBuildData({ library: e.target.checked })} />
+          {t("library")}
         </label>
         <label className="field">
-          Bandits
+          {t("bandits")}
           <select
             className="input"
             value={buildData.bandit}
             onChange={(e) => setBuildData({ bandit: e.target.value as RouteData.BuildData["bandit"] })}
           >
-            <option value="None">Kill all</option>
-            <option value="Alira">Help Alira</option>
-            <option value="Oak">Help Oak</option>
-            <option value="Kraityn">Help Kraityn</option>
+            <option value="None">{t("banditKill")}</option>
+            {(["Alira", "Oak", "Kraityn"] as const).map((b) => (
+              <option key={b} value={b}>
+                {t("banditHelp", game.term(b))}
+              </option>
+            ))}
           </select>
         </label>
-        <label className="check">
-          <input type="checkbox" checked={showSubsteps} onChange={toggleSubsteps} />
-          Show hints under the current step
+        <label className="field">
+          {t("hints")}
+          <select className="input" value={hints} onChange={(e) => setSettings({ hints: e.target.value as Hints })}>
+            {HINT_ORDER.map((h) => (
+              <option key={h} value={h}>
+                {hintLabels[h]}
+              </option>
+            ))}
+          </select>
         </label>
       </section>
 
       <section className="form-section">
         <h3>Client.txt</h3>
         <p className="muted">
-          {log.fileName ? `Linked: ${log.fileName}` : "Not linked."} Find it in{" "}
-          <code>&lt;Steam library&gt;\steamapps\common\Path of Exile\logs\Client.txt</code>
+          {log.fileName ? t("logLinked", log.fileName) : t("logNotLinked")} {t("logWhere")} <code>{LOG_PATH}</code>
         </p>
         {log.fileName && (
-          <button className="btn btn-ghost" onClick={disconnectLog}>
-            Unlink log
+          <button className="btn" onClick={disconnectLog}>
+            {t("unlinkLog")}
           </button>
         )}
       </section>
 
       <section className="form-section">
-        <h3>Reset</h3>
+        <h3>{t("reset")}</h3>
         <button
           className="btn btn-danger"
           onClick={() => {
-            if (confirm("Reset build and progress?")) {
+            if (confirm(t("resetConfirm"))) {
               resetAll();
               setCode("");
               setMessage(null);
             }
           }}
         >
-          Reset everything
+          {t("resetAll")}
         </button>
       </section>
     </Drawer>
   );
 }
 
-const KEYS: [string, string][] = [
-  ["Space / → / J", "Step done"],
-  ["Backspace / ← / K", "Step back"],
-  ["L", "Full route"],
-  ["G", "Gem links"],
-  ["B", "Build & settings"],
-  ["H", "Toggle hints"],
-  ["?", "This help"],
-  ["Esc", "Close panel"],
-];
-
 function Help() {
+  const { t } = useI18n();
+  const keys: [string, string][] = [
+    ["Space / → / J", t("keyNext")],
+    ["Backspace / ← / K", t("keyBack")],
+    ["G", t("gemLinks")],
+    ["B", t("build")],
+    ["H", t("keyHints")],
+    ["?", t("keyHelp")],
+    ["Esc", t("keyClose")],
+  ];
+  const [before, after] = t("creditsText").split("{0}");
+
   return (
-    <Drawer title="Help">
+    <Drawer title={t("help")}>
       <section className="form-section">
-        <h3>Keys</h3>
+        <h3>{t("keys")}</h3>
         <dl className="keys">
-          {KEYS.map(([k, v]) => (
+          {keys.map(([k, v]) => (
             <div key={k}>
               <dt>
                 <kbd>{k}</kbd>
@@ -264,22 +228,20 @@ function Help() {
         </dl>
       </section>
       <section className="form-section">
-        <h3>Auto-progress</h3>
+        <h3>{t("autoProgress")}</h3>
+        <p className="muted">{t("autoProgressText")}</p>
         <p className="muted">
-          Click <b>Connect Client.txt</b> (Chrome or Edge) and pick the game log:{" "}
-          <code>&lt;Steam library&gt;\steamapps\common\Path of Exile\logs\Client.txt</code>. Each time you
-          enter the next zone of the route, the guide moves on by itself. Portals back to town outside the
-          route are ignored.
+          <code>{LOG_PATH}</code>
         </p>
       </section>
       <section className="form-section">
-        <h3>Credits</h3>
+        <h3>{t("credits")}</h3>
         <p className="muted">
-          Route and game data:{" "}
+          {before}
           <a href="https://github.com/HeartofPhos/exile-leveling" target="_blank" rel="noreferrer">
             exile-leveling
-          </a>{" "}
-          by HeartofPhos (MIT).
+          </a>
+          {after}
         </p>
       </section>
     </Drawer>

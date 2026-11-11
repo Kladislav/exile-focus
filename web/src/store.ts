@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_BUILD_DATA } from "./route/build";
 
-export type Panel = "list" | "gems" | "build" | "help" | null;
+export type Panel = "gems" | "build" | "help" | null;
 
 interface ProgressState {
   /** Индекс текущего (ещё не выполненного) шага. */
@@ -12,7 +12,6 @@ interface ProgressState {
   requiredGems: RouteData.RequiredGem[];
   gemLinks: RouteData.GemLinkGroup[];
   pobCode: string | null;
-  showSubsteps: boolean;
 
   setPointer: (pointer: number) => void;
   setBuild: (build: {
@@ -22,7 +21,6 @@ interface ProgressState {
     pobCode: string | null;
   }) => void;
   setBuildData: (patch: Partial<RouteData.BuildData>) => void;
-  toggleSubsteps: () => void;
   resetAll: () => void;
 }
 
@@ -32,7 +30,6 @@ const INITIAL = {
   requiredGems: [],
   gemLinks: [],
   pobCode: null,
-  showSubsteps: true,
 };
 
 export const useProgress = create<ProgressState>()(
@@ -44,7 +41,6 @@ export const useProgress = create<ProgressState>()(
       setBuild: (build) => set({ ...build, pointer: 0 }),
       setBuildData: (patch) =>
         set((s) => ({ buildData: { ...s.buildData, ...patch }, pointer: 0 })),
-      toggleSubsteps: () => set((s) => ({ showSubsteps: !s.showSubsteps })),
       resetAll: () => set(INITIAL),
     }),
     { name: "exile-focus", version: 1 },

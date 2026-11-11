@@ -11,7 +11,9 @@ const INITIAL_TAIL_BYTES = 256 * 1024;
 const HANDLE_KEY = "client-log-handle";
 
 const AREA_RE = /Generating level (\d+) area "([^"]+)"/;
-const LEVEL_RE = /: (\S+) \((\w+)\) is now level (\d+)/;
+// Английский клиент: "Name (Class) is now level N".
+// Русский (ClientStrings HUDContactCharacterLevelChanged): "Name (Класс) теперь N уровня".
+const LEVEL_RE = /: (\S+) \(([^)]+)\) (?:is now level (\d+)|теперь (\d+) уровня)/;
 
 export type LogStatus =
   | "unsupported"
@@ -72,7 +74,7 @@ function processLine(line: string, live: boolean) {
     useLog.setState({
       charName: level[1],
       charClass: level[2],
-      level: Number(level[3]),
+      level: Number(level[3] ?? level[4]),
     });
   }
 }

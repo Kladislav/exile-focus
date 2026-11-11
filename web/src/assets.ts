@@ -26,3 +26,17 @@ export function gemCostIcon(requiredLevel: number) {
             : "alchemy";
   return { src: costImages[`${COST}/${name}.png`], name };
 }
+
+/** Мягкие цвета атрибутов вместо кислотных #33ff33 из данных игры. */
+export function gemColor(attribute: string) {
+  switch (attribute) {
+    case "strength":
+      return "var(--gem-str)";
+    case "dexterity":
+      return "var(--gem-dex)";
+    case "intelligence":
+      return "var(--gem-int)";
+    default:
+      return "var(--faint)";
+  }
+}

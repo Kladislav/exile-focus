@@ -1,0 +1,73 @@
+{
+  "patch": "3.29.3.6",
+  "translations": [
+    "English",
+    "Russian"
+  ],
+  "tables": [
+    {
+      "name": "WorldAreas",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "Quest",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "NPCs",
+      "columns": [
+        "Id",
+        "Name",
+        "ShortName"
+      ]
+    },
+    {
+      "name": "BaseItemTypes",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "MonsterVarieties",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "Characters",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "MapPins",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "Chests",
+      "columns": [
+        "Id",
+        "Name"
+      ]
+    },
+    {
+      "name": "ClientStrings",
+      "columns": [
+        "Id",
+        "Text"
+      ]
+    }
+  ]
+}

@@ -1,17 +1,48 @@
-import { useEffect, useMemo } from "react";
-import { FocusView } from "./components/FocusView";
+import { useEffect, useMemo, useRef } from "react";
 import { Panels } from "./components/Panels";
 import { ProgressRail } from "./components/ProgressRail";
+import { RouteView } from "./components/RouteView";
 import { TopBar } from "./components/TopBar";
 import { onAreaEntered, restoreLog } from "./log/client-log";
 import { buildFocusRoute, pointerForArea } from "./route/build";
+import { HINT_ORDER, useSettings } from "./settings";
 import { useProgress, useUi, type Panel } from "./store";
 
-const PANEL_KEYS: Record<string, Panel> = { l: "list", g: "gems", b: "build", "?": "help" };
+const PANEL_KEYS: Record<string, Panel> = { g: "gems", b: "build", "?": "help" };
+
+function useTheme() {
+  const theme = useSettings((s) => s.theme);
+  const uiLang = useSettings((s) => s.uiLang);
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === "system") root.removeAttribute("data-theme");
+    else root.setAttribute("data-theme", theme);
+  }, [theme]);
+  useEffect(() => {
+    document.documentElement.lang = uiLang;
+  }, [uiLang]);
+}
+
+/** Высота шапки нужна липким заголовкам актов. */
+function useHeaderHeight() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    update();
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+}
 
 export function App() {
   const buildData = useProgress((s) => s.buildData);
   const requiredGems = useProgress((s) => s.requiredGems);
+  useTheme();
+  const headerRef = useHeaderHeight();
 
   const route = useMemo(() => buildFocusRoute(buildData, requiredGems), [buildData, requiredGems]);
 
@@ -43,7 +74,7 @@ export function App() {
       // Иначе пробел нажмёт кнопку в фокусе и шаг сдвинется дважды.
       if (target instanceof HTMLButtonElement) target.blur();
 
-      const { pointer, setPointer, toggleSubsteps } = useProgress.getState();
+      const { pointer, setPointer } = useProgress.getState();
       const { panel, setPanel } = useUi.getState();
       const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
 
@@ -52,7 +83,10 @@ export function App() {
         const p = PANEL_KEYS[key];
         return setPanel(panel === p ? null : p);
       }
-      if (key === "h") return toggleSubsteps();
+      if (key === "h") {
+        const { hints, set } = useSettings.getState();
+        return set({ hints: HINT_ORDER[(HINT_ORDER.indexOf(hints) + 1) % HINT_ORDER.length] });
+      }
       if (panel) return;
 
       if (key === " " || key === "ArrowRight" || key === "j") {
@@ -69,10 +103,12 @@ export function App() {
 
   return (
     <div className="app">
-      <TopBar route={route} />
-      <ProgressRail route={route} />
-      <FocusView route={route} />
-      <Panels route={route} />
+      <div className="header" ref={headerRef}>
+        <TopBar route={route} />
+        <ProgressRail route={route} />
+      </div>
+      <RouteView route={route} />
+      <Panels />
     </div>
   );
 }
