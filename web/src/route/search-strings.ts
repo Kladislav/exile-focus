@@ -14,22 +14,20 @@ export interface SearchString {
   query: string;
 }
 
-const STAT_TEXT: Record<Lang, { movement: string; life: string; resist: string }> = {
+const STAT_TEXT: Record<Lang, { movement: string }> = {
   // "{0}% increased Movement Speed", "+{0} to maximum Life", "+{0}% to Fire Resistance"
-  en: { movement: "movement speed", life: "maximum life", resist: "resistance" },
+  en: { movement: "movement speed" },
   // "{0}% повышение скорости передвижения", "+{0} к максимуму здоровья", "+{0}% к сопротивлению огню"
-  ru: { movement: "скорости передвижения", life: "максимуму здоровья", resist: "сопротивлению" },
+  ru: { movement: "скорости передвижения" },
 };
 
-/** Строки, полезные любому билду. */
+/** Отдельные строки, полезные любому билду (здоровье и сопротивления есть в общей строке). */
 export function commonSearchStrings(gameLang: Lang): SearchString[] {
   const t = STAT_TEXT[gameLang];
   return [
     { id: "links3", query: '"-\\w-"' },
     { id: "links4", query: '"-\\w-\\w-"' },
     { id: "movement", query: `"${t.movement}"` },
-    { id: "life", query: `"${t.life}"` },
-    { id: "resist", query: `"${t.resist}"` },
   ];
 }
 
