@@ -1,0 +1,13 @@
+{
+  "name": "exile-focus",
+  "private": true,
+  "workspaces": [
+    "upstream/common",
+    "web"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w web",
+    "build": "npm run build -w web",
+    "sync-upstream": "sh scripts/sync-upstream.sh"
+  }
+}
