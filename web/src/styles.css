@@ -33,7 +33,8 @@
 
   --radius: 10px;
   --header-h: 110px;
-  --layout-w: 1180px;
+  /* Раскладка на всю ширину, предел только для очень широких мониторов. */
+  --layout-w: 2400px;
   --gutter: 24px;
   --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   color-scheme: light;
@@ -996,21 +997,14 @@ select.input {
 
 /* ---------- Layout ---------- */
 
-.app.has-build {
-  --layout-w: 1560px;
-}
-
 .layout {
   display: grid;
-  grid-template-columns: 190px minmax(0, 1fr);
-  gap: 36px;
+  /* Справа треть экрана: там гемы и дерево пассивок, им ширина нужнее, чем списку. */
+  grid-template-columns: 220px minmax(0, 1fr) clamp(380px, 30vw, 680px);
+  gap: 32px;
   max-width: var(--layout-w);
   margin: 0 auto;
   padding: 0 var(--gutter);
-}
-
-.app.has-build .layout {
-  grid-template-columns: 190px minmax(0, 1fr) 400px;
 }
 
 .layout-left,
@@ -1236,7 +1230,7 @@ select.input {
 
 .tree-viewport {
   position: relative;
-  height: min(52vh, 480px);
+  height: min(62vh, 680px);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   background: var(--surface);
@@ -1270,6 +1264,18 @@ select.input {
   vertical-align: -1px;
 }
 
+.build-empty h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.build-empty p {
+  margin: 0 0 14px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
 .tree-problems {
   padding-left: 18px;
   font-size: 14px;
@@ -1284,11 +1290,8 @@ select.input {
 /* ---------- Narrow windows ---------- */
 
 @media (max-width: 1279px) {
-  .app.has-build {
-    --layout-w: 1180px;
-  }
-  .app.has-build .layout {
-    grid-template-columns: 190px minmax(0, 1fr);
+  .layout {
+    grid-template-columns: 200px minmax(0, 1fr);
   }
   .layout-right {
     display: none;
@@ -1296,8 +1299,7 @@ select.input {
 }
 
 @media (max-width: 900px) {
-  .layout,
-  .app.has-build .layout {
+  .layout {
     grid-template-columns: minmax(0, 1fr);
   }
   .layout-left {

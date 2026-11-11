@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
 import { ActNav } from "./components/ActNav";
-import { BuildSidebar } from "./components/BuildSidebar";
+import { BuildEmpty, BuildSidebar } from "./components/BuildSidebar";
 import { Panels } from "./components/Panels";
 import { ProgressRail } from "./components/ProgressRail";
 import { RouteView } from "./components/RouteView";
@@ -108,7 +108,7 @@ export function App() {
   }, [route]);
 
   return (
-    <div className={`app ${hasBuild ? "has-build" : ""}`}>
+    <div className="app">
       <div className="header" ref={headerRef}>
         <TopBar route={route} />
         <ProgressRail route={route} />
@@ -118,11 +118,7 @@ export function App() {
           <ActNav route={route} />
         </aside>
         <RouteView route={route} />
-        {hasBuild && (
-          <aside className="layout-right">
-            <BuildSidebar act={act} />
-          </aside>
-        )}
+        <aside className="layout-right">{hasBuild ? <BuildSidebar act={act} /> : <BuildEmpty />}</aside>
       </div>
       <Panels act={act} />
     </div>

@@ -2,7 +2,7 @@ import { Data, type RouteData } from "common";
 import { useMemo, useState } from "react";
 import { gemColor } from "../assets";
 import { useI18n } from "../i18n";
-import { useProgress } from "../store";
+import { useProgress, useUi } from "../store";
 import { SetSwitcher, setForAct } from "./SetSwitcher";
 import { TreeViewer } from "./TreeViewer";
 
@@ -93,4 +93,19 @@ function groupByTitle(groups: RouteData.GemLinkGroup[]) {
   const map = new Map<string, RouteData.GemLinkGroup[]>();
   for (const g of groups) map.set(g.title, [...(map.get(g.title) ?? []), g]);
   return [...map.entries()];
+}
+
+/** Правая колонка без билда: что здесь появится и кнопка импорта. */
+export function BuildEmpty() {
+  const { t } = useI18n();
+  const setPanel = useUi((s) => s.setPanel);
+  return (
+    <div className="build-side build-empty">
+      <h3>{t("buildInfo")}</h3>
+      <p>{t("buildEmptyText")}</p>
+      <button className="btn btn-primary" onClick={() => setPanel("build")}>
+        {t("importBuild")}
+      </button>
+    </div>
+  );
 }
