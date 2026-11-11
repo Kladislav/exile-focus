@@ -163,7 +163,8 @@ const StepRow = memo(function StepRow({
           </ul>
         )}
 
-        {item.gems.length > 0 && (
+        {/* У выполненных шагов гемы уже взяты или куплены. */}
+        {state !== "done" && item.gems.length > 0 && (
           <div className="gems">
             {item.gems.map((g, i) => (
               <GemRow key={i} gem={g} i18n={i18n} />
