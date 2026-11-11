@@ -7,6 +7,14 @@
     <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#16181b" media="(prefers-color-scheme: dark)" />
 
+    <script>
+      // Тема до загрузки приложения, чтобы страница не мигала не тем цветом.
+      try {
+        var theme = JSON.parse(localStorage.getItem("exile-focus-settings") || "{}").state?.theme;
+        if (theme === "light" || theme === "dark") document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {}
+    </script>
+
     <title>Exile Focus — Path of Exile leveling guide with auto-progress</title>
     <meta
       name="description"
@@ -55,8 +63,9 @@
     </script>
   </head>
   <body>
-    <div id="root">
-      <!-- Статическое содержимое для поисковиков и браузеров без JS; React заменяет его при запуске. -->
+    <div id="root"></div>
+    <!-- Описание для браузеров без JS и простых краулеров; при работающем JS не показывается. -->
+    <noscript>
       <main style="max-width: 720px; margin: 64px auto; padding: 0 16px; font-family: system-ui, sans-serif">
         <h1>Exile Focus — Path of Exile leveling guide</h1>
         <p>
@@ -74,9 +83,9 @@
           Гайд по прокачке Path of Exile, акты 1–10: маршрут списком с текущим шагом на виду, автопрогресс по
           Client.txt, импорт билда из Path of Building, подсказки по зонам, русский и английский язык.
         </p>
-        <noscript><p>Exile Focus needs JavaScript to run.</p></noscript>
+        <p>Exile Focus needs JavaScript to run.</p>
       </main>
-    </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
