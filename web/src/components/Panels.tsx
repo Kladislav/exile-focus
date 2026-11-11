@@ -1,8 +1,8 @@
-import { Data, type RouteData } from "common";
+import type { RouteData } from "common";
 import { X } from "lucide-react";
 import { useState, type ReactNode } from "react";
-import { gemColor } from "../assets";
 import { processPob } from "../build/pob";
+import { BuildSidebar } from "./BuildSidebar";
 import { useI18n } from "../i18n";
 import { disconnectLog, useLog } from "../log/client-log";
 import { HINT_ORDER, useSettings, type Hints } from "../settings";
@@ -29,11 +29,11 @@ function Drawer({ title, children }: { title: string; children: ReactNode }) {
   );
 }
 
-export function Panels() {
+export function Panels({ act }: { act: number }) {
   const panel = useUi((s) => s.panel);
   switch (panel) {
     case "gems":
-      return <GemLinks />;
+      return <BuildDrawer act={act} />;
     case "build":
       return <BuildPanel />;
     case "help":
@@ -43,39 +43,13 @@ export function Panels() {
   }
 }
 
-function GemLinks() {
-  const gemLinks = useProgress((s) => s.gemLinks);
-  const { t, game } = useI18n();
+function BuildDrawer({ act }: { act: number }) {
+  const { t } = useI18n();
   return (
-    <Drawer title={t("gemLinks")}>
-      {gemLinks.length === 0 && <p className="muted">{t("noGemLinks")}</p>}
-      {groupByTitle(gemLinks).map(([title, groups]) => (
-        <section key={title} className="links-group">
-          <h3>{title}</h3>
-          {groups.map((group, i) => (
-            <div key={i} className="links-row">
-              {[...group.primaryGems, ...group.secondaryGems].map((link, j) => {
-                const gem = Data.Gems[link.id];
-                if (!gem) return null;
-                return (
-                  <span key={j} className={`link-gem ${gem.is_support ? "is-support" : ""}`}>
-                    <span className="gem-dot" style={{ background: gemColor(gem.primary_attribute) }} />
-                    {game.gem(gem.id)}
-                  </span>
-                );
-              })}
-            </div>
-          ))}
-        </section>
-      ))}
+    <Drawer title={t("buildInfo")}>
+      <BuildSidebar act={act} />
     </Drawer>
   );
-}
-
-function groupByTitle(groups: RouteData.GemLinkGroup[]) {
-  const map = new Map<string, RouteData.GemLinkGroup[]>();
-  for (const g of groups) map.set(g.title, [...(map.get(g.title) ?? []), g]);
-  return [...map.entries()];
 }
 
 function BuildPanel() {
@@ -97,7 +71,13 @@ function BuildPanel() {
       pob = null;
     }
     if (!pob) return setMessage(t("pobInvalid"));
-    setBuild({ buildData: pob.buildData, requiredGems: pob.requiredGems, gemLinks: pob.gemLinks, pobCode: value });
+    setBuild({
+      buildData: pob.buildData,
+      requiredGems: pob.requiredGems,
+      gemLinks: pob.gemLinks,
+      buildTrees: pob.buildTrees,
+      pobCode: value,
+    });
     setMessage(t("pobImported", game.term(pob.buildData.characterClass), pob.requiredGems.length));
   }
 

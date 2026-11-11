@@ -11,6 +11,7 @@ interface ProgressState {
   buildData: RouteData.BuildData;
   requiredGems: RouteData.RequiredGem[];
   gemLinks: RouteData.GemLinkGroup[];
+  buildTrees: RouteData.BuildTree[];
   pobCode: string | null;
 
   setPointer: (pointer: number) => void;
@@ -18,6 +19,7 @@ interface ProgressState {
     buildData: RouteData.BuildData;
     requiredGems: RouteData.RequiredGem[];
     gemLinks: RouteData.GemLinkGroup[];
+    buildTrees: RouteData.BuildTree[];
     pobCode: string | null;
   }) => void;
   setBuildData: (patch: Partial<RouteData.BuildData>) => void;
@@ -29,6 +31,7 @@ const INITIAL = {
   buildData: DEFAULT_BUILD_DATA,
   requiredGems: [],
   gemLinks: [],
+  buildTrees: [],
   pobCode: null,
 };
 

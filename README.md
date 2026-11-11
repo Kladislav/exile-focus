@@ -9,13 +9,15 @@ your current step in view and moves on by itself when you enter the next zone.
 - **Themes**: system, light, dark.
 - **Auto-progress**: link the game's `Client.txt` once (Chrome / Edge), the guide follows you zone by zone.
   Steam: `<Steam library>\steamapps\common\Path of Exile\logs\Client.txt`.
-- **Path of Building import**: gem rewards and vendor purchases appear on the right quest step.
+- **Path of Building import**: gem rewards and vendor purchases appear on the right quest step;
+  a side panel shows gem links and the passive tree per PoB set ("Act 1-3" etc.), following the current act.
 - **Keys**: `Space` done, `Backspace` back, `G` gem links, `B` build, `H` hints, `?` help.
 
 ## Development
 
 ```sh
 npm install
+npm run seed-tree  # passive tree data from GGG's skilltree-export, not committed
 npm run dev        # http://localhost:5173/exile-focus/
 npm run build
 ```

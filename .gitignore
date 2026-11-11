@@ -4,3 +4,4 @@ dist/
 *.local
 scripts/game-i18n/tables/
 scripts/game-i18n/.cache/
+web/src/tree/data/

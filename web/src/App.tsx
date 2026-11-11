@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useRef } from "react";
+import { ActNav } from "./components/ActNav";
+import { BuildSidebar } from "./components/BuildSidebar";
 import { Panels } from "./components/Panels";
 import { ProgressRail } from "./components/ProgressRail";
 import { RouteView } from "./components/RouteView";
@@ -45,6 +47,10 @@ export function App() {
   const headerRef = useHeaderHeight();
 
   const route = useMemo(() => buildFocusRoute(buildData, requiredGems), [buildData, requiredGems]);
+  const pointer = useProgress((s) => s.pointer);
+  const hasBuild = useProgress((s) => s.gemLinks.length > 0 || s.buildTrees.length > 0);
+  const currentStep = route.steps[Math.min(pointer, route.steps.length - 1)];
+  const act = currentStep ? currentStep.sectionIndex + 1 : 1;
 
   // Указатель мог сохраниться от более длинного маршрута.
   useEffect(() => {
@@ -102,13 +108,23 @@ export function App() {
   }, [route]);
 
   return (
-    <div className="app">
+    <div className={`app ${hasBuild ? "has-build" : ""}`}>
       <div className="header" ref={headerRef}>
         <TopBar route={route} />
         <ProgressRail route={route} />
       </div>
-      <RouteView route={route} />
-      <Panels />
+      <div className="layout">
+        <aside className="layout-left">
+          <ActNav route={route} />
+        </aside>
+        <RouteView route={route} />
+        {hasBuild && (
+          <aside className="layout-right">
+            <BuildSidebar act={act} />
+          </aside>
+        )}
+      </div>
+      <Panels act={act} />
     </div>
   );
 }

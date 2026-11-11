@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "npm run dev -w web",
     "build": "npm run build -w web",
-    "sync-upstream": "sh scripts/sync-upstream.sh"
+    "sync-upstream": "sh scripts/sync-upstream.sh",
+    "seed-tree": "tsx scripts/tree/seed.mts"
   }
 }
