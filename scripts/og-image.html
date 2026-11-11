@@ -1,0 +1,38 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+body{width:1200px;height:630px;background:#16181b;color:#dde1e6;font-family:-apple-system,"SF Pro Display","Helvetica Neue",Arial,sans-serif;display:flex;align-items:center;gap:56px;padding:0 72px;overflow:hidden}
+.left{flex:1}
+.brand{display:flex;align-items:center;gap:22px;margin-bottom:28px}
+.brand img{width:96px;height:96px}
+h1{font-size:68px;font-weight:700;letter-spacing:-1px}
+.sub{white-space:nowrap;font-size:30px;color:#979ea7;margin-bottom:34px;line-height:1.3}
+ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:14px;font-size:26px}
+li::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#7ea6f6;margin-right:16px;vertical-align:4px}
+.card{width:430px;padding:22px 26px;border-radius:20px;background:#1d2024;border:1px solid #2f343a}
+.zone{font-size:24px;font-weight:600;color:#8db7f7;margin-bottom:6px}
+.row{position:relative;padding:14px 0 14px 40px;font-size:22px}
+.row::before{content:"";position:absolute;left:12px;top:0;bottom:0;width:3px;background:#2f343a}
+.row:first-child::before{top:26px}.row:last-child::before{bottom:calc(100% - 26px)}
+.row.done::before{background:#4a5f86}
+.dot{position:absolute;left:13.5px;top:26px;width:12px;height:12px;border-radius:50%;transform:translate(-50%,-50%);background:#16181b;border:3px solid #6b7380}
+.done .dot{background:#4a5f86;border:none;width:11px;height:11px}
+.cur{background:#1f2a3d;border-radius:12px;margin:0 -12px;padding-left:52px}
+.cur .dot{left:25.5px;width:18px;height:18px;border:none;background:#7ea6f6;box-shadow:0 0 0 7px rgba(126,166,246,.25)}
+.cur::before{left:24px}
+.done{color:#979ea7}
+.k{color:#f2928a;font-weight:600}.q{color:#86cf9c;font-weight:600}.i{color:#e9c46a;font-weight:600}
+.hint{display:block;font-size:17px;color:#979ea7;margin-top:4px}
+</style></head><body>
+<div class="left">
+  <div class="brand"><img src="favicon.svg"><h1>Exile Focus</h1></div>
+  <div class="sub">Path of Exile leveling guide · Acts 1–10</div>
+  <ul><li>Current step always in view</li><li>Auto-progress from Client.txt</li><li>Path of Building gems &amp; passive tree</li><li>English and Russian</li></ul>
+</div>
+<div class="card">
+  <div class="row done"><span class="dot"></span>Hand in <span class="q">Enemy at the Gate</span></div>
+  <div class="row done"><span class="dot"></span><span class="zone" style="font-size:22px">The Coast</span></div>
+  <div class="row cur"><span class="dot"></span>Find and kill <span class="k">Hailrake</span>, take <span class="i">Medicine Chest</span><span class="hint">Recommended level: 4</span></div>
+  <div class="row"><span class="dot"></span><span class="zone" style="font-size:22px">The Submerged Passage</span></div>
+  <div class="row"><span class="dot"></span>Find and kill <span class="k">The Dweller of the Deep</span></div>
+</div>
+</body></html>

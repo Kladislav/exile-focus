@@ -4,10 +4,79 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
-    <title>Exile Focus</title>
+    <meta name="theme-color" content="#f6f6f4" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#16181b" media="(prefers-color-scheme: dark)" />
+
+    <title>Exile Focus — Path of Exile leveling guide with auto-progress</title>
+    <meta
+      name="description"
+      content="Path of Exile 1 leveling route for acts 1–10: the current step always in view, auto-progress from Client.txt, Path of Building gem rewards and passive tree. English and Russian."
+    />
+    <link rel="canonical" href="%SITE_URL%" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Exile Focus" />
+    <meta property="og:title" content="Exile Focus — Path of Exile leveling guide" />
+    <meta
+      property="og:description"
+      content="Acts 1–10 route with the current step always in view, auto-progress from Client.txt and Path of Building import."
+    />
+    <meta property="og:url" content="%SITE_URL%" />
+    <meta property="og:image" content="%SITE_URL%og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ru_RU" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Exile Focus — Path of Exile leveling guide" />
+    <meta
+      name="twitter:description"
+      content="Acts 1–10 route with the current step always in view, auto-progress from Client.txt and Path of Building import."
+    />
+    <meta name="twitter:image" content="%SITE_URL%og-image.png" />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Exile Focus",
+        "url": "%SITE_URL%",
+        "applicationCategory": "GameApplication",
+        "operatingSystem": "Any",
+        "inLanguage": ["en", "ru"],
+        "description": "Path of Exile 1 leveling guide for acts 1–10 with auto-progress from Client.txt and Path of Building import.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+      }
+    </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Статическое содержимое для поисковиков и браузеров без JS; React заменяет его при запуске. -->
+      <main style="max-width: 720px; margin: 64px auto; padding: 0 16px; font-family: system-ui, sans-serif">
+        <h1>Exile Focus — Path of Exile leveling guide</h1>
+        <p>
+          A Path of Exile 1 leveling route for acts 1–10. The whole route is one readable list that keeps your
+          current step in view and moves on by itself when you enter the next zone (auto-progress from the game's
+          Client.txt in Chrome or Edge).
+        </p>
+        <ul>
+          <li>Speedrun-style route: optional quests skipped, all passive skill points and Trials of Ascendancy kept.</li>
+          <li>Path of Building import: gem rewards and vendor purchases on the right quest steps, gem links and the passive tree per act.</li>
+          <li>Hints for every zone: where to find waypoints, quest items and bosses.</li>
+          <li>Interface and game names in English or Russian, light and dark themes.</li>
+        </ul>
+        <p lang="ru">
+          Гайд по прокачке Path of Exile, акты 1–10: маршрут списком с текущим шагом на виду, автопрогресс по
+          Client.txt, импорт билда из Path of Building, подсказки по зонам, русский и английский язык.
+        </p>
+        <noscript><p>Exile Focus needs JavaScript to run.</p></noscript>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
