@@ -162,7 +162,19 @@ export function renderParts(parts: Fragments.AnyFragment[], i18n: I18n) {
   const head: ReactNode[] = [];
   const tail: ReactNode[] = [];
   parts.forEach((part, i) => {
-    const r = renderFragment(part, i18n, parts[i + 1]);
+    // «➞ Зона» в начале шага: шаг и так открывает карточку зоны, стрелка лишняя.
+    // Стрелки внутри шага («Портал ➞ Зона») оставляем: они показывают, куда ведёт действие.
+    const next = parts[i + 1];
+    if (
+      i === 0 &&
+      typeof part === "string" &&
+      part.trim() === "➞" &&
+      next &&
+      typeof next !== "string" &&
+      (next.type === "enter" || next.type === "arena")
+    )
+      return;
+    const r = renderFragment(part, i18n, next);
     if (r.head) head.push(<span key={i}>{r.head}</span>);
     if (r.tail) tail.push(<span key={i}>{r.tail}</span>);
   });
