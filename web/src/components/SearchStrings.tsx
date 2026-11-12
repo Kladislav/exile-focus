@@ -21,7 +21,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
   return (
     <div className="search-strings">
-      <p className="panel-hint">{t("searchHelp")}</p>
       {links.map(({ size, query, withBuild }) => (
         <SearchRow
           key={size}
