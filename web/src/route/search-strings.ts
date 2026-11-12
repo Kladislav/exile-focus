@@ -8,7 +8,7 @@
 //
 //  - связки: перестановки цветов «r-r-g|r-g-r|g-r-r» (пробел в «Sockets: R-G B» разделяет
 //    несвязанные группы), любые связки «-\w-», «-\w-.-» (как у poe.re);
-//  - скорость: названия модификаторов на волшебных ботинках по ступеням;
+//  - скорость: названия модификаторов на волшебных ботинках, 10% и 15%;
 //  - урон: «d.+cal d» — «Adds # to # Physical Damage» / «#% increased Physical Damage»,
 //    «fi.+d.+er$» — «+#% to Fire Damage over Time Multiplier» (и холод, хаос);
 //  - оружие: «Item Class: …» → «s:.+(ax|sw)»; выбранный тип подсвечивается всегда.
@@ -27,10 +27,7 @@ const ANY_LINKS: Record<"any3" | "any4", string> = { any3: "-\\w-", any4: "-\\w-
 export const MOVEMENT_TIERS = [
   { id: "10", re: "Runn" }, // Runner's
   { id: "15", re: "rint" }, // Sprinter's
-  { id: "20", re: "tallio" }, // Stallion's
-  { id: "25", re: "zelle's" }, // Gazelle's (не «of the Gazelle»)
-  { id: "30", re: "etah's" }, // Cheetah's (не «of the Cheetah»)
-  { id: "35", re: "ellion's" }, // Hellion's (не «Aspect of the Hellion»)
+  // Выше 15% на прокачке у торговцев почти не встречается — не показываем.
 ] as const;
 export type MovementTier = (typeof MOVEMENT_TIERS)[number]["id"];
 
@@ -65,7 +62,7 @@ export interface RegexSelection {
 
 export const DEFAULT_SELECTION: RegexSelection = {
   links: ["build3"],
-  movement: ["10", "15", "20"],
+  movement: ["10", "15"],
   damage: [],
   weapons: [],
 };
