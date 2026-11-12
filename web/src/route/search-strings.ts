@@ -1,34 +1,74 @@
-// Готовые строки для поиска в окне торговца (Ctrl+F). Подход как у poe.re
-// (github.com/veiset/poe-vendor-string).
+// Конструктор строки для поиска в окне торговца (Ctrl+F), как раздел Vendor на poe.re
+// (github.com/veiset/poe-vendor-string, poe/src/utils/OutputString.ts).
 //
-// Строки английские и одинаковые для любого клиента: поиск в игре понимает
-// английский текст предмета и в русском клиенте (проверено пользователем 2026-11-12).
+// Строки английские и одинаковые для любого клиента: поиск понимает английский
+// текст предмета и в русском клиенте (проверено пользователем 2026-11-12).
 // Поле поиска вмещает 250 символов (уточнено пользователем).
+// Части через «|» — «или»; условия в отдельных кавычках через пробел — «и».
 //
-//  - гнёзда: связки цветов перестановками «r-r-g|r-g-r|g-r-r» (без якоря «Sockets:»,
-//    поэтому кольца и амулеты не цепляются); пробел в «Sockets: R-G B» разделяет
-//    несвязанные группы, так что «r-r-g» находит только связанные гнёзда;
-//  - скорость передвижения: названия модификаторов на волшебных ботинках
-//    Runner's 10%, Sprinter's 15%, Stallion's 20%, Gazelle's 25%, Cheetah's 30%,
-//    Hellion's 35%; апостроф отсекает «of the Gazelle», «of the Cheetah»,
-//    «Aspect of the Hellion»;
-//  - +1 к уровню камней: «+1 to Level of all … Skill Gems»;
-//  - оружие: «Item Class: Two Hand Axes / Two Hand Swords» и свойства «Adds # to # Physical Damage»,
-//    «#% increased Physical Damage» (строка характеристик «Physical Damage: 4-9»
-//    под них не попадает). Несколько условий в кавычках через пробел — «и».
+//  - связки: перестановки цветов «r-r-g|r-g-r|g-r-r» (пробел в «Sockets: R-G B» разделяет
+//    несвязанные группы), любые связки «-\w-», «-\w-.-» (как у poe.re);
+//  - скорость: названия модификаторов на волшебных ботинках по ступеням;
+//  - урон: «d.+cal d» — «Adds # to # Physical Damage» / «#% increased Physical Damage»,
+//    «fi.+d.+er$» — «+#% to Fire Damage over Time Multiplier» (и холод, хаос);
+//  - оружие: «Item Class: …» → «s:.+(ax|sw)»; выбранный тип подсвечивается всегда.
 
 import { Data, type RouteData } from "common";
 
 /** Ограничение длины поля поиска в игре. */
 export const SEARCH_LIMIT = 250;
 
-const MOVEMENT = "Runn|rint|llion's|zelle's|etah's";
-const PLUS_GEMS = "ll g";
-// «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
-// (строка уточнена пользователем). Классы «Two Hand Axes» и «Two Hand Swords».
-const TWO_HAND_AXE_PHYS = '"two hand (ax|sw)" "s \\d+ to \\d+ phys|d.+cal d"';
+export const LINK_OPTIONS = ["build3", "build4", "any3", "any4"] as const;
+export type LinkOption = (typeof LINK_OPTIONS)[number];
 
-const ANY_LINKS: Record<3 | 4, string> = { 3: "-\\w-", 4: "-\\w-.-" };
+const ANY_LINKS: Record<"any3" | "any4", string> = { any3: "-\\w-", any4: "-\\w-.-" };
+
+/** Ступени скорости передвижения: % → кусок названия модификатора (проверено по таблице Mods). */
+export const MOVEMENT_TIERS = [
+  { id: "10", re: "Runn" }, // Runner's
+  { id: "15", re: "rint" }, // Sprinter's
+  { id: "20", re: "tallio" }, // Stallion's
+  { id: "25", re: "zelle's" }, // Gazelle's (не «of the Gazelle»)
+  { id: "30", re: "etah's" }, // Cheetah's (не «of the Cheetah»)
+  { id: "35", re: "ellion's" }, // Hellion's (не «Aspect of the Hellion»)
+] as const;
+export type MovementTier = (typeof MOVEMENT_TIERS)[number]["id"];
+
+export const DAMAGE_OPTIONS = [
+  { id: "phys", re: "d.+cal d" },
+  { id: "fireDot", re: "fi.+d.+er$" },
+  { id: "coldDot", re: "co.+d.+er$" },
+  { id: "chaosDot", re: "ch.+d.+er$" },
+] as const;
+export type DamageOption = (typeof DAMAGE_OPTIONS)[number]["id"];
+
+export const WEAPON_OPTIONS = [
+  { id: "axe", re: "ax" },
+  { id: "mace", re: "mac" },
+  { id: "sword", re: "sw" },
+  { id: "staff", re: "stave" },
+  { id: "sceptre", re: "sc" },
+  { id: "claw", re: "cl" },
+  { id: "bow", re: "bow" },
+  { id: "wand", re: "wa" },
+  { id: "dagger", re: "da" },
+  { id: "shield", re: "sh" },
+] as const;
+export type WeaponOption = (typeof WEAPON_OPTIONS)[number]["id"];
+
+export interface RegexSelection {
+  links: LinkOption[];
+  movement: MovementTier[];
+  damage: DamageOption[];
+  weapons: WeaponOption[];
+}
+
+export const DEFAULT_SELECTION: RegexSelection = {
+  links: ["build3"],
+  movement: ["10", "15", "20"],
+  damage: [],
+  weapons: [],
+};
 
 /** Сколько связок набора учитывать (главная атака, движение, ауры…). */
 const MAX_LINK_GROUPS = 3;
@@ -71,30 +111,38 @@ function linkPermutations(colours: string[]): string[] {
   return permutations(colours).map((p) => p.split("").join("-"));
 }
 
-/**
- * Связанные гнёзда (цвета всех основных связок билда) + ботинки на скорость.
- * Если всё не помещается в лимит поиска, отбрасывает связки с конца.
- */
-export function combinedSearchString(colourSets: string[][], size: 3 | 4): { query: string; withBuild: boolean } {
-  for (let n = colourSets.length; n >= 1; n--) {
-    const links = [...new Set(colourSets.slice(0, n).flatMap(linkPermutations))];
-    const query = `"${[...links, MOVEMENT].join("|")}"`;
-    if (query.length <= SEARCH_LIMIT) return { query, withBuild: true };
+/** Собирает строку из выбранных частей; части через «|», всё в кавычках. */
+export function composeRegex(
+  selection: RegexSelection,
+  buildColours: { 3: string[][]; 4: string[][] },
+): string {
+  const parts: string[] = [];
+  for (const link of LINK_OPTIONS) {
+    if (!selection.links.includes(link)) continue;
+    if (link === "build3" || link === "build4") {
+      const sets = buildColours[link === "build3" ? 3 : 4];
+      // Без билда (или без связки нужного размера) — любые связанные гнёзда.
+      if (sets.length) parts.push(...sets.flatMap(linkPermutations));
+      else parts.push(ANY_LINKS[link === "build3" ? "any3" : "any4"]);
+    } else {
+      parts.push(ANY_LINKS[link]);
+    }
   }
-  return { query: `"${ANY_LINKS[size]}|${MOVEMENT}"`, withBuild: false };
+  for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
+  for (const dmg of DAMAGE_OPTIONS) if (selection.damage.includes(dmg.id)) parts.push(dmg.re);
+  const weapons = WEAPON_OPTIONS.filter((w) => selection.weapons.includes(w.id)).map((w) => w.re);
+  if (weapons.length === 1) parts.push(`s:.+${weapons[0]}`);
+  if (weapons.length > 1) parts.push(`s:.+(${weapons.join("|")})`);
+
+  const unique = [...new Set(parts)];
+  return unique.length ? `"${unique.join("|")}"` : "";
 }
 
-/** Только ботинки на скорость, все ступени 10–35%. */
-export function movementSpeedString(): string {
-  return `"${MOVEMENT}"`;
-}
+// «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
+// (строка уточнена пользователем). Классы «Two Hand Axes» и «Two Hand Swords».
+const TWO_HAND_AXE_PHYS = '"two hand (ax|sw)" "s \\d+ to \\d+ phys|d.+cal d"';
 
-/** +1 к уровню камней умений (жезлы, скипетры для заклинателей). */
-export function plusGemsString(): string {
-  return `"${PLUS_GEMS}"`;
-}
-
-/** Двуручные топоры и мечи с плоским или процентным физическим уроном. */
+/** Двуручные топоры и мечи с плоским или процентным физическим уроном (условие «и»). */
 export function twoHandAxePhysString(): string {
   return TWO_HAND_AXE_PHYS;
 }

@@ -532,6 +532,103 @@ button.log:hover {
   border-bottom: none;
 }
 
+.regex-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+
+.regex-result .search-query {
+  flex: 1;
+  min-height: 1.5em;
+}
+
+.regex-result.is-too-long {
+  border-color: var(--danger);
+}
+
+.regex-result-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.regex-count {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.regex-result.is-too-long .regex-count {
+  color: var(--danger);
+}
+
+.regex-group {
+  margin-top: 14px;
+}
+
+.drawer-body .regex-group-title,
+.regex-group-title {
+  margin: 0 0 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.regex-note {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.regex-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.regex-toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.regex-toggle:hover {
+  color: var(--text);
+}
+
+.regex-toggle.is-on {
+  color: var(--text);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 16%, var(--surface));
+}
+
+.regex-toggle.is-build {
+  border-style: dashed;
+}
+
+.regex-toggle.is-build.is-on {
+  border-style: solid;
+}
+
+.regex .search-row {
+  margin-top: 16px;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+
 .search-row.is-build {
   margin: 4px 0 8px;
   padding: 10px 12px;
