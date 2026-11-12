@@ -55,14 +55,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
               <ul className="build-link-sets">
                 {sets.map((set) => (
                   <li key={set.colours.join("")} className="build-link-set">
-                    <code className="build-link-code">
-                      {set.colours.map((c, i) => (
-                        <span key={i} className={`socket-${c}`}>
-                          {i > 0 && <span className="build-link-dash">-</span>}
-                          {c}
-                        </span>
-                      ))}
-                    </code>
                     <span className="build-link-gems">
                       {set.gems.map((id, i) => (
                         <span key={id} className="build-link-gem">

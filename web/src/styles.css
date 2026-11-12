@@ -628,27 +628,10 @@ button.log:hover {
   background: color-mix(in srgb, var(--text) 4%, transparent);
 }
 
-.build-link-code {
-  flex: none;
-  font-size: 12px;
-  font-weight: 600;
-}
 
-.build-link-dash {
-  color: var(--faint);
-}
 
-.socket-r {
-  color: var(--gem-str);
-}
 
-.socket-g {
-  color: var(--gem-dex);
-}
 
-.socket-b {
-  color: var(--gem-int);
-}
 
 .build-link-gems {
   display: flex;
