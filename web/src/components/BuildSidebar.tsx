@@ -6,6 +6,9 @@ import { useProgress, useUi } from "../store";
 import { SetSwitcher, setForAct } from "./SetSwitcher";
 import { SearchStrings } from "./SearchStrings";
 import { TreeViewer } from "./TreeViewer";
+import { CopyButton } from "./CopyButton";
+import { useRoute } from "../route-context";
+import { gemSource, routeGemSources, type GemSource } from "../route/gem-sources";
 
 
 /**
@@ -68,16 +71,17 @@ export function BuildSidebar({ act }: { act: number }) {
 }
 
 function GemSet({ groups }: { groups: RouteData.GemLinkGroup[] }) {
-  const { game } = useI18n();
+  const route = useRoute();
+  const sources = useMemo(() => (route ? routeGemSources(route) : new Map<string, GemSource>()), [route]);
   return (
     <div className="gem-set">
       {groups.map((group, i) => (
         <div key={i} className="gem-group">
           {group.primaryGems.map((link, j) => (
-            <GemLine key={`p${j}`} id={link.id} name={game.gem(link.id)} />
+            <GemLine key={`p${j}`} id={link.id} source={gemSource(sources, link.id)} />
           ))}
           {group.secondaryGems.map((link, j) => (
-            <GemLine key={`s${j}`} id={link.id} name={game.gem(link.id)} support />
+            <GemLine key={`s${j}`} id={link.id} source={gemSource(sources, link.id)} support />
           ))}
         </div>
       ))}
@@ -85,12 +89,37 @@ function GemSet({ groups }: { groups: RouteData.GemLinkGroup[] }) {
   );
 }
 
-function GemLine({ id, name, support }: { id: string; name: string; support?: boolean }) {
+/** Строка гема: при наведении — где его взять, справа — копирование названия для поиска у торговца. */
+function GemLine({ id, source, support }: { id: string; source: GemSource; support?: boolean }) {
+  const i18n = useI18n();
+  const { t, game } = i18n;
   const gem = Data.Gems[id];
+  const name = game.gem(id);
   return (
     <div className={`gem-line ${support ? "is-support" : ""}`}>
-      <span className="gem-dot" style={{ background: gem ? gemColor(gem.primary_attribute) : "var(--faint)" }} />
-      {name}
+      <span className="gem-hover" tabIndex={0}>
+        <span className="gem-dot" style={{ background: gem ? gemColor(gem.primary_attribute) : "var(--faint)" }} />
+        <span className="gem-line-name">{name}</span>
+        <span className="opt-pop gem-pop" role="tooltip">
+          {source.kind === "quest" || source.kind === "vendor" ? (
+            <>
+              <span className="opt-sub">
+                {t(source.kind === "quest" ? "gemFromQuest" : "gemFromVendor")} · {t("act", source.act)}
+              </span>
+              <b>{game.quest(source.questId)}</b>
+              <span className="opt-text">{game.term(source.npc)}</span>
+            </>
+          ) : source.kind === "lilly" ? (
+            <>
+              <span className="opt-sub">{t("gemFromLillyTitle")}</span>
+              <span className="opt-text">{t("gemFromLilly", game.term("Lilly Roth"))}</span>
+            </>
+          ) : (
+            <span className="opt-text">{t("gemNotSold")}</span>
+          )}
+        </span>
+      </span>
+      <CopyButton text={name} />
     </div>
   );
 }

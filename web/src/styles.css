@@ -1448,6 +1448,54 @@ select.input {
   height: 10px;
 }
 
+.gem-hover {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex: 1;
+  min-width: 0;
+  cursor: help;
+  outline: none;
+}
+
+.gem-line-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gem-hover:hover .gem-line-name,
+.gem-hover:focus .gem-line-name {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+/* Подсказка гема: шириной со строку, чтобы не вылезать из колонки. */
+.gem-pop {
+  width: auto;
+  right: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.gem-hover:hover .gem-pop,
+.gem-hover:focus .gem-pop {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gem-line .chip {
+  opacity: 0.55;
+}
+
+.gem-line:hover .chip,
+.gem-line .chip:focus-visible {
+  opacity: 1;
+}
+
 .tree {
   display: flex;
   flex-direction: column;

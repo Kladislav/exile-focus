@@ -5,6 +5,7 @@ import { Panels } from "./components/Panels";
 import { ProgressRail } from "./components/ProgressRail";
 import { RouteView } from "./components/RouteView";
 import { TopBar } from "./components/TopBar";
+import { RouteContext } from "./route-context";
 import { onAreaEntered, restoreLog } from "./log/client-log";
 import { buildFocusRoute, pointerForArea } from "./route/build";
 import { HINT_ORDER, useSettings } from "./settings";
@@ -25,7 +26,6 @@ function useTheme() {
   }, [uiLang]);
 }
 
-/** Высота шапки нужна липким заголовкам актов. */
 export function App() {
   const buildData = useProgress((s) => s.buildData);
   const requiredGems = useProgress((s) => s.requiredGems);
@@ -95,19 +95,21 @@ export function App() {
   }, [route]);
 
   return (
-    <div className="app">
-      <div className="header">
-        <TopBar />
-        <ProgressRail route={route} />
+    <RouteContext.Provider value={route}>
+      <div className="app">
+        <div className="header">
+          <TopBar />
+          <ProgressRail route={route} />
+        </div>
+        <div className="layout">
+          <aside className="layout-left">
+            <ActNav route={route} />
+          </aside>
+          <RouteView route={route} />
+          <aside className="layout-right">{hasBuild ? <BuildSidebar act={act} /> : <BuildEmpty />}</aside>
+        </div>
+        <Panels act={act} />
       </div>
-      <div className="layout">
-        <aside className="layout-left">
-          <ActNav route={route} />
-        </aside>
-        <RouteView route={route} />
-        <aside className="layout-right">{hasBuild ? <BuildSidebar act={act} /> : <BuildEmpty />}</aside>
-      </div>
-      <Panels act={act} />
-    </div>
+    </RouteContext.Provider>
   );
 }
