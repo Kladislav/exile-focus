@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ActNav } from "./components/ActNav";
 import { BuildEmpty, BuildSidebar } from "./components/BuildSidebar";
 import { Panels } from "./components/Panels";
@@ -26,10 +26,26 @@ function useTheme() {
   }, [uiLang]);
 }
 
+/** Высота липкой шапки — для заголовков актов, сайдбаров и прокрутки к шагу. */
+function useHeaderHeight() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => document.documentElement.style.setProperty("--header-h", `${el.offsetHeight}px`);
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    update();
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+}
+
 export function App() {
   const buildData = useProgress((s) => s.buildData);
   const requiredGems = useProgress((s) => s.requiredGems);
   useTheme();
+  const headerRef = useHeaderHeight();
 
   const route = useMemo(() => buildFocusRoute(buildData, requiredGems), [buildData, requiredGems]);
   const pointer = useProgress((s) => s.pointer);
@@ -97,7 +113,7 @@ export function App() {
   return (
     <RouteContext.Provider value={route}>
       <div className="app">
-        <div className="header">
+        <div className="header" ref={headerRef}>
           <TopBar />
           <ProgressRail route={route} />
         </div>
