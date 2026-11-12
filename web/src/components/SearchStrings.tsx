@@ -7,6 +7,7 @@ import {
   combinedSearchString,
   mainLinkColours,
   plusGemsString,
+  twoHandAxePhysString,
 } from "../route/search-strings";
 import { useSettings } from "../settings";
 import { CopyButton } from "./CopyButton";
@@ -39,6 +40,10 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
       <SearchRow label={t("searchPlusGems")} query={plusGemsString(gameLang)}>
         <span className="search-gems">{t("searchPlusGemsHint")}</span>
+      </SearchRow>
+
+      <SearchRow label={t("searchAxePhys")} query={twoHandAxePhysString(gameLang)}>
+        <span className="search-gems">{t("searchAxePhysHint")}</span>
       </SearchRow>
 
       {forBuild.length > 0 && (

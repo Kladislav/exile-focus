@@ -9,7 +9,12 @@
 //    «Быстрый», «Резкий», «Резвый» с родом, поэтому ищем по основе);
 //  - +1 к уровню камней: текст свойства «+1 to Level of all … Skill Gems» /
 //    «+1 к уровню всех камней умений чар …».
-// Тексты взяты из файлов игры 3.29 (таблица Mods, stat_descriptions.txt).
+//  - оружие: строка «Item Class: Two Hand Axes» / «Класс предмета: Двуручные топоры»
+//    и свойства «Adds # to # Physical Damage», «#% increased Physical Damage»
+//    (в русском — «… физического урона»; строка характеристик «Physical Damage: 4-9» /
+//    «Физический урон» под них не попадает). Несколько условий в кавычках через
+//    пробел поиск объединяет по «и».
+// Тексты взяты из файлов игры 3.29 (таблицы Mods, ItemClasses, stat_descriptions.txt).
 
 import { Data, type RouteData } from "common";
 import type { Lang } from "../settings";
@@ -88,4 +93,16 @@ export function buildLinkString(gameLang: Lang, colours: ColourCounts): string {
 /** +1 к уровню камней умений (жезлы, скипетры для заклинателей). */
 export function plusGemsString(gameLang: Lang): string {
   return `"${TEXT[gameLang].plusGems}"`;
+}
+
+const WEAPON: Record<Lang, { twoHandAxe: string; physMod: string }> = {
+  // «d.+cal d»: d из «Adds»/«increased» перед «Physical Damage» в одной строке (как у poe.re)
+  en: { twoHandAxe: "two hand ax", physMod: "d.+cal d" },
+  ru: { twoHandAxe: "двуручные топ", physMod: "физического урона" },
+};
+
+/** Двуручные топоры с плоским или процентным физическим уроном. */
+export function twoHandAxePhysString(gameLang: Lang): string {
+  const w = WEAPON[gameLang];
+  return `"${w.twoHandAxe}" "${w.physMod}"`;
 }
