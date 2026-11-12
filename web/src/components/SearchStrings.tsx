@@ -9,21 +9,19 @@ import {
   plusGemsString,
   twoHandAxePhysString,
 } from "../route/search-strings";
-import { useSettings } from "../settings";
 import { CopyButton } from "./CopyButton";
 
 /** Готовые строки для поиска в окне торговца. */
 export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] }) {
-  const gameLang = useSettings((s) => s.gameLang);
   const { t, game } = useI18n();
 
   const rows = useMemo(
     () =>
       ([3, 4] as const).map((size) => {
         const colours = groups ? mainLinkColours(groups, size) : null;
-        return { size, colours, combined: combinedSearchString(gameLang, colours, size) };
+        return { size, colours, combined: combinedSearchString(colours, size) };
       }),
-    [gameLang, groups],
+    [groups],
   );
   const forBuild = rows.filter((r) => r.colours);
 
@@ -38,11 +36,11 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         ))}
       </div>
 
-      <SearchRow label={t("searchPlusGems")} query={plusGemsString(gameLang)}>
+      <SearchRow label={t("searchPlusGems")} query={plusGemsString()}>
         <span className="search-gems">{t("searchPlusGemsHint")}</span>
       </SearchRow>
 
-      <SearchRow label={t("searchAxePhys")} query={twoHandAxePhysString(gameLang)}>
+      <SearchRow label={t("searchAxePhys")} query={twoHandAxePhysString()}>
         <span className="search-gems">{t("searchAxePhysHint")}</span>
       </SearchRow>
 
@@ -53,7 +51,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
             <SearchRow
               key={size}
               label={t(size === 3 ? "search_build3" : "search_build4")}
-              query={buildLinkString(gameLang, colours!)}
+              query={buildLinkString(colours!)}
             >
               <span className="search-gems">
                 {colours!.gems.map((id) => (
