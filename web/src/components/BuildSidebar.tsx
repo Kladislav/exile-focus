@@ -62,7 +62,7 @@ export function BuildSidebar({ act }: { act: number }) {
 
       {tab === "tree" && <TreeViewer buildTrees={buildTrees} index={treeIndex} onIndex={setTreeIndex} />}
 
-      {tab === "search" && <SearchStrings groups={gemSets[gemIndex]?.[1] ?? []} />}
+      {tab === "search" && <SearchStrings />}
     </div>
   );
 }

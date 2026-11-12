@@ -576,66 +576,6 @@ button.log:hover {
   background: color-mix(in srgb, var(--accent) 16%, var(--surface));
 }
 
-/* Связки билда: свой цвет, чтобы не путать с общей строкой. */
-.regex-group.is-build {
-  padding: 14px;
-  border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--border));
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--warn) 6%, transparent);
-}
-
-.drawer-body .build-title,
-.build-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-  font-size: 15px;
-  color: var(--warn);
-}
-
-.build-links + .build-links {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-}
-
-.build-links-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 4px;
-}
-
-.build-link-sets {
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.build-link-set {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--warn) 7%, transparent);
-}
-
-.build-link-gems {
-  display: grid;
-  gap: 4px;
-  color: var(--text);
-}
-
-.build-link-gem {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  white-space: nowrap;
-}
-
 .search-label {
   font-size: 15px;
   font-weight: 500;
