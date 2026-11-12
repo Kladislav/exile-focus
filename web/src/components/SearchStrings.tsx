@@ -79,13 +79,11 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           </h4>
           {build.map(({ size, sets, query }) => (
             <div key={size} className="build-links">
-              <div className="search-row">
-                <div className="search-main">
-                  <span className="search-label">{t("regexBuildLinks", size)}</span>
-                  <code className="search-query">{query}</code>
-                </div>
+              <div className="build-links-head">
+                <span className="search-label">{t("regexBuildLinks", size)}</span>
                 <CopyButton text={query} />
               </div>
+              <code className="search-query">{query}</code>
               <ul className="build-link-sets">
                 {sets.map((set) => (
                   <li key={set.colours.join("")} className="build-link-set">

@@ -478,7 +478,6 @@ button.log:hover {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-top: 12px;
   font-size: 14px;
   color: var(--muted);
 }
@@ -492,23 +491,23 @@ button.log:hover {
   text-decoration: underline;
 }
 
-.search-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--border);
+/* Вкладка Regex: блоки через один шаг 20px, внутри блока — 8–12px. */
+.regex {
+  display: grid;
+  gap: 20px;
 }
 
-.search-row:last-child {
-  border-bottom: none;
+.regex .search-query {
+  padding: 0;
+  background: none;
 }
 
 .regex-result {
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 8px 8px 14px;
   border-radius: 10px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
   background: color-mix(in srgb, var(--accent) 6%, transparent);
@@ -516,7 +515,7 @@ button.log:hover {
 
 .regex-result .search-query {
   flex: 1;
-  min-height: 1.5em;
+  align-self: center;
 }
 
 .regex-result.is-too-long {
@@ -525,9 +524,9 @@ button.log:hover {
 
 .regex-result-side {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 6px;
+  align-items: center;
+  gap: 8px;
+  flex: none;
 }
 
 .regex-count {
@@ -540,22 +539,12 @@ button.log:hover {
   color: var(--danger);
 }
 
-.regex-group {
-  margin-top: 14px;
-}
-
 .drawer-body .regex-group-title,
 .regex-group-title {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
-}
-
-.regex-note {
-  margin: 0 0 6px;
-  font-size: 12px;
-  color: var(--faint);
 }
 
 .regex-toggles {
@@ -587,57 +576,52 @@ button.log:hover {
   background: color-mix(in srgb, var(--accent) 16%, var(--surface));
 }
 
+/* Связки билда: свой цвет, чтобы не путать с общей строкой. */
 .regex-group.is-build {
-  margin-top: 20px;
-  padding: 10px 12px 12px;
+  padding: 14px;
   border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--border));
   border-radius: 10px;
   background: color-mix(in srgb, var(--warn) 6%, transparent);
 }
 
+.drawer-body .build-title,
 .build-title {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 12px;
   font-size: 15px;
   color: var(--warn);
 }
 
-.regex-group.is-build .build-link-set {
-  background: color-mix(in srgb, var(--warn) 7%, transparent);
-}
-
-.regex-group.is-build .search-row {
-  margin: 0;
-  padding: 0;
-  border: 0;
-}
-
 .build-links + .build-links {
-  margin-top: 12px;
-  padding-top: 12px;
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid var(--border);
 }
 
+.build-links-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
 .build-link-sets {
-  margin: 8px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   list-style: none;
   display: grid;
-  gap: 6px;
+  gap: 8px;
   font-size: 13px;
 }
 
 .build-link-set {
   padding: 8px 10px;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--text) 4%, transparent);
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
 }
-
-
-
-
-
 
 .build-link-gems {
   display: grid;
@@ -645,29 +629,11 @@ button.log:hover {
   color: var(--text);
 }
 
-/* Строка связок билда без отступов: ровно по левому краю с подписью и гемами. */
-.regex-group.is-build .search-query {
-  padding: 0;
-  background: none;
-}
-
 .build-link-gem {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   white-space: nowrap;
-}
-
-
-
-
-
-.search-main {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-  flex: 1;
 }
 
 .search-label {
@@ -739,7 +705,6 @@ button.log:hover {
 .step.is-edge .step-text {
   font-weight: 500;
 }
-
 
 .opt-badge {
   position: relative;
@@ -1892,7 +1857,6 @@ select.input {
     display: flex;
   }
 }
-
 
 @media (max-width: 760px) {
   .topbar-row {
