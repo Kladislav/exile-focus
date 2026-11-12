@@ -11,7 +11,6 @@ import {
   LINK_OPTIONS,
   MOVEMENT_TIERS,
   SEARCH_LIMIT,
-  twoHandAxePhysString,
 } from "../route/search-strings";
 import { useProgress } from "../store";
 import { CopyButton } from "./CopyButton";
@@ -56,9 +55,8 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
                 {sets.map((set) => (
                   <li key={set.colours.join("")} className="build-link-set">
                     <span className="build-link-gems">
-                      {set.gems.map((id, i) => (
+                      {set.gems.map((id) => (
                         <span key={id} className="build-link-gem">
-                          {i > 0 && <span className="build-link-join">+</span>}
                           <span className="gem-dot" style={{ background: gemColor(Data.Gems[id].primary_attribute) }} />
                           {game.gem(id)}
                         </span>
@@ -105,14 +103,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           </Toggle>
         ))}
       </RegexGroup>
-
-      <div className="search-row">
-        <div className="search-main">
-          <span className="search-label">{t("searchAxePhys")}</span>
-          <code className="search-query">{twoHandAxePhysString()}</code>
-        </div>
-        <CopyButton text={twoHandAxePhysString()} />
-      </div>
 
       <div className="search-more">
         <span>{t("searchMore")}</span>

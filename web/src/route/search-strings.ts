@@ -117,12 +117,3 @@ export function composeRegex(selection: RegexSelection): string {
   const unique = [...new Set(parts)];
   return unique.length ? `"${unique.join("|")}"` : "";
 }
-
-// «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
-// (строка уточнена пользователем). Классы «Two Hand Axes» и «Two Hand Swords».
-const TWO_HAND_AXE_PHYS = '"two hand (ax|sw)" "s \\d+ to \\d+ phys|d.+cal d"';
-
-/** Двуручные топоры и мечи с плоским или процентным физическим уроном (условие «и»). */
-export function twoHandAxePhysString(): string {
-  return TWO_HAND_AXE_PHYS;
-}

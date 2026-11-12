@@ -620,10 +620,7 @@ button.log:hover {
 }
 
 .build-link-set {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
-  padding: 6px 10px;
+  padding: 8px 10px;
   border-radius: 8px;
   background: color-mix(in srgb, var(--text) 4%, transparent);
 }
@@ -634,10 +631,15 @@ button.log:hover {
 
 
 .build-link-gems {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 0;
+  display: grid;
+  gap: 4px;
   color: var(--text);
+}
+
+/* Строка связок билда без отступов: ровно по левому краю с подписью и гемами. */
+.regex-group.is-build .search-query {
+  padding: 0;
+  background: none;
 }
 
 .build-link-gem {
@@ -647,24 +649,8 @@ button.log:hover {
   white-space: nowrap;
 }
 
-.build-link-join {
-  margin: 0 8px;
-  color: var(--faint);
-}
 
-.regex .search-row {
-  margin-top: 16px;
-  border-top: 1px solid var(--border);
-  padding-top: 12px;
-}
 
-.search-row.is-build {
-  margin: 4px 0 8px;
-  padding: 10px 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
-}
 
 .search-tag {
   margin-left: 8px;
