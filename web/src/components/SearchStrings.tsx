@@ -4,7 +4,7 @@ import { useI18n } from "../i18n";
 import { useProgress } from "../store";
 import {
   combinedSearchString,
-  mainLinkColours,
+  linkGroupColours,
   movementSpeedString,
   plusGemsString,
   twoHandAxePhysString,
@@ -20,7 +20,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
     () =>
       ([3, 4] as const).map((size) => ({
         size,
-        ...combinedSearchString(groups ? mainLinkColours(groups, size) : null, size),
+        ...combinedSearchString(groups ? linkGroupColours(groups, size) : [], size),
       })),
     [groups],
   );

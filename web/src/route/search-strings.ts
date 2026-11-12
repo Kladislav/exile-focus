@@ -3,10 +3,15 @@
 //
 // Строки английские и одинаковые для любого клиента: поиск в игре понимает
 // английский текст предмета и в русском клиенте (проверено пользователем 2026-11-12).
+// Поле поиска вмещает 250 символов (уточнено пользователем).
 //
-//  - гнёзда: строка «Sockets: R-G-B» (якорь «ets:»); пробел разделяет несвязанные группы;
+//  - гнёзда: связки цветов перестановками «r-r-g|r-g-r|g-r-r» (без якоря «Sockets:»,
+//    поэтому кольца и амулеты не цепляются); пробел в «Sockets: R-G B» разделяет
+//    несвязанные группы, так что «r-r-g» находит только связанные гнёзда;
 //  - скорость передвижения: названия модификаторов на волшебных ботинках
-//    (Runner's 10%, Sprinter's 15%, Stallion's 20%);
+//    Runner's 10%, Sprinter's 15%, Stallion's 20%, Gazelle's 25%, Cheetah's 30%,
+//    Hellion's 35%; апостроф отсекает «of the Gazelle», «of the Cheetah»,
+//    «Aspect of the Hellion»;
 //  - +1 к уровню камней: «+1 to Level of all … Skill Gems»;
 //  - оружие: «Item Class: Two Hand Axes / Two Hand Swords» и свойства «Adds # to # Physical Damage»,
 //    «#% increased Physical Damage» (строка характеристик «Physical Damage: 4-9»
@@ -15,69 +20,73 @@
 import { Data, type RouteData } from "common";
 
 /** Ограничение длины поля поиска в игре. */
-export const SEARCH_LIMIT = 50;
+export const SEARCH_LIMIT = 250;
 
-// «ets:» — только «Sockets:». Короче «ts:» нельзя: так же кончается «Requirements:»,
-// и кольца с амулетами начинали подсвечиваться (замечено пользователем).
-const SOCKETS = "ets:";
-const MOVEMENT = ["Runn", "rint", "tallio"];
+const MOVEMENT = "Runn|rint|llion's|zelle's|etah's";
 const PLUS_GEMS = "ll g";
 // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
-// (строка уточнена пользователем)
-// Классы «Two Hand Axes» и «Two Hand Swords».
+// (строка уточнена пользователем). Классы «Two Hand Axes» и «Two Hand Swords».
 const TWO_HAND_AXE_PHYS = '"two hand (ax|sw)" "s \\d+ to \\d+ phys|d.+cal d"';
 
 const ANY_LINKS: Record<3 | 4, string> = { 3: "-\\w-", 4: "-\\w-.-" };
 
+/** Сколько связок набора учитывать (главная атака, движение, ауры…). */
+const MAX_LINK_GROUPS = 3;
+
 const COLOUR: Record<string, "r" | "g" | "b"> = { strength: "r", dexterity: "g", intelligence: "b" };
 
-export interface ColourCounts {
-  r: number;
-  g: number;
-  b: number;
-  gems: string[];
+/** Цвета связок набора: для каждой группы первые `size` гемов, без повторов, крупные группы первыми. */
+export function linkGroupColours(groups: RouteData.GemLinkGroup[], size: 3 | 4): string[][] {
+  const result: string[][] = [];
+  const seen = new Set<string>();
+  const sorted = [...groups].sort(
+    (a, b) => b.primaryGems.length + b.secondaryGems.length - (a.primaryGems.length + a.secondaryGems.length),
+  );
+  for (const group of sorted) {
+    const colours = [...group.primaryGems, ...group.secondaryGems]
+      .map((g) => COLOUR[Data.Gems[g.id]?.primary_attribute])
+      .filter(Boolean)
+      .slice(0, size);
+    if (colours.length < size) continue;
+    const key = [...colours].sort().join("");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    result.push(colours);
+    if (result.length >= MAX_LINK_GROUPS) break;
+  }
+  return result;
 }
 
-/** Цвета основной связки набора (самой большой группы): первые `size` гемов. */
-export function mainLinkColours(groups: RouteData.GemLinkGroup[], size: 3 | 4): ColourCounts | null {
-  const main = [...groups].sort(
-    (a, b) => b.primaryGems.length + b.secondaryGems.length - (a.primaryGems.length + a.secondaryGems.length),
-  )[0];
-  if (!main) return null;
-  const gems = [...main.primaryGems, ...main.secondaryGems]
-    .map((g) => g.id)
-    .filter((id) => COLOUR[Data.Gems[id]?.primary_attribute])
-    .slice(0, size);
-  if (gems.length < size) return null;
-  const counts = { r: 0, g: 0, b: 0, gems };
-  for (const id of gems) counts[COLOUR[Data.Gems[id].primary_attribute]]++;
-  return counts;
+function permutations(letters: string[]): string[] {
+  if (letters.length <= 1) return [letters.join("")];
+  const out = new Set<string>();
+  letters.forEach((l, i) => {
+    for (const rest of permutations([...letters.slice(0, i), ...letters.slice(i + 1)])) out.add(l + rest);
+  });
+  return [...out].sort();
+}
+
+/** «r-r-g|r-g-r|g-r-r» — связанные гнёзда этих цветов в любом порядке. */
+function linkPermutations(colours: string[]): string[] {
+  return permutations(colours).map((p) => p.split("").join("-"));
 }
 
 /**
- * «В одной группе связанных гнёзд есть N красных, M зелёных…»:
- * ets:.+(?=(\S*r){2})(\S*g) — \S* не пересекает пробел между группами.
+ * Связанные гнёзда (цвета всех основных связок билда) + ботинки на скорость.
+ * Если всё не помещается в лимит поиска, отбрасывает связки с конца.
  */
-export function colourLinkPattern(c: ColourCounts): string {
-  const order = (["r", "g", "b"] as const).filter((x) => c[x] > 0);
-  const last = order[order.length - 1];
-  const part = (x: "r" | "g" | "b") => {
-    const body = c[x] > 1 ? `(\\S*${x}){${c[x]}}` : `(\\S*${x})`;
-    return x === last ? body : `(?=${body})`;
-  };
-  return `${SOCKETS}.+${order.map(part).join("")}`;
+export function combinedSearchString(colourSets: string[][], size: 3 | 4): { query: string; withBuild: boolean } {
+  for (let n = colourSets.length; n >= 1; n--) {
+    const links = [...new Set(colourSets.slice(0, n).flatMap(linkPermutations))];
+    const query = `"${[...links, MOVEMENT].join("|")}"`;
+    if (query.length <= SEARCH_LIMIT) return { query, withBuild: true };
+  }
+  return { query: `"${ANY_LINKS[size]}|${MOVEMENT}"`, withBuild: false };
 }
 
-/** Связанные гнёзда (цвета билда, если известны) + ботинки на скорость передвижения. */
-export function combinedSearchString(colours: ColourCounts | null, size: 3 | 4): { query: string; withBuild: boolean } {
-  for (const links of [colours ? colourLinkPattern(colours) : null, ANY_LINKS[size]]) {
-    if (!links) continue;
-    for (let n = MOVEMENT.length; n >= 1; n--) {
-      const query = `"${[links, ...MOVEMENT.slice(0, n)].join("|")}"`;
-      if (query.length <= SEARCH_LIMIT) return { query, withBuild: links !== ANY_LINKS[size] };
-    }
-  }
-  return { query: `"${ANY_LINKS[size]}|${MOVEMENT[0]}"`, withBuild: false };
+/** Только ботинки на скорость, все ступени 10–35%. */
+export function movementSpeedString(): string {
+  return `"${MOVEMENT}"`;
 }
 
 /** +1 к уровню камней умений (жезлы, скипетры для заклинателей). */
@@ -88,13 +97,4 @@ export function plusGemsString(): string {
 /** Двуручные топоры и мечи с плоским или процентным физическим уроном. */
 export function twoHandAxePhysString(): string {
   return TWO_HAND_AXE_PHYS;
-}
-
-/**
- * Только ботинки на скорость, все ступени: Runner's 10%, Sprinter's 15%, Stallion's 20%,
- * Gazelle's 25%, Cheetah's 30%, Hellion's 35%. Апостроф отсекает суффиксы-тёзки
- * («of the Gazelle», «of the Cheetah») и «Aspect of the Hellion».
- */
-export function movementSpeedString(): string {
-  return `"Runn|rint|llion's|zelle's|etah's"`;
 }
