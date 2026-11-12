@@ -4,7 +4,7 @@
 // Строки английские и одинаковые для любого клиента: поиск в игре понимает
 // английский текст предмета и в русском клиенте (проверено пользователем 2026-11-12).
 //
-//  - гнёзда: строка «Sockets: R-G-B»; пробел разделяет несвязанные группы;
+//  - гнёзда: строка «Sockets: R-G-B» (якорь «ets:»); пробел разделяет несвязанные группы;
 //  - скорость передвижения: названия модификаторов на волшебных ботинках
 //    (Runner's 10%, Sprinter's 15%, Stallion's 20%);
 //  - +1 к уровню камней: «+1 to Level of all … Skill Gems»;
@@ -17,7 +17,9 @@ import { Data, type RouteData } from "common";
 /** Ограничение длины поля поиска в игре. */
 export const SEARCH_LIMIT = 50;
 
-const SOCKETS = "ts:";
+// «ets:» — только «Sockets:». Короче «ts:» нельзя: так же кончается «Requirements:»,
+// и кольца с амулетами начинали подсвечиваться (замечено пользователем).
+const SOCKETS = "ets:";
 const MOVEMENT = ["Runn", "rint", "tallio"];
 const PLUS_GEMS = "ll g";
 // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
@@ -53,7 +55,7 @@ export function mainLinkColours(groups: RouteData.GemLinkGroup[], size: 3 | 4): 
 
 /**
  * «В одной группе связанных гнёзд есть N красных, M зелёных…»:
- * ts:.+(?=(\S*r){2})(\S*g) — \S* не пересекает пробел между группами.
+ * ets:.+(?=(\S*r){2})(\S*g) — \S* не пересекает пробел между группами.
  */
 export function colourLinkPattern(c: ColourCounts): string {
   const order = (["r", "g", "b"] as const).filter((x) => c[x] > 0);
