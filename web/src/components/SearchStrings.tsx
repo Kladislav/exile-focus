@@ -1,11 +1,14 @@
-import type { RouteData } from "common";
+import { Data, type RouteData } from "common";
+import { gemColor } from "../assets";
 import { useMemo } from "react";
 import { useI18n, type UiKey } from "../i18n";
 import { useRegex } from "../regex-store";
 import {
   composeRegex,
   DAMAGE_OPTIONS,
-  linkGroupColours,
+  buildLinkSets,
+  buildLinksString,
+  LINK_OPTIONS,
   MOVEMENT_TIERS,
   SEARCH_LIMIT,
   twoHandAxePhysString,
@@ -19,18 +22,64 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
   const characterClass = useProgress((s) => s.buildData.characterClass);
   const selection = useRegex();
 
-  const buildColours = useMemo(
-    () => ({ 3: groups ? linkGroupColours(groups, 3) : [], 4: groups ? linkGroupColours(groups, 4) : [] }),
+  const build = useMemo(
+    () =>
+      ([3, 4] as const)
+        .map((size) => {
+          const sets = groups ? buildLinkSets(groups, size) : [];
+          return { size, sets, query: buildLinksString(sets) };
+        })
+        .filter((b) => b.sets.length),
     [groups],
   );
-  const query = composeRegex(selection, buildColours);
+  const query = composeRegex(selection);
   const tooLong = query.length > SEARCH_LIMIT;
-
-  const buildLinks = ([3, 4] as const).filter((n) => buildColours[n].length);
-  const anyLinks = ["any3", "any4"] as const;
 
   return (
     <div className="regex">
+      {build.length > 0 && (
+        <section className="regex-group is-build">
+          <h4 className="regex-group-title">
+            {t("regexBuild")}
+            {characterClass && <span className="search-tag">{game.term(characterClass)}</span>}
+          </h4>
+          {build.map(({ size, sets, query }) => (
+            <div key={size} className="build-links">
+              <div className="search-row">
+                <div className="search-main">
+                  <span className="search-label">{t("regexBuildLinks", size)}</span>
+                  <code className="search-query">{query}</code>
+                </div>
+                <CopyButton text={query} />
+              </div>
+              <ul className="build-link-sets">
+                {sets.map((set) => (
+                  <li key={set.colours.join("")} className="build-link-set">
+                    <code className="build-link-code">
+                      {set.colours.map((c, i) => (
+                        <span key={i} className={`socket-${c}`}>
+                          {i > 0 && <span className="build-link-dash">-</span>}
+                          {c}
+                        </span>
+                      ))}
+                    </code>
+                    <span className="build-link-gems">
+                      {set.gems.map((id, i) => (
+                        <span key={id} className="build-link-gem">
+                          {i > 0 && <span className="build-link-join">+</span>}
+                          <span className="gem-dot" style={{ background: gemColor(Data.Gems[id].primary_attribute) }} />
+                          {game.gem(id)}
+                        </span>
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      )}
+
       <div className={`regex-result ${tooLong ? "is-too-long" : ""}`}>
         <code className="search-query">{query || t("regexEmpty")}</code>
         <div className="regex-result-side">
@@ -41,30 +90,8 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         </div>
       </div>
 
-      {buildLinks.length > 0 && (
-        <RegexGroup
-          className="is-build"
-          title={
-            <>
-              {t("regexBuild")}
-              {characterClass && <span className="search-tag">{game.term(characterClass)}</span>}
-            </>
-          }
-        >
-          {buildLinks.map((n) => {
-            const id = `build${n}` as const;
-            return (
-              <Toggle key={id} on={selection.links.includes(id)} onClick={() => selection.toggle("links", id)}>
-                {t("regexBuildLinks", n)}
-                <span className="regex-colours">{buildColours[n].map((c) => c.join("-")).join(" ")}</span>
-              </Toggle>
-            );
-          })}
-        </RegexGroup>
-      )}
-
       <RegexGroup title={t("regexLinks")}>
-        {anyLinks.map((id) => (
+        {LINK_OPTIONS.map((id) => (
           <Toggle key={id} on={selection.links.includes(id)} onClick={() => selection.toggle("links", id)}>
             {t("regexAnyLinks", id === "any3" ? 3 : 4)}
           </Toggle>

@@ -1,36 +1,21 @@
-import { Data } from "common";
 import { Gem, Radio, Settings, Swords } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "../i18n";
 import { connectLog, reconnectLog, useLog } from "../log/client-log";
-import type { FocusRoute } from "../route/build";
-import { areaBefore, minAreaLevel } from "../route/build";
 import { useProgress, useUi, type Panel } from "../store";
 
-export function TopBar({ route }: { route: FocusRoute }) {
-  const pointer = useProgress((s) => s.pointer);
+export function TopBar() {
   const characterClass = useProgress((s) => s.buildData.characterClass);
-  const log = useLog();
   const i18n = useI18n();
   const { t } = i18n;
-
-  // Пока лог подключён, зону берём из него: так видно, где игрок на самом деле.
-  const area =
-    (log.status === "connected" && log.areaId && Data.Areas[log.areaId]) || areaBefore(route, pointer);
 
   return (
     <header>
       <div className="topbar-row">
-        <div className="zone">
-          <span className="zone-act">{t("act", area.act)}</span>
-          <span className="zone-name">{i18n.game.area(area.id)}</span>
-          {!area.is_town_area && (
-            <span className="zone-level" title={t("monsterLevel")}>
-              {minAreaLevel(area.level)}+
-            </span>
-          )}
-          <LevelBadge areaLevel={area.is_town_area ? null : area.level} />
-        </div>
+        <a className="brand" href={import.meta.env.BASE_URL}>
+          <img className="brand-logo" src={`${import.meta.env.BASE_URL}logo.svg`} alt="" width={30} height={30} />
+          <span className="brand-name">Exile Focus</span>
+        </a>
 
         <div className="topbar-actions">
           <LogButton />
@@ -64,22 +49,6 @@ function NavButton({ panel, title, children }: { panel: Panel; title: string; ch
     >
       {children}
     </button>
-  );
-}
-
-function LevelBadge({ areaLevel }: { areaLevel: number | null }) {
-  const { level, charName } = useLog();
-  const { t } = useI18n();
-  if (level === null) return null;
-
-  let tone = "ok";
-  if (areaLevel !== null && level < areaLevel - 2) tone = "low";
-  if (areaLevel !== null && level > areaLevel + 4) tone = "high";
-
-  return (
-    <span className={`level level-${tone}`} title={charName ?? undefined}>
-      {t("level", level)}
-    </span>
   );
 }
 

@@ -32,7 +32,8 @@
   --tree-removed: #d0473c;
 
   --radius: 10px;
-  --header-h: 110px;
+  /* Шапка не липкая: прилипающие заголовки актов и сайдбары встают к самому верху. */
+  --header-h: 0px;
   /* Раскладка на всю ширину, предел только для очень широких мониторов. */
   --layout-w: 2400px;
   --gutter: 24px;
@@ -162,11 +163,6 @@ kbd {
 /* ---------- Header ---------- */
 
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: color-mix(in srgb, var(--bg) 92%, transparent);
-  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
 
@@ -179,31 +175,26 @@ kbd {
   padding: 12px var(--gutter) 10px;
 }
 
-.zone {
-  display: flex;
-  align-items: baseline;
+.brand {
+  display: inline-flex;
+  align-items: center;
   gap: 10px;
-  min-width: 240px;
   flex: 1;
+  min-width: 0;
+  color: var(--text);
+  text-decoration: none;
 }
 
-.zone-act {
-  font-size: 15px;
-  color: var(--muted);
+.brand-logo {
+  flex: none;
+  border-radius: 8px;
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   white-space: nowrap;
-}
-
-.zone-name {
-  font-size: 21px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.zone-level {
-  font-size: 15px;
-  color: var(--muted);
 }
 
 .topbar-actions {
@@ -301,25 +292,6 @@ kbd {
   background: var(--surface);
   color: var(--text);
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
-}
-
-.level {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  white-space: nowrap;
-}
-
-.level-ok {
-  color: var(--ok);
-}
-.level-low {
-  color: var(--danger);
-}
-.level-high {
-  color: var(--c-area);
 }
 
 .log {
@@ -622,11 +594,79 @@ button.log:hover {
   background: color-mix(in srgb, var(--accent) 6%, transparent);
 }
 
-.regex-colours {
-  margin-left: 8px;
-  font-family: var(--mono, ui-monospace, monospace);
+.regex-group.is-build {
+  margin-bottom: 16px;
+}
+
+.regex-group.is-build .search-row {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.build-links + .build-links {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.build-link-sets {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.build-link-set {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--text) 4%, transparent);
+}
+
+.build-link-code {
+  flex: none;
   font-size: 12px;
-  color: var(--muted);
+  font-weight: 600;
+}
+
+.build-link-dash {
+  color: var(--faint);
+}
+
+.socket-r {
+  color: var(--gem-str);
+}
+
+.socket-g {
+  color: var(--gem-dex);
+}
+
+.socket-b {
+  color: var(--gem-int);
+}
+
+.build-link-gems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 0;
+  color: var(--text);
+}
+
+.build-link-gem {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.build-link-join {
+  margin: 0 8px;
+  color: var(--faint);
 }
 
 .regex .search-row {
@@ -1891,9 +1931,6 @@ select.input {
     flex-wrap: wrap;
     gap: 6px 12px;
     padding: 10px var(--gutter) 6px;
-  }
-  .zone {
-    flex-basis: 100%;
   }
   .topbar-actions {
     justify-content: flex-start;

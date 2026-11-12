@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { DEFAULT_SELECTION, MOVEMENT_TIERS, type RegexSelection } from "./route/search-strings";
+import { DEFAULT_SELECTION, LINK_OPTIONS, MOVEMENT_TIERS, type RegexSelection } from "./route/search-strings";
 
 type Key = keyof RegexSelection;
 
@@ -24,12 +24,18 @@ export const useRegex = create<
     }),
     {
       name: "exile-focus-regex",
-      version: 3,
-      // v2: остались только ступени скорости 10% и 15%; v3: убраны типы оружия.
+      version: 4,
+      // v2: остались только ступени скорости 10% и 15%; v3: убраны типы оружия;
+      // v4: связки билда вынесены в отдельную строку.
       migrate: (state) => {
         const { weapons: _weapons, ...s } = state as RegexSelection & { weapons?: unknown };
-        const known = new Set<string>(MOVEMENT_TIERS.map((m) => m.id));
-        return { ...s, movement: (s.movement ?? []).filter((m) => known.has(m)) } as never;
+        const tiers = new Set<string>(MOVEMENT_TIERS.map((m) => m.id));
+        const links = new Set<string>(LINK_OPTIONS);
+        return {
+          ...s,
+          links: (s.links ?? []).filter((l) => links.has(l)),
+          movement: (s.movement ?? []).filter((m) => tiers.has(m)),
+        } as never;
       },
     },
   ),
