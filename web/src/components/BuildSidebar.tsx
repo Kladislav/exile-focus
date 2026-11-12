@@ -5,7 +5,9 @@ import { Check, Package, Sparkles } from "lucide-react";
 import { gemColor, gemCostIcon, icon } from "../assets";
 import { useI18n } from "../i18n";
 import { useProgress, useUi } from "../store";
-import { SetSwitcher, setForAct } from "./SetSwitcher";
+import { SetSwitcher, useAutoSet } from "./SetSwitcher";
+import { useLog } from "../log/client-log";
+import { reachedAreaLevel } from "../route/build";
 import { SearchStrings } from "./SearchStrings";
 import { TreeViewer } from "./TreeViewer";
 import { CopyButton, useCopy } from "./CopyButton";
@@ -13,17 +15,14 @@ import { useRoute } from "../route-context";
 import { gemSource, routeGemSources, type GemSource } from "../route/gem-sources";
 
 
-/**
- * Номер набора: по умолчанию тот, что подходит к текущему акту;
- * ручной выбор действует, пока игрок не перешёл в другой акт.
- */
 const QUEST_ICON = icon("quest");
 
-function useSetIndex(names: string[], act: number) {
-  const [manual, setManual] = useState<{ act: number; index: number } | null>(null);
-  const auto = setForAct(names, act) ?? 0;
-  const index = manual && manual.act === act ? manual.index : auto;
-  return [Math.min(index, Math.max(names.length - 1, 0)), (i: number) => setManual({ act, index: i })] as const;
+/** Уровень персонажа: из Client.txt, а без лога — по самой высокой зоне, пройденной по маршруту. */
+function useCharacterLevel() {
+  const logLevel = useLog((s) => s.level);
+  const route = useRoute();
+  const pointer = useProgress((s) => s.pointer);
+  return useMemo(() => logLevel ?? (route ? reachedAreaLevel(route, pointer) : null), [logLevel, route, pointer]);
 }
 
 export function BuildSidebar({ act }: { act: number }) {
@@ -33,14 +32,12 @@ export function BuildSidebar({ act }: { act: number }) {
   const gemLinks = useProgress((s) => s.gemLinks);
   const buildTrees = useProgress((s) => s.buildTrees);
 
+  const level = useCharacterLevel();
   const gemSets = useMemo(() => groupByTitle(gemLinks), [gemLinks]);
-  const [gemIndex, setGemIndex] = useSetIndex(
+  const [gemIndex, setGemIndex] = useAutoSet(
     gemSets.map(([title]) => title),
     act,
-  );
-  const [treeIndex, setTreeIndex] = useSetIndex(
-    buildTrees.map((x) => x.name),
-    act,
+    level,
   );
 
   return (
@@ -67,7 +64,7 @@ export function BuildSidebar({ act }: { act: number }) {
           </>
         ))}
 
-      {tab === "tree" && <TreeViewer buildTrees={buildTrees} index={treeIndex} onIndex={setTreeIndex} />}
+      {tab === "tree" && <TreeViewer buildTrees={buildTrees} act={act} level={level} />}
 
       {tab === "search" && <SearchStrings />}
     </div>

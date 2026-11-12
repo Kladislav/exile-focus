@@ -11,6 +11,8 @@ export namespace UrlTree {
     version: string;
     ascendancy?: SkillTree.Ascendancy;
     nodes: string[];
+    /** Очки пассивок в основном дереве (без асцендантских нод). */
+    points: number;
     masteries: Record<string, string>;
   }
 }
@@ -89,6 +91,7 @@ export async function buildUrlTree(buildTree: RouteData.BuildTree): Promise<UrlT
         ? skillTree.ascendancies[skillTree.classes[classId].ascendancies[ascendancyId - 1]]
         : undefined,
     nodes,
+    points: nodes.filter((id) => skillTree.graphs[skillTree.graphIndex]?.nodes[id] !== undefined).length,
     masteries,
   };
 }

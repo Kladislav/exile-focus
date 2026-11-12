@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import { buildUrlTreeDelta, calculateBounds } from "../tree/delta";
 import { buildUrlTrees, loadTree, type TreeProblem, type UrlTree } from "../tree/url-tree";
-import { SetSwitcher } from "./SetSwitcher";
+import { SetSwitcher, useAutoSet } from "./SetSwitcher";
 
 interface Rendered {
   svg: string;
@@ -22,12 +22,12 @@ interface Rendered {
 /** Дерево пассивок: текущий набор, новые относительно предыдущего ноды подсвечены. */
 export function TreeViewer({
   buildTrees,
-  index,
-  onIndex,
+  act,
+  level,
 }: {
   buildTrees: RouteData.BuildTree[];
-  index: number;
-  onIndex: (i: number) => void;
+  act: number;
+  level: number | null;
 }) {
   const { t } = useI18n();
   const [trees, setTrees] = useState<UrlTree.Data[] | null>(null);
@@ -49,6 +49,13 @@ export function TreeViewer({
     };
   }, [buildTrees]);
 
+  // Набор по акту или уровню в названии, а у безымянных («1», «2»…) — по числу очков.
+  const [index, onIndex] = useAutoSet(
+    trees?.map((x) => x.name) ?? [],
+    act,
+    level,
+    trees?.map((x) => x.points),
+  );
   const current = trees && trees.length > 0 ? Math.min(index, trees.length - 1) : 0;
 
   useEffect(() => {

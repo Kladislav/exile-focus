@@ -276,6 +276,17 @@ export function pointerForArea(
 }
 
 /** Минимальный уровень монстров в зоне, как в оригинале. */
+/** Самый высокий уровень зоны (не города), куда маршрут привёл до шага `pointer`: оценка уровня персонажа. */
+export function reachedAreaLevel(route: FocusRoute, pointer: number): number | null {
+  const last = edgeBefore(route, pointer);
+  let level: number | null = null;
+  for (let i = 0; i <= last && i < route.edges.length; i++) {
+    const area = Data.Areas[route.edges[i]];
+    if (area && !area.is_town_area) level = Math.max(level ?? 0, area.level);
+  }
+  return level;
+}
+
 export function minAreaLevel(areaLevel: number) {
   return Math.max(1, areaLevel - (3 + Math.floor(areaLevel / 16)));
 }
