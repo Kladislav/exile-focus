@@ -4,12 +4,10 @@ import { useState, type ReactNode } from "react";
 import { processPob } from "../build/pob";
 import { BuildSidebar } from "./BuildSidebar";
 import { count, useI18n } from "../i18n";
-import { CopyButton } from "./CopyButton";
-import { connectLog, disconnectLog, reconnectLog, useLog } from "../log/client-log";
+import { AutoProgressModal, LOG_PATHS, LogPath } from "./AutoProgress";
+import { disconnectLog, reconnectLog, useLog } from "../log/client-log";
 import { HINT_ORDER, useSettings, type Hints, type Lang, type Theme } from "../settings";
 import { useProgress, useUi } from "../store";
-
-const LOG_PATH = "<Steam library>\\steamapps\\common\\Path of Exile\\logs\\Client.txt";
 
 function Drawer({ title, children }: { title: string; children: ReactNode }) {
   const setPanel = useUi((s) => s.setPanel);
@@ -39,6 +37,8 @@ export function Panels({ act }: { act: number }) {
       return <BuildPanel />;
     case "settings":
       return <Settings />;
+    case "log":
+      return <AutoProgressModal />;
     default:
       return null;
   }
@@ -242,6 +242,7 @@ function BuildPanel() {
 function LogCard() {
   const log = useLog();
   const { t } = useI18n();
+  const setPanel = useUi((s) => s.setPanel);
   const status =
     log.status === "connected"
       ? { tone: "ok", text: t("logStatusOn", log.fileName ?? "Client.txt") }
@@ -261,22 +262,7 @@ function LogCard() {
         <span className={`status-dot status-${status.tone}`} />
         <span>{status.text}</span>
       </div>
-      <div className="path-box">
-        <code>
-          {/* Переносим путь только после обратных слешей, а не посреди слова. */}
-          {LOG_PATH.split("\\").map((part, i, all) => (
-            <span key={i}>
-              {part}
-              {i < all.length - 1 && (
-                <>
-                  \<wbr />
-                </>
-              )}
-            </span>
-          ))}
-        </code>
-        <CopyButton text={LOG_PATH} />
-      </div>
+      <LogPath path={LOG_PATHS.steam} />
       <div className="row">
         {log.status === "connected" || log.status === "needs-permission" ? (
           <>
@@ -291,7 +277,7 @@ function LogCard() {
           </>
         ) : (
           log.status !== "unsupported" && (
-            <button className="btn btn-sm" onClick={connectLog}>
+            <button className="btn btn-sm" onClick={() => setPanel("log")}>
               {t("connectLog")}
             </button>
           )
@@ -331,6 +317,7 @@ const LANG_OPTIONS: { value: Lang; label: string }[] = [
 function Settings() {
   const { t } = useI18n();
   const settings = useSettings();
+  const setPanel = useUi((s) => s.setPanel);
   const keys: [string, string][] = [
     ["→ / J", t("keyNext")],
     ["Backspace / ← / K", t("keyBack")],
@@ -383,9 +370,9 @@ function Settings() {
       <section className="form-section">
         <h3>{t("autoProgress")}</h3>
         <p className="muted">{t("autoProgressText")}</p>
-        <p className="muted">
-          <code>{LOG_PATH}</code>
-        </p>
+        <button className="btn btn-sm" onClick={() => setPanel("log")}>
+          <Radio size={15} /> {t("apHowTo")}
+        </button>
       </section>
       <section className="form-section">
         <h3>{t("credits")}</h3>

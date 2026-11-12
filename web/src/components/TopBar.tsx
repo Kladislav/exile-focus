@@ -1,7 +1,7 @@
 import { Gem, Radio, Settings, Swords } from "lucide-react";
 import type { ReactNode } from "react";
 import { useI18n } from "../i18n";
-import { connectLog, reconnectLog, useLog } from "../log/client-log";
+import { reconnectLog, useLog } from "../log/client-log";
 import { useProgress, useUi, type Panel } from "../store";
 
 export function TopBar() {
@@ -64,23 +64,20 @@ function NavButton({
 }
 
 function LogButton() {
-  const { status, error } = useLog();
+  const { status } = useLog();
   const { t } = useI18n();
+  const setPanel = useUi((s) => s.setPanel);
+  const open = () => setPanel("log");
 
   switch (status) {
-    case "unsupported":
-      return (
-        <span className="log" title={t("logUnsupportedTitle")}>
-          <Radio size={16} /> <span className="nav-label">{t("logUnsupported")}</span>
-        </span>
-      );
     case "connected":
       return (
-        <span className="log log-on" title={t("logLiveTitle")}>
+        <button className="log log-on" title={t("logLiveTitle")} onClick={open}>
           <span className="log-dot" /> {t("logLive")}
-        </span>
+        </button>
       );
     case "needs-permission":
+      // Доступ к файлу после перезагрузки выдаётся только по клику — сразу здесь.
       return (
         <button className="log log-warn" onClick={reconnectLog}>
           <Radio size={16} /> {t("logResume")}
@@ -88,14 +85,14 @@ function LogButton() {
       );
     case "error":
       return (
-        <button className="log log-warn" title={error ?? ""} onClick={connectLog}>
+        <button className="log log-warn" onClick={open}>
           <Radio size={16} /> {t("logError")}
         </button>
       );
     default:
       return (
-        <button className="log" onClick={connectLog}>
-          <Radio size={16} /> {t("connectLog")}
+        <button className="log" onClick={open} title={t("apButtonTitle")}>
+          <Radio size={16} /> <span className="nav-label">{t("autoProgress")}</span>
         </button>
       );
   }

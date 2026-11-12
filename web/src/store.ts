@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { DEFAULT_BUILD_DATA } from "./route/build";
 
-export type Panel = "gems" | "build" | "settings" | null;
+export type Panel = "gems" | "build" | "settings" | "log" | null;
 
 interface ProgressState {
   /** Индекс текущего (ещё не выполненного) шага. */
