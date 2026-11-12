@@ -11,6 +11,16 @@ import { buildFocusRoute, pointerForArea } from "./route/build";
 import { HINT_ORDER, useSettings } from "./settings";
 import { useProgress, useUi, type Panel } from "./store";
 
+/**
+ * Клавиша по физическому месту, а не по символу: в русской раскладке J — это «о»,
+ * а хоткеи должны работать при любой раскладке.
+ */
+function hotkey(e: KeyboardEvent): string {
+  if (e.code.startsWith("Key")) return e.code.slice(3).toLowerCase();
+  if (e.code === "Slash" && e.shiftKey) return "?";
+  return e.key.length === 1 ? e.key.toLowerCase() : e.key;
+}
+
 const PANEL_KEYS: Record<string, Panel> = { g: "gems", b: "build", "?": "settings", s: "settings" };
 
 function useTheme() {
@@ -81,7 +91,7 @@ export function App() {
 
       const { pointer, setPointer } = useProgress.getState();
       const { panel, setPanel } = useUi.getState();
-      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      const key = hotkey(e);
 
       if (key === "Escape") return setPanel(null);
       if (key in PANEL_KEYS) {
