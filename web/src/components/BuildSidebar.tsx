@@ -1,7 +1,7 @@
 import { Data, type RouteData } from "common";
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check } from "lucide-react";
+import { Check, Package, Sparkles } from "lucide-react";
 import { gemColor, gemCostIcon, icon } from "../assets";
 import { useI18n } from "../i18n";
 import { useProgress, useUi } from "../store";
@@ -76,16 +76,17 @@ export function BuildSidebar({ act }: { act: number }) {
 
 function GemSet({ groups }: { groups: RouteData.GemLinkGroup[] }) {
   const route = useRoute();
+  const characterClass = useProgress((s) => s.buildData.characterClass);
   const sources = useMemo(() => (route ? routeGemSources(route) : new Map<string, GemSource>()), [route]);
   return (
     <div className="gem-set">
       {groups.map((group, i) => (
         <div key={i} className="gem-group">
           {group.primaryGems.map((link, j) => (
-            <GemLine key={`p${j}`} id={link.id} source={gemSource(sources, link.id)} />
+            <GemLine key={`p${j}`} id={link.id} source={gemSource(sources, link.id, characterClass)} />
           ))}
           {group.secondaryGems.map((link, j) => (
-            <GemLine key={`s${j}`} id={link.id} source={gemSource(sources, link.id)} support />
+            <GemLine key={`s${j}`} id={link.id} source={gemSource(sources, link.id, characterClass)} support />
           ))}
         </div>
       ))}
@@ -166,6 +167,18 @@ function GemSourcePop({ source, anchor: el, copied }: { source: GemSource; ancho
           <b>{game.quest(source.questId)}</b>
           <span className="opt-text">{game.term(source.npc)}</span>
         </>
+      ) : source.kind === "start" ? (
+        <>
+          <span className="opt-sub">{t("gemFromStartTitle")}</span>
+          <span className="opt-text">{t("gemFromStart")}</span>
+        </>
+      ) : source.kind === "chest" ? (
+        <>
+          <span className="opt-sub">
+            {t("gemFromChestTitle")} · {t("act", 1)}
+          </span>
+          <span className="opt-text">{t("gemFromChest", game.area("1_1_1"))}</span>
+        </>
       ) : source.kind === "lilly" ? (
         <>
           <span className="opt-sub">{t("gemFromLillyTitle")}</span>
@@ -178,10 +191,19 @@ function GemSourcePop({ source, anchor: el, copied }: { source: GemSource; ancho
   );
 }
 
-/** Иконка у гема: квест — награда, сфера — покупка у торговца (сколько стоит); находка — без иконки. */
+/** Иконка у гема: квест — награда, сфера — покупка у торговца (сколько стоит), звёзды — стартовый гем, коробка — сундук; находка — без иконки. */
 function GemSourceIcon({ source, requiredLevel }: { source: GemSource; requiredLevel: number }) {
   const { t } = useI18n();
   if (source.kind === "drop") return <span className="gem-source" />;
+  if (source.kind === "start" || source.kind === "chest") {
+    const title = t(source.kind === "start" ? "gemFromStartTitle" : "gemFromChestTitle");
+    const Icon = source.kind === "start" ? Sparkles : Package;
+    return (
+      <span className="gem-source gem-source-icon" title={title} aria-label={title}>
+        <Icon size={17} />
+      </span>
+    );
+  }
   if (source.kind === "quest") return <img className="gem-source" src={QUEST_ICON} alt={t("gemFromQuest")} title={t("gemFromQuest")} />;
   const cost = gemCostIcon(requiredLevel);
   const title = source.kind === "vendor" ? t("gemFromVendor") : t("gemFromLillyTitle");

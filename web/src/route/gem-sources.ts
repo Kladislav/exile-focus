@@ -1,4 +1,5 @@
-// Где игрок получает гем: по готовому маршруту (награда или покупка после квеста),
+// Где игрок получает гем: стартовый гем класса и гем из сундука на берегу,
+// иначе по готовому маршруту (награда или покупка после квеста),
 // а если в маршруте гема нет — у Лилии Рот в 6 акте или нигде.
 
 import { Data } from "common";
@@ -6,6 +7,10 @@ import type { FocusRoute } from "./build";
 
 export type GemSource =
   | { kind: "quest" | "vendor"; questId: string; npc: string; act: number }
+  /** Гем, с которым класс начинает игру. */
+  | { kind: "start" }
+  /** Большой сундук на Сумрачном взморье в начале 1 акта (свой гем у каждого класса). */
+  | { kind: "chest" }
   /** В маршруте нет, но гем есть в наградах квестов — после 6 акта его продаёт Лилия Рот. */
   | { kind: "lilly" }
   /** Ни в наградах, ни у торговцев: только находка (ваал-гемы, особые поддержки и т.п.). */
@@ -49,6 +54,10 @@ export function routeGemSources(route: FocusRoute): Map<string, GemSource> {
   return result;
 }
 
-export function gemSource(sources: Map<string, GemSource>, id: string): GemSource {
+export function gemSource(sources: Map<string, GemSource>, id: string, characterClass: string): GemSource {
+  // Маршрут не выдаёт эти гемы (findCharacterGems считает их уже полученными).
+  const character = Data.Characters[characterClass];
+  if (character?.start_gem_id === id) return { kind: "start" };
+  if (character?.chest_gem_id === id) return { kind: "chest" };
   return sources.get(id) ?? (soldGems().has(id) ? { kind: "lilly" } : { kind: "drop" });
 }
