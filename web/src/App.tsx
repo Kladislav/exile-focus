@@ -78,8 +78,6 @@ export function App() {
       const target = e.target;
       if (target instanceof Element && target.closest("input, textarea, select")) return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
-      // Иначе пробел нажмёт кнопку в фокусе и шаг сдвинется дважды.
-      if (target instanceof HTMLButtonElement) target.blur();
 
       const { pointer, setPointer } = useProgress.getState();
       const { panel, setPanel } = useUi.getState();
@@ -98,12 +96,14 @@ export function App() {
       }
       if (panel) return;
 
-      if (key === " " || key === "ArrowRight" || key === "j") {
+      // Пробел шаги не листает: его легко задеть случайно. Зажатая клавиша
+      // срабатывает один раз — автоповтор не пролистывает пачку шагов.
+      if (key === "ArrowRight" || key === "j") {
         e.preventDefault();
-        if (pointer < route.steps.length) setPointer(pointer + 1);
+        if (!e.repeat && pointer < route.steps.length) setPointer(pointer + 1);
       } else if (key === "Backspace" || key === "ArrowLeft" || key === "k") {
         e.preventDefault();
-        setPointer(pointer - 1);
+        if (!e.repeat) setPointer(pointer - 1);
       }
     }
     window.addEventListener("keydown", onKey);

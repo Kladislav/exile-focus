@@ -11,7 +11,7 @@ your current step in view and moves on by itself when you enter the next zone.
   Steam: `<Steam library>\steamapps\common\Path of Exile\logs\Client.txt`.
 - **Path of Building import**: gem rewards and vendor purchases appear on the right quest step;
   a side panel shows gem links and the passive tree per PoB set ("Act 1-3" etc.), following the current act.
-- **Keys**: `Space` done, `Backspace` back, `G` gem links, `B` build, `H` hints, `?` help.
+- **Keys**: `→` / `J` done, `←` / `K` / `Backspace` back (holding a key moves one step), `G` gem links, `B` build, `H` hints, `?` help.
 
 ## Development
 

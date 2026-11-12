@@ -332,7 +332,7 @@ function Settings() {
   const { t } = useI18n();
   const settings = useSettings();
   const keys: [string, string][] = [
-    ["Space / → / J", t("keyNext")],
+    ["→ / J", t("keyNext")],
     ["Backspace / ← / K", t("keyBack")],
     ["G", t("gemLinks")],
     ["B", t("build")],
