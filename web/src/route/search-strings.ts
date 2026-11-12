@@ -11,7 +11,8 @@
 //  - скорость: названия модификаторов на волшебных ботинках, 10% и 15%;
 //  - урон: «d.+cal d» — «Adds # to # Physical Damage» / «#% increased Physical Damage»,
 //    «fi.+d.+er$» — «+#% to Fire Damage over Time Multiplier» (и холод, хаос);
-//  - оружие: «Item Class: …» → «s:.+(ax|sw)»; выбранный тип подсвечивается всегда.
+//  - оружие: «Item Class: …» → отдельное условие «и» "s:.+(ax|sw)": только это оружие
+//    и только со связками/уроном выше (у poe.re тип идёт через «|» и подсвечивается всегда).
 
 import { Data, type RouteData } from "common";
 
@@ -108,7 +109,7 @@ function linkPermutations(colours: string[]): string[] {
   return permutations(colours).map((p) => p.split("").join("-"));
 }
 
-/** Собирает строку из выбранных частей; части через «|», всё в кавычках. */
+/** Собирает строку: выбранное через «|» в кавычках, тип оружия — отдельным условием «и». */
 export function composeRegex(
   selection: RegexSelection,
   buildColours: { 3: string[][]; 4: string[][] },
@@ -125,14 +126,17 @@ export function composeRegex(
       parts.push(ANY_LINKS[link]);
     }
   }
-  for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
-  for (const dmg of DAMAGE_OPTIONS) if (selection.damage.includes(dmg.id)) parts.push(dmg.re);
   const weapons = WEAPON_OPTIONS.filter((w) => selection.weapons.includes(w.id)).map((w) => w.re);
-  if (weapons.length === 1) parts.push(`s:.+${weapons[0]}`);
-  if (weapons.length > 1) parts.push(`s:.+(${weapons.join("|")})`);
+  // Ботинки не оружие: с фильтром по типу оружия скорость не ищем.
+  if (!weapons.length) for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
+  for (const dmg of DAMAGE_OPTIONS) if (selection.damage.includes(dmg.id)) parts.push(dmg.re);
 
   const unique = [...new Set(parts)];
-  return unique.length ? `"${unique.join("|")}"` : "";
+  const any = unique.length ? `"${unique.join("|")}"` : "";
+  if (!weapons.length) return any;
+  // Тип оружия — отдельное условие «и»: только это оружие и только с выбранным выше.
+  const filter = `"s:.+${weapons.length === 1 ? weapons[0] : `(${weapons.join("|")})`}"`;
+  return any ? `${any} ${filter}` : filter;
 }
 
 // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»

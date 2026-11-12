@@ -72,7 +72,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         ))}
       </RegexGroup>
 
-      <RegexGroup title={t("regexMovement")}>
+      <RegexGroup title={t("regexMovement")} className={selection.weapons.length ? "is-off" : ""}>
         {MOVEMENT_TIERS.map((m) => (
           <Toggle key={m.id} on={selection.movement.includes(m.id)} onClick={() => selection.toggle("movement", m.id)}>
             {m.id}%
@@ -88,7 +88,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         ))}
       </RegexGroup>
 
-      <RegexGroup title={t("regexWeapons")} note={t("regexWeaponsNote")}>
+      <RegexGroup title={t("regexWeapons")}>
         {WEAPON_OPTIONS.map((w) => (
           <Toggle key={w.id} on={selection.weapons.includes(w.id)} onClick={() => selection.toggle("weapons", w.id)}>
             {t(`regexWeapon_${w.id}` as UiKey)}
@@ -116,19 +116,16 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
 function RegexGroup({
   title,
-  note,
   className = "",
   children,
 }: {
   title: React.ReactNode;
-  note?: string;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <section className={`regex-group ${className}`}>
       <h4 className="regex-group-title">{title}</h4>
-      {note && <p className="regex-note">{note}</p>}
       <div className="regex-toggles">{children}</div>
     </section>
   );
