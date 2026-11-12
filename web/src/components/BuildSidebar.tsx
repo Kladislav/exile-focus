@@ -7,7 +7,6 @@ import { SetSwitcher, setForAct } from "./SetSwitcher";
 import { SearchStrings } from "./SearchStrings";
 import { TreeViewer } from "./TreeViewer";
 
-type Tab = "tree" | "gems" | "search";
 
 /**
  * Номер набора: по умолчанию тот, что подходит к текущему акту;
@@ -22,7 +21,8 @@ function useSetIndex(names: string[], act: number) {
 
 export function BuildSidebar({ act }: { act: number }) {
   const { t } = useI18n();
-  const [tab, setTab] = useState<Tab>("tree");
+  const tab = useUi((s) => s.sidebarTab);
+  const setTab = useUi((s) => s.setSidebarTab);
   const gemLinks = useProgress((s) => s.gemLinks);
   const buildTrees = useProgress((s) => s.buildTrees);
 

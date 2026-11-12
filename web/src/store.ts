@@ -50,9 +50,33 @@ export const useProgress = create<ProgressState>()(
   ),
 );
 
-export const useUi = create<{ panel: Panel; setPanel: (p: Panel) => void }>(
-  (set) => ({
-    panel: null,
-    setPanel: (panel) => set({ panel }),
-  }),
-);
+export type SidebarTab = "tree" | "gems" | "search";
+const SIDEBAR_TABS: SidebarTab[] = ["tree", "gems", "search"];
+
+/** Вкладка панели билда хранится в адресе (?tab=gems), чтобы переживать перезагрузку. */
+function tabFromUrl(): SidebarTab {
+  const tab = new URLSearchParams(window.location.search).get("tab");
+  return SIDEBAR_TABS.includes(tab as SidebarTab) ? (tab as SidebarTab) : "tree";
+}
+
+function tabToUrl(tab: SidebarTab) {
+  const url = new URL(window.location.href);
+  if (tab === "tree") url.searchParams.delete("tab");
+  else url.searchParams.set("tab", tab);
+  window.history.replaceState(null, "", url);
+}
+
+export const useUi = create<{
+  panel: Panel;
+  setPanel: (p: Panel) => void;
+  sidebarTab: SidebarTab;
+  setSidebarTab: (tab: SidebarTab) => void;
+}>((set) => ({
+  panel: null,
+  setPanel: (panel) => set({ panel }),
+  sidebarTab: tabFromUrl(),
+  setSidebarTab: (sidebarTab) => {
+    tabToUrl(sidebarTab);
+    set({ sidebarTab });
+  },
+}));
