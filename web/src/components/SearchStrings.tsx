@@ -2,7 +2,13 @@ import type { RouteData } from "common";
 import { useMemo } from "react";
 import { useI18n } from "../i18n";
 import { useProgress } from "../store";
-import { combinedSearchString, mainLinkColours, plusGemsString, twoHandAxePhysString } from "../route/search-strings";
+import {
+  combinedSearchString,
+  mainLinkColours,
+  movementSpeedString,
+  plusGemsString,
+  twoHandAxePhysString,
+} from "../route/search-strings";
 import { CopyButton } from "./CopyButton";
 
 /** Готовые строки для поиска в окне торговца. */
@@ -29,6 +35,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           build={withBuild ? game.term(characterClass) : undefined}
         />
       ))}
+      <SearchRow label={t("searchMovement")} query={movementSpeedString()} />
       <SearchRow label={t("searchPlusGems")} query={plusGemsString()} />
       <SearchRow label={t("searchAxePhys")} query={twoHandAxePhysString()} />
       <div className="search-more">

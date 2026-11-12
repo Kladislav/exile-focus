@@ -89,3 +89,12 @@ export function plusGemsString(): string {
 export function twoHandAxePhysString(): string {
   return TWO_HAND_AXE_PHYS;
 }
+
+/**
+ * Только ботинки на скорость, все ступени: Runner's 10%, Sprinter's 15%, Stallion's 20%,
+ * Gazelle's 25%, Cheetah's 30%, Hellion's 35%. Апостроф отсекает суффиксы-тёзки
+ * («of the Gazelle», «of the Cheetah») и «Aspect of the Hellion».
+ */
+export function movementSpeedString(): string {
+  return `"Runn|rint|llion's|zelle's|etah's"`;
+}
