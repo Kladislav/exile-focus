@@ -18,12 +18,13 @@ export const SEARCH_LIMIT = 250;
 export const LINK_OPTIONS = ["any3", "any4", "any5", "any6"] as const;
 export type LinkOption = (typeof LINK_OPTIONS)[number];
 
-// «Sockets: R-G-B-R»: каждый «-.» — ещё одно связанное гнездо (3L/4L как у poe.re).
+// Как у poe.re (generate3LinkStr … generate6LinkStr): «Sockets: R-G-B-R».
+// «[rgbw]» — с белыми гнёздами; каждое «-\w» — ещё одно связанное гнездо.
 const ANY_LINKS: Record<LinkOption, string> = {
-  any3: "-\\w-",
+  any3: "-[rgbw]-",
   any4: "-\\w-.-",
-  any5: "-\\w-.-.-",
-  any6: "-\\w-.-.-.-",
+  any5: "(-\\w){4}",
+  any6: "(-\\w){5}",
 };
 
 /** Ступени скорости передвижения: % → кусок названия модификатора (проверено по таблице Mods). */
@@ -54,7 +55,7 @@ export const DEFAULT_SELECTION: RegexSelection = {
   damage: [],
 };
 
-/** Собирает строку из выбранных частей; части через «|», всё в кавычках. */
+/** Собирает строку из выбранных частей через «|», как generateResultString у poe.re. */
 export function composeRegex(selection: RegexSelection): string {
   const parts: string[] = [];
   // Выбрана одна связка (старое сохранённое состояние могло хранить несколько — берём меньшую).
@@ -63,6 +64,7 @@ export function composeRegex(selection: RegexSelection): string {
   for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
   for (const dmg of DAMAGE_OPTIONS) if (selection.damage.includes(dmg.id)) parts.push(dmg.re);
 
-  const unique = [...new Set(parts)];
-  return unique.length ? `"${unique.join("|")}"` : "";
+  const result = [...new Set(parts)].join("|");
+  // Как у poe.re: кавычки нужны, только если в строке есть пробел.
+  return /[ "]/.test(result) ? `"${result.replaceAll('"', "")}"` : result;
 }
