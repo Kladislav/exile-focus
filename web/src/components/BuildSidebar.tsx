@@ -1,6 +1,6 @@
 import { Data, type RouteData } from "common";
 import { useMemo, useState } from "react";
-import { gemColor } from "../assets";
+import { gemColor, gemCostIcon, icon } from "../assets";
 import { useI18n } from "../i18n";
 import { useProgress, useUi } from "../store";
 import { SetSwitcher, setForAct } from "./SetSwitcher";
@@ -15,6 +15,8 @@ import { gemSource, routeGemSources, type GemSource } from "../route/gem-sources
  * Номер набора: по умолчанию тот, что подходит к текущему акту;
  * ручной выбор действует, пока игрок не перешёл в другой акт.
  */
+const QUEST_ICON = icon("quest");
+
 function useSetIndex(names: string[], act: number) {
   const [manual, setManual] = useState<{ act: number; index: number } | null>(null);
   const auto = setForAct(names, act) ?? 0;
@@ -119,9 +121,20 @@ function GemLine({ id, source, support }: { id: string; source: GemSource; suppo
           )}
         </span>
       </span>
+      <GemSourceIcon source={source} requiredLevel={gem?.required_level ?? 1} />
       <CopyButton text={name} />
     </div>
   );
+}
+
+/** Иконка у гема: квест — награда, сфера — покупка у торговца (сколько стоит); находка — без иконки. */
+function GemSourceIcon({ source, requiredLevel }: { source: GemSource; requiredLevel: number }) {
+  const { t } = useI18n();
+  if (source.kind === "drop") return <span className="gem-source" />;
+  if (source.kind === "quest") return <img className="gem-source" src={QUEST_ICON} alt={t("gemFromQuest")} title={t("gemFromQuest")} />;
+  const cost = gemCostIcon(requiredLevel);
+  const title = source.kind === "vendor" ? t("gemFromVendor") : t("gemFromLillyTitle");
+  return <img className="gem-source" src={cost.src} alt={title} title={title} />;
 }
 
 function groupByTitle(groups: RouteData.GemLinkGroup[]) {

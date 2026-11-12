@@ -1492,6 +1492,13 @@ select.input {
   gap: 4px;
 }
 
+.gem-source {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
 .gem-line .chip {
   opacity: 0.55;
 }
