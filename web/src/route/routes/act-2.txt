@@ -18,7 +18,6 @@ Get {waypoint_get}
     #ifdef OPT_a2q6
         Kill {kill|Fidelitas, the Mourning}, take {quest_text|Baleful Gem}
             #sub Look for the long hallway
-            #sub Recommended Level: 14-15
             #sub After the kill activate {generic|Strange Device} to get the quest item
     #endif
     {logout}
@@ -54,7 +53,6 @@ Get {waypoint_get}
         #sub Lots of cobwebs around the entrance
     ➞ {arena|The Weaver's Nest}, kill {kill|The Weaver}, take {quest_text|Maligaro's Spike}
         #sub Try go {dir|270}, if it's blocked go {dir|45}
-        #sub Recommended Level: 16
     {logout}
     Hand in {quest|a2q4} #Sharp and Cruel
 #endif
@@ -172,7 +170,6 @@ Get {crafting}
 ➞ {arena|Pyramid Apex}, kill {kill|Vaal Oversoul}
     #sub First floor exit will be in one of the 3 corners
     #sub Remaining floors will have the exit diagonally across from the entrance
-    #sub Recommended Level: 20-22
     #sub Activate the altar at the top to summon the boss
     #sub Logout right after the kill and take the waypoint to {area|1_3_1}: no need to wait for the cutscene
 Get {crafting}
