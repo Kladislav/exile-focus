@@ -1,7 +1,15 @@
-// Готовые строки поиска для окна торговца (поле поиска в окне продавца, Ctrl+F).
-// Поиск идёт по тексту предмета на языке клиента, поэтому строки про свойства
-// зависят от языка игры. Тексты свойств взяты из stat_descriptions.txt игры (3.29).
-// Буквы цветов гнёзд (R/G/B) в русском клиенте не переводятся.
+// Готовые строки для поиска в окне торговца (Ctrl+F). Подход как у poe.re
+// (github.com/veiset/poe-vendor-string), плюс русский клиент.
+//
+// Поиск идёт по тексту предмета на языке клиента:
+//  - гнёзда: строка «Sockets: R-G-B» / «Гнезда: R-G-B»; пробел разделяет
+//    несвязанные группы, буквы цветов в русском клиенте латинские;
+//  - скорость передвижения: названия модификаторов на волшебных ботинках
+//    (Runner's 10%, Sprinter's 15%, Stallion's 20%; в русском — прилагательные
+//    «Быстрый», «Резкий», «Резвый» с родом, поэтому ищем по основе);
+//  - +1 к уровню камней: текст свойства «+1 to Level of all … Skill Gems» /
+//    «+1 к уровню всех камней умений чар …».
+// Тексты взяты из файлов игры 3.29 (таблица Mods, stat_descriptions.txt).
 
 import { Data, type RouteData } from "common";
 import type { Lang } from "../settings";
@@ -9,79 +17,75 @@ import type { Lang } from "../settings";
 /** Ограничение длины поля поиска в игре. */
 export const SEARCH_LIMIT = 50;
 
-export interface SearchString {
-  id: string;
-  query: string;
+const TEXT: Record<Lang, { sockets: string; movement: string[]; plusGems: string }> = {
+  en: { sockets: "ts:", movement: ["Runn", "rint", "tallio"], plusGems: "ll g" },
+  ru: { sockets: "да:", movement: ["быстр", "резк", "резв"], plusGems: "умений чар" },
+};
+
+const ANY_LINKS: Record<3 | 4, string> = { 3: "-\\w-", 4: "-\\w-.-" };
+
+const COLOUR: Record<string, "r" | "g" | "b"> = { strength: "r", dexterity: "g", intelligence: "b" };
+
+export interface ColourCounts {
+  r: number;
+  g: number;
+  b: number;
+  gems: string[];
 }
 
-const COLOUR: Record<string, string> = { strength: "r", dexterity: "g", intelligence: "b" };
-
-function permutations(letters: string[]): string[] {
-  if (letters.length <= 1) return [letters.join("")];
-  const out = new Set<string>();
-  letters.forEach((l, i) => {
-    for (const rest of permutations([...letters.slice(0, i), ...letters.slice(i + 1)])) out.add(l + rest);
-  });
-  return [...out];
-}
-
-/** "g-g-r|g-r-g|r-g-g" — связанные гнёзда нужных цветов в любом порядке. */
-function linkQuery(colours: string[]): string | null {
-  const variants = permutations(colours).map((p) => p.split("").join("-"));
-  const query = `"${variants.join("|")}"`;
-  return query.length <= SEARCH_LIMIT ? query : null;
-}
-
-/** Перестановки цветов связки без кавычек ("g-r-r|r-g-r|r-r-g") или null. */
-export function buildLinkPattern(groups: RouteData.GemLinkGroup[], size = 3): string | null {
-  const s = buildSearchStrings(groups).find((x) => x.id === `build${size}`);
-  return s ? s.query.slice(1, -1) : null;
-}
-
-/**
- * Гнёзда под основную связку набора: главный гем и поддержки, цвета по атрибуту.
- * Возвращает строки для 3 и 4 связанных гнёзд, если они укладываются в лимит поиска.
- */
-export function buildSearchStrings(groups: RouteData.GemLinkGroup[]): (SearchString & { gems: string[] })[] {
+/** Цвета основной связки набора (самой большой группы): первые `size` гемов. */
+export function mainLinkColours(groups: RouteData.GemLinkGroup[], size: 3 | 4): ColourCounts | null {
   const main = [...groups].sort(
     (a, b) => b.primaryGems.length + b.secondaryGems.length - (a.primaryGems.length + a.secondaryGems.length),
   )[0];
-  if (!main) return [];
-  const gems = [...main.primaryGems, ...main.secondaryGems].map((g) => g.id).filter((id) => Data.Gems[id]);
-  const colours = gems.map((id) => COLOUR[Data.Gems[id].primary_attribute]).filter(Boolean);
-
-  const result: (SearchString & { gems: string[] })[] = [];
-  for (const size of [3, 4]) {
-    if (colours.length < size) continue;
-    const query = linkQuery(colours.slice(0, size).sort());
-    if (query) result.push({ id: `build${size}`, query, gems: gems.slice(0, size) });
-  }
-  return result;
+  if (!main) return null;
+  const gems = [...main.primaryGems, ...main.secondaryGems]
+    .map((g) => g.id)
+    .filter((id) => COLOUR[Data.Gems[id]?.primary_attribute])
+    .slice(0, size);
+  if (gems.length < size) return null;
+  const counts = { r: 0, g: 0, b: 0, gems };
+  for (const id of gems) counts[COLOUR[Data.Gems[id].primary_attribute]]++;
+  return counts;
 }
 
-/** Скорость передвижения в тексте предмета; короткий вариант — на случай длинной связки. */
-const MOVEMENT: Record<Lang, string[]> = {
-  // "{0}% increased Movement Speed"
-  en: ["movement speed", "movement"],
-  // "{0}% повышение скорости передвижения"
-  ru: ["скорости передвижения", "передвиж"],
-};
-
 /**
- * Общая строка: связанные гнёзда (цвета билда, если влезают) и скорость передвижения.
- * Укладывается в лимит поиска, сокращая фразу или откатываясь на любые цвета.
+ * «В одной группе связанных гнёзд есть N красных, M зелёных…»:
+ * ts:.+(?=(\S*r){2})(\S*g) — \S* не пересекает пробел между группами.
  */
+export function colourLinkPattern(gameLang: Lang, c: ColourCounts): string {
+  const order = (["r", "g", "b"] as const).filter((x) => c[x] > 0);
+  const last = order[order.length - 1];
+  const part = (x: "r" | "g" | "b") => {
+    const body = c[x] > 1 ? `(\\S*${x}){${c[x]}}` : `(\\S*${x})`;
+    return x === last ? body : `(?=${body})`;
+  };
+  return `${TEXT[gameLang].sockets}.+${order.map(part).join("")}`;
+}
+
+/** Связанные гнёзда (цвета билда, если известны) + ботинки на скорость передвижения. */
 export function combinedSearchString(
   gameLang: Lang,
-  buildLinks?: string,
-  size: 3 | 4 = 3,
+  colours: ColourCounts | null,
+  size: 3 | 4,
 ): { query: string; withBuild: boolean } {
-  const anyLinks = size === 3 ? "-\\w-" : "-\\w-\\w-";
-  for (const links of [buildLinks, anyLinks].filter((x): x is string => !!x)) {
-    for (const movement of MOVEMENT[gameLang]) {
-      const query = `"${links}|${movement}"`;
-      if (query.length <= SEARCH_LIMIT) return { query, withBuild: links === buildLinks };
+  const movement = TEXT[gameLang].movement;
+  for (const links of [colours ? colourLinkPattern(gameLang, colours) : null, ANY_LINKS[size]]) {
+    if (!links) continue;
+    for (let n = movement.length; n >= 1; n--) {
+      const query = `"${[links, ...movement.slice(0, n)].join("|")}"`;
+      if (query.length <= SEARCH_LIMIT) return { query, withBuild: links !== ANY_LINKS[size] };
     }
   }
-  return { query: `"${anyLinks}|${MOVEMENT[gameLang][1]}"`, withBuild: false };
+  return { query: `"${ANY_LINKS[size]}|${movement[0]}"`, withBuild: false };
+}
+
+/** Только гнёзда цветов билда — для блока «Под основную связку». */
+export function buildLinkString(gameLang: Lang, colours: ColourCounts): string {
+  return `"${colourLinkPattern(gameLang, colours)}"`;
+}
+
+/** +1 к уровню камней умений (жезлы, скипетры для заклинателей). */
+export function plusGemsString(gameLang: Lang): string {
+  return `"${TEXT[gameLang].plusGems}"`;
 }

@@ -512,6 +512,12 @@ button.log:hover {
   border-bottom: none;
 }
 
+.search-credit {
+  margin: 14px 0 0;
+  font-size: 12px;
+  color: var(--faint);
+}
+
 .search-group {
   margin: 14px 0 6px;
   font-size: 13px;

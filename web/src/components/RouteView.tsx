@@ -115,11 +115,24 @@ function isOnScreen(el: Element) {
   return rect.top >= header + 40 && rect.bottom <= window.innerHeight;
 }
 
-/** Шаги акта, разбитые на блоки: каждый переход в новую зону начинает блок. */
+const TRAVEL = new Set(["enter", "waypoint_use", "logout", "portal_use"]);
+
+/** Шаг перемещает в другую зону (вход, вейпоинт, выход в меню, портал). */
+function isTravel(item: FocusStep) {
+  return item.edgeIndex !== null && item.step.parts.some((p) => typeof p !== "string" && TRAVEL.has(p.type));
+}
+
+/**
+ * Шаги акта, разбитые на блоки. Переход в зону начинает новый блок, только если
+ * в текущем уже было действие: проходные зоны (вошёл и сразу дальше) собираются
+ * с действием, ради которого шли, в один «квестовый» блок.
+ */
 function zoneGroups(route: FocusRoute, first: number, count: number) {
   const groups: FocusStep[][] = [];
   for (const item of route.steps.slice(first, first + count)) {
-    if (item.edgeIndex !== null || groups.length === 0) groups.push([]);
+    const current = groups[groups.length - 1];
+    const hasAction = current?.some((s) => !isTravel(s));
+    if (!current || (isTravel(item) && hasAction)) groups.push([]);
     groups[groups.length - 1].push(item);
   }
   return groups;

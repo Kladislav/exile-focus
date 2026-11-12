@@ -1,45 +1,57 @@
 import { Data, type RouteData } from "common";
 import { useMemo } from "react";
 import { gemColor } from "../assets";
-import { useI18n, type UiKey } from "../i18n";
-import { buildLinkPattern, buildSearchStrings, combinedSearchString } from "../route/search-strings";
+import { useI18n } from "../i18n";
+import {
+  buildLinkString,
+  combinedSearchString,
+  mainLinkColours,
+  plusGemsString,
+} from "../route/search-strings";
 import { useSettings } from "../settings";
 import { CopyButton } from "./CopyButton";
 
-/** Готовые строки для поиска в окне торговца: общие и под связку билда. */
+/** Готовые строки для поиска в окне торговца. */
 export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] }) {
   const gameLang = useSettings((s) => s.gameLang);
   const { t, game } = useI18n();
-  const forBuild = useMemo(() => (groups ? buildSearchStrings(groups) : []), [groups]);
-  // Две общие строки: в начале ищут 3 связанных, к середине игры — 4.
-  const combined = useMemo(
+
+  const rows = useMemo(
     () =>
-      ([3, 4] as const).map((size) => ({
-        size,
-        ...combinedSearchString(gameLang, groups ? (buildLinkPattern(groups, size) ?? undefined) : undefined, size),
-      })),
+      ([3, 4] as const).map((size) => {
+        const colours = groups ? mainLinkColours(groups, size) : null;
+        return { size, colours, combined: combinedSearchString(gameLang, colours, size) };
+      }),
     [gameLang, groups],
   );
+  const forBuild = rows.filter((r) => r.colours);
 
   return (
     <div className="search-strings">
       <p className="panel-hint">{t("searchHelp")}</p>
       <div className="search-combined">
-        {combined.map((c) => (
-          <SearchRow key={c.size} label={t(c.size === 3 ? "searchCombined" : "searchCombined4")} query={c.query}>
-            <span className="search-gems">
-              {t(c.withBuild ? "searchCombinedBuild" : "searchCombinedHint", c.size)}
-            </span>
+        {rows.map(({ size, combined }) => (
+          <SearchRow key={size} label={t(size === 3 ? "searchCombined" : "searchCombined4")} query={combined.query}>
+            <span className="search-gems">{t(combined.withBuild ? "searchCombinedBuild" : "searchCombinedHint", size)}</span>
           </SearchRow>
         ))}
       </div>
+
+      <SearchRow label={t("searchPlusGems")} query={plusGemsString(gameLang)}>
+        <span className="search-gems">{t("searchPlusGemsHint")}</span>
+      </SearchRow>
+
       {forBuild.length > 0 && (
         <>
           <h4 className="search-group">{t("searchForBuild")}</h4>
-          {forBuild.map((s) => (
-            <SearchRow key={s.id} label={t(`search_${s.id}` as UiKey)} query={s.query}>
+          {forBuild.map(({ size, colours }) => (
+            <SearchRow
+              key={size}
+              label={t(size === 3 ? "search_build3" : "search_build4")}
+              query={buildLinkString(gameLang, colours!)}
+            >
               <span className="search-gems">
-                {s.gems.map((id) => (
+                {colours!.gems.map((id) => (
                   <span key={id} className="search-gem">
                     <span className="gem-dot" style={{ background: gemColor(Data.Gems[id]?.primary_attribute ?? "") }} />
                     {game.gem(id)}
@@ -50,6 +62,13 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           ))}
         </>
       )}
+
+      <p className="search-credit">
+        {t("searchCredit")}{" "}
+        <a href="https://poe.re/#/vendor" target="_blank" rel="noreferrer">
+          poe.re
+        </a>
+      </p>
     </div>
   );
 }
