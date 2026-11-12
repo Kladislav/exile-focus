@@ -1,5 +1,4 @@
 import { Data, type RouteData } from "common";
-import { ExternalLink } from "lucide-react";
 import { useMemo } from "react";
 import { gemColor } from "../assets";
 import { useI18n } from "../i18n";
@@ -69,8 +68,8 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
       <div className="search-more">
         <span>{t("searchMore")}</span>
-        <a className="chip search-more-link" href="https://poe.re/#/vendor" target="_blank" rel="noreferrer">
-          {t("searchMoreLink")} <ExternalLink size={13} />
+        <a className="search-more-link" href="https://poe.re/#/vendor" target="_blank" rel="noreferrer">
+          poe.re
         </a>
       </div>
     </div>

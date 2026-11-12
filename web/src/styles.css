@@ -514,20 +514,22 @@ button.log:hover {
 
 .search-more {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: baseline;
+  gap: 6px;
   margin-top: 14px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
-  font-size: 13px;
+  font-size: 14px;
   color: var(--muted);
 }
 
 .search-more-link {
-  height: 28px;
   color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  text-decoration: none;
+}
+
+.search-more-link:hover {
+  text-decoration: underline;
 }
 
 .search-group {
