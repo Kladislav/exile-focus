@@ -72,6 +72,8 @@ export function App() {
       if (key === "Escape") return setPanel(null);
       if (key in PANEL_KEYS) {
         const p = PANEL_KEYS[key];
+        // На широком экране панель билда и так в правой колонке.
+        if (p === "gems" && matchMedia("(min-width: 1280px)").matches) return;
         return setPanel(panel === p ? null : p);
       }
       if (key === "h") {

@@ -19,7 +19,8 @@ export function TopBar() {
 
         <div className="topbar-actions">
           <LogButton />
-          <NavButton panel="gems" title={`${t("gemLinks")} (G)`}>
+          {/* Только для узких окон: на широком экране то же самое в правой колонке. */}
+          <NavButton panel="gems" title={`${t("gemLinks")} (G)`} className="nav-btn-narrow">
             <Gem size={18} />
           </NavButton>
           <NavButton panel="build" title={`${t("build")} (B)`}>
@@ -37,12 +38,22 @@ export function TopBar() {
   );
 }
 
-function NavButton({ panel, title, children }: { panel: Panel; title: string; children: ReactNode }) {
+function NavButton({
+  panel,
+  title,
+  className = "",
+  children,
+}: {
+  panel: Panel;
+  title: string;
+  className?: string;
+  children: ReactNode;
+}) {
   const current = useUi((s) => s.panel);
   const setPanel = useUi((s) => s.setPanel);
   return (
     <button
-      className={`nav-btn ${current === panel ? "is-active" : ""}`}
+      className={`nav-btn ${className} ${current === panel ? "is-active" : ""}`}
       title={title}
       aria-label={title}
       onClick={() => setPanel(current === panel ? null : panel)}

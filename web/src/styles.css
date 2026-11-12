@@ -1837,6 +1837,13 @@ select.input {
 
 /* ---------- Narrow windows ---------- */
 
+/* Панель билда в шапке нужна, только когда правой колонки нет. */
+@media (min-width: 1280px) {
+  .nav-btn-narrow {
+    display: none;
+  }
+}
+
 @media (max-width: 1279px) {
   .layout {
     grid-template-columns: 200px minmax(0, 1fr);
