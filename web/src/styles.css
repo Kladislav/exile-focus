@@ -1547,6 +1547,80 @@ select.input {
   transform-origin: 0 0;
 }
 
+.tree-corner {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: default;
+}
+
+.tree-expand {
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  border: 1px solid var(--border);
+}
+
+.tree-expanded-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 120px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Развёрнутое дерево: почти весь экран, карта занимает всё свободное место. */
+.tree-scrim {
+  z-index: 29;
+}
+
+.tree-modal {
+  position: fixed;
+  inset: 24px;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.35);
+}
+
+.tree-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 1;
+}
+
+.tree.is-expanded {
+  flex: 1;
+  min-height: 0;
+}
+
+.tree.is-expanded .set-switcher {
+  margin-right: 48px;
+}
+
+.tree.is-expanded .tree-viewport {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  .tree-modal {
+    inset: 8px;
+    padding: 12px;
+  }
+}
+
 .tree-legend {
   display: flex;
   flex-wrap: wrap;

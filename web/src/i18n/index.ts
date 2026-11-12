@@ -141,6 +141,9 @@ const UI = {
     treeTaken: "Already taken",
     treeRemoved: "Refund",
     treeRemovedHint: "Taken in the previous set, not in this one",
+    treeExpand: "Expand",
+    treeCollapse: "Collapse",
+    treeExpandedNote: "The tree is open in a large window",
     treeHint: "Hover a node to see it. Scroll to zoom, drag to move.",
   },
   ru: {
@@ -278,6 +281,9 @@ const UI = {
     treeTaken: "Уже взято",
     treeRemoved: "Снять",
     treeRemovedHint: "Было в прошлом наборе, в этом нет",
+    treeExpand: "Развернуть",
+    treeCollapse: "Свернуть",
+    treeExpandedNote: "Дерево открыто в большом окне",
     treeHint: "Наведите на ноду, чтобы увидеть её. Колесо — масштаб, перетаскивание — сдвиг.",
   },
 } satisfies Record<Lang, Record<string, string>>;

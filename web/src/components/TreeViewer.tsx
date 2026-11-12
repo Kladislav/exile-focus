@@ -1,7 +1,9 @@
 import type { RouteData, SkillTree } from "common";
 import { select } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
+import { Maximize2, Minimize2, X } from "lucide-react";
 import { useEffect, useId, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useI18n } from "../i18n";
 import { buildUrlTreeDelta, calculateBounds } from "../tree/delta";
 import { buildUrlTrees, loadTree, type TreeProblem, type UrlTree } from "../tree/url-tree";
@@ -32,6 +34,7 @@ export function TreeViewer({
   const [problems, setProblems] = useState<TreeProblem[]>([]);
   const [rendered, setRendered] = useState<Rendered | null>(null);
   const [hovered, setHovered] = useState<string | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const styleId = `tree-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
 
   useEffect(() => {
@@ -96,36 +99,98 @@ export function TreeViewer({
   if (trees === null) return <p className="muted">…</p>;
   if (trees.length === 0) return <TreeProblems problems={problems} />;
 
+  const switcher = <SetSwitcher names={trees.map((x) => x.name)} index={current} onIndex={onIndex} />;
+  const content = rendered && (
+    <>
+      <Viewport
+        focus={rendered.focus}
+        corner={
+          <button
+            className="icon-btn tree-expand"
+            title={expanded ? `${t("treeCollapse")} (Esc)` : t("treeExpand")}
+            aria-label={expanded ? t("treeCollapse") : t("treeExpand")}
+            onClick={() => setExpanded(!expanded)}
+          >
+            {expanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+          </button>
+        }
+      >
+        <style dangerouslySetInnerHTML={{ __html: rendered.style }} />
+        <div
+          id={styleId}
+          dangerouslySetInnerHTML={{ __html: rendered.svg }}
+          onPointerOver={(e) => {
+            const id = (e.target as Element).id;
+            if (id?.startsWith("n")) setHovered(id.slice(1));
+          }}
+          onPointerOut={() => setHovered(null)}
+        />
+      </Viewport>
+      <div className="tree-legend">
+        <span><i style={{ background: "var(--tree-added)" }} /> {t("treeAdded")}</span>
+        <span><i style={{ background: "var(--tree-active)" }} /> {t("treeTaken")}</span>
+        {rendered.removedCount > 0 && (
+          <span title={t("treeRemovedHint")}>
+            <i style={{ background: "var(--tree-removed)" }} /> {t("treeRemoved")}
+          </span>
+        )}
+      </div>
+      <NodeInfo rendered={rendered} nodeId={hovered} />
+    </>
+  );
+
+  // Карта рисуется в одном месте: в колонке или в развёрнутом окне (у SVG и стилей общий id).
   return (
     <div className="tree">
-      <SetSwitcher names={trees.map((x) => x.name)} index={current} onIndex={onIndex} />
-      {rendered && (
-        <>
-          <Viewport focus={rendered.focus}>
-            <style dangerouslySetInnerHTML={{ __html: rendered.style }} />
-            <div
-              id={styleId}
-              dangerouslySetInnerHTML={{ __html: rendered.svg }}
-              onPointerOver={(e) => {
-                const id = (e.target as Element).id;
-                if (id?.startsWith("n")) setHovered(id.slice(1));
-              }}
-              onPointerOut={() => setHovered(null)}
-            />
-          </Viewport>
-          <div className="tree-legend">
-            <span><i style={{ background: "var(--tree-added)" }} /> {t("treeAdded")}</span>
-            <span><i style={{ background: "var(--tree-active)" }} /> {t("treeTaken")}</span>
-            {rendered.removedCount > 0 && (
-              <span title={t("treeRemovedHint")}>
-                <i style={{ background: "var(--tree-removed)" }} /> {t("treeRemoved")}
-              </span>
-            )}
-          </div>
-          <NodeInfo rendered={rendered} nodeId={hovered} />
-        </>
+      {switcher}
+      {expanded ? (
+        <button className="tree-expanded-note" onClick={() => setExpanded(false)}>
+          <Minimize2 size={14} /> {t("treeExpandedNote")}
+        </button>
+      ) : (
+        content
       )}
+      {expanded &&
+        createPortal(
+          <TreeModal onClose={() => setExpanded(false)}>
+            {switcher}
+            {content}
+          </TreeModal>,
+          document.body,
+        )}
     </div>
+  );
+}
+
+/** Дерево поверх страницы: Esc, крестик или клик по затемнению закрывают. */
+function TreeModal({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  const { t } = useI18n();
+  useEffect(() => {
+    // Пока окно открыто, клавиши не листают маршрут (пробел, стрелки), Esc закрывает.
+    const onKey = (e: KeyboardEvent) => {
+      e.stopPropagation();
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey, { capture: true });
+    const root = document.documentElement;
+    const overflow = root.style.overflow;
+    root.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey, { capture: true });
+      root.style.overflow = overflow;
+    };
+  }, [onClose]);
+
+  return (
+    <>
+      <div className="scrim tree-scrim" onClick={onClose} />
+      <div className="tree-modal" role="dialog" aria-label={t("tabTree")}>
+        <button className="icon-btn tree-modal-close" onClick={onClose} title={`${t("close")} (Esc)`}>
+          <X size={18} />
+        </button>
+        <div className="tree is-expanded">{children}</div>
+      </div>
+    </>
   );
 }
 
@@ -168,7 +233,15 @@ function NodeInfo({ rendered, nodeId }: { rendered: Rendered; nodeId: string | n
 }
 
 /** Масштаб и перемещение колесом и мышью (d3-zoom), стартовый кадр — по нодам набора. */
-function Viewport({ focus, children }: { focus: Rendered["focus"]; children: React.ReactNode }) {
+function Viewport({
+  focus,
+  corner,
+  children,
+}: {
+  focus: Rendered["focus"];
+  corner?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const worldRef = useRef<HTMLDivElement>(null);
 
@@ -212,6 +285,12 @@ function Viewport({ focus, children }: { focus: Rendered["focus"]; children: Rea
       <div className="tree-world" ref={worldRef}>
         {children}
       </div>
+      {/* Кнопка поверх карты: нажатие не должно начинать перетаскивание (d3-zoom). */}
+      {corner && (
+        <div className="tree-corner" onMouseDown={(e) => e.stopPropagation()} onDoubleClick={(e) => e.stopPropagation()}>
+          {corner}
+        </div>
+      )}
     </div>
   );
 }
