@@ -11,8 +11,6 @@
 //  - скорость: названия модификаторов на волшебных ботинках, 10% и 15%;
 //  - урон: «d.+cal d» — «Adds # to # Physical Damage» / «#% increased Physical Damage»,
 //    «fi.+d.+er$» — «+#% to Fire Damage over Time Multiplier» (и холод, хаос);
-//  - оружие: «Item Class: …» → отдельное условие «и» "s:.+(ax|sw)": только это оружие
-//    и только со связками/уроном выше (у poe.re тип идёт через «|» и подсвечивается всегда).
 
 import { Data, type RouteData } from "common";
 
@@ -40,32 +38,16 @@ export const DAMAGE_OPTIONS = [
 ] as const;
 export type DamageOption = (typeof DAMAGE_OPTIONS)[number]["id"];
 
-export const WEAPON_OPTIONS = [
-  { id: "axe", re: "ax" },
-  { id: "mace", re: "mac" },
-  { id: "sword", re: "sw" },
-  { id: "staff", re: "stave" },
-  { id: "sceptre", re: "sc" },
-  { id: "claw", re: "cl" },
-  { id: "bow", re: "bow" },
-  { id: "wand", re: "wa" },
-  { id: "dagger", re: "da" },
-  { id: "shield", re: "sh" },
-] as const;
-export type WeaponOption = (typeof WEAPON_OPTIONS)[number]["id"];
-
 export interface RegexSelection {
   links: LinkOption[];
   movement: MovementTier[];
   damage: DamageOption[];
-  weapons: WeaponOption[];
 }
 
 export const DEFAULT_SELECTION: RegexSelection = {
   links: ["build3"],
   movement: ["10", "15"],
   damage: [],
-  weapons: [],
 };
 
 /** Сколько связок набора учитывать (главная атака, движение, ауры…). */
@@ -109,7 +91,7 @@ function linkPermutations(colours: string[]): string[] {
   return permutations(colours).map((p) => p.split("").join("-"));
 }
 
-/** Собирает строку: выбранное через «|» в кавычках, тип оружия — отдельным условием «и». */
+/** Собирает строку из выбранных частей; части через «|», всё в кавычках. */
 export function composeRegex(
   selection: RegexSelection,
   buildColours: { 3: string[][]; 4: string[][] },
@@ -126,17 +108,11 @@ export function composeRegex(
       parts.push(ANY_LINKS[link]);
     }
   }
-  const weapons = WEAPON_OPTIONS.filter((w) => selection.weapons.includes(w.id)).map((w) => w.re);
-  // Ботинки не оружие: с фильтром по типу оружия скорость не ищем.
-  if (!weapons.length) for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
+  for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);
   for (const dmg of DAMAGE_OPTIONS) if (selection.damage.includes(dmg.id)) parts.push(dmg.re);
 
   const unique = [...new Set(parts)];
-  const any = unique.length ? `"${unique.join("|")}"` : "";
-  if (!weapons.length) return any;
-  // Тип оружия — отдельное условие «и»: только это оружие и только с выбранным выше.
-  const filter = `"s:.+${weapons.length === 1 ? weapons[0] : `(${weapons.join("|")})`}"`;
-  return any ? `${any} ${filter}` : filter;
+  return unique.length ? `"${unique.join("|")}"` : "";
 }
 
 // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»

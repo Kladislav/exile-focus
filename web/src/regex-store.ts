@@ -24,10 +24,10 @@ export const useRegex = create<
     }),
     {
       name: "exile-focus-regex",
-      version: 2,
-      // v2: остались только ступени скорости 10% и 15%.
+      version: 3,
+      // v2: остались только ступени скорости 10% и 15%; v3: убраны типы оружия.
       migrate: (state) => {
-        const s = state as RegexSelection;
+        const { weapons: _weapons, ...s } = state as RegexSelection & { weapons?: unknown };
         const known = new Set<string>(MOVEMENT_TIERS.map((m) => m.id));
         return { ...s, movement: (s.movement ?? []).filter((m) => known.has(m)) } as never;
       },

@@ -9,7 +9,6 @@ import {
   MOVEMENT_TIERS,
   SEARCH_LIMIT,
   twoHandAxePhysString,
-  WEAPON_OPTIONS,
 } from "../route/search-strings";
 import { useProgress } from "../store";
 import { CopyButton } from "./CopyButton";
@@ -72,7 +71,7 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         ))}
       </RegexGroup>
 
-      <RegexGroup title={t("regexMovement")} className={selection.weapons.length ? "is-off" : ""}>
+      <RegexGroup title={t("regexMovement")}>
         {MOVEMENT_TIERS.map((m) => (
           <Toggle key={m.id} on={selection.movement.includes(m.id)} onClick={() => selection.toggle("movement", m.id)}>
             {m.id}%
@@ -84,14 +83,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
         {DAMAGE_OPTIONS.map((d) => (
           <Toggle key={d.id} on={selection.damage.includes(d.id)} onClick={() => selection.toggle("damage", d.id)}>
             {t(`regexDamage_${d.id}` as UiKey)}
-          </Toggle>
-        ))}
-      </RegexGroup>
-
-      <RegexGroup title={t("regexWeapons")}>
-        {WEAPON_OPTIONS.map((w) => (
-          <Toggle key={w.id} on={selection.weapons.includes(w.id)} onClick={() => selection.toggle("weapons", w.id)}>
-            {t(`regexWeapon_${w.id}` as UiKey)}
           </Toggle>
         ))}
       </RegexGroup>

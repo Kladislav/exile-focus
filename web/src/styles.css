@@ -615,10 +615,6 @@ button.log:hover {
   background: color-mix(in srgb, var(--accent) 16%, var(--surface));
 }
 
-.regex-group.is-off {
-  opacity: 0.45;
-}
-
 .regex-group.is-build {
   padding: 10px 12px 12px;
   border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
