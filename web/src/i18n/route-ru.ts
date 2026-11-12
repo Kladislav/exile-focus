@@ -32,7 +32,8 @@ const PHRASES: Record<string, string> = {
   "place": "Поставить",
   "in the plaza": "на площади",
   ", set sail from oriath": ", отплыть из Ориата",
-  "take the": "Сесть:",
+  // У лодки в игре нет названия: обычный текст, а не термин игры.
+  "take the boat ➞": "Сесть в лодку ➞",
   ", place": ", поставить",
   "find and help": "Найти и помочь",
   "help and talk to": "Помочь и поговорить:",

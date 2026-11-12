@@ -37,7 +37,7 @@ Find 3x{quest_text|Glyph}
 Find and kill {kill|The Dweller of the Deep}
     #sub Search opposite the entrance
     #sub Look for the large empty room
-Take the {generic|Boat} ➞ {enter|1_1_4_1} #The Submerged Passage
+Take the boat ➞ {enter|1_1_4_1} #The Submerged Passage
 ➞ {enter|1_1_5} #The Ledge
     #sub A narrow bridge means you are heading the right way
 ➞ {enter|1_1_6} #The Climb
