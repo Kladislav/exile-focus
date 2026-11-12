@@ -1,12 +1,7 @@
 import { Data, type Fragments } from "common";
 import {
   ArrowUp,
-  CircleDot,
-  Hammer,
-  House,
   LogOut,
-  MapPin,
-  ScrollText,
   Skull,
   type LucideIcon,
 } from "lucide-react";
@@ -50,14 +45,19 @@ function Term({
   );
 }
 
-/** Игровая иконка испытания восхождения (зелёный череп), как на карте в игре. */
+/** Игровые иконки с миникарты (из upstream): испытание, вейпоинт, портал, квест, город, рецепт. */
 const TRIAL_ICON = icon("trial");
+const WAYPOINT_ICON = icon("waypoint");
+const PORTAL_ICON = icon("portal");
+const QUEST_ICON = icon("quest");
+const TOWN_ICON = icon("town");
+const CRAFTING_ICON = icon("crafting");
 
 function Area({ id, i18n }: { id: string; i18n: I18n }) {
   const area = Data.Areas[id];
   if (!area) return <Term kind="area">{id}</Term>;
   return (
-    <Term kind="area" icon={area.is_town_area ? House : undefined}>
+    <Term kind="area" img={area.is_town_area ? TOWN_ICON : undefined}>
       {i18n.game.area(id)}
       {!area.is_town_area && (
         <span className="term-level" title={i18n.t("monsterLevel")}>
@@ -78,7 +78,7 @@ function Quest({ fragment, i18n }: { fragment: Fragments.QuestFragment; i18n: I1
     ),
   ];
   return (
-    <Term kind="quest" icon={ScrollText}>
+    <Term kind="quest" img={QUEST_ICON}>
       {i18n.game.quest(fragment.questId)}
       {npcs.length > 0 && <span className="term-aside"> · {npcs.map(i18n.game.term).join(", ")}</span>}
     </Term>
@@ -115,14 +115,14 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
       };
     case "waypoint":
     case "waypoint_get":
-      return { head: <Term kind="waypoint" icon={MapPin}>{game.term("Waypoint")}</Term> };
+      return { head: <Term kind="waypoint" img={WAYPOINT_ICON}>{game.term("Waypoint")}</Term> };
     case "waypoint_use": {
       const dst = Data.Areas[f.dstAreaId];
       const src = Data.Areas[f.srcAreaId];
       return {
         head: (
           <>
-            <Term kind="waypoint" icon={MapPin}>{game.term("Waypoint")}</Term> ➞ <Area id={f.dstAreaId} i18n={i18n} />
+            <Term kind="waypoint" img={WAYPOINT_ICON}>{game.term("Waypoint")}</Term> ➞ <Area id={f.dstAreaId} i18n={i18n} />
             {dst && src && dst.act !== src.act && dst.id !== "Labyrinth_Airlock" && (
               <span className="term-aside"> · {t("act", dst.act)}</span>
             )}
@@ -131,12 +131,12 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
       };
     }
     case "portal_set":
-      return { head: <Term kind="portal" icon={CircleDot}>{game.term("Portal")}</Term> };
+      return { head: <Term kind="portal" img={PORTAL_ICON}>{game.term("Portal")}</Term> };
     case "portal_use":
       return {
         head: (
           <>
-            <Term kind="portal" icon={CircleDot}>{game.term("Portal")}</Term> ➞ <Area id={f.dstAreaId} i18n={i18n} />
+            <Term kind="portal" img={PORTAL_ICON}>{game.term("Portal")}</Term> ➞ <Area id={f.dstAreaId} i18n={i18n} />
           </>
         ),
       };
@@ -169,7 +169,7 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
     case "crafting":
       return {
         head: (
-          <Term kind="generic" icon={Hammer}>
+          <Term kind="generic" img={CRAFTING_ICON}>
             {t("crafting")}: {f.crafting_recipes.map(game.term).join(", ")}
           </Term>
         ),
