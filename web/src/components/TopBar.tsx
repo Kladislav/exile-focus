@@ -13,7 +13,7 @@ export function TopBar() {
     <header>
       <div className="topbar-row">
         <a className="brand" href={import.meta.env.BASE_URL}>
-          <img className="brand-logo" src={`${import.meta.env.BASE_URL}logo.svg`} alt="" width={30} height={30} />
+          <img className="brand-logo" src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" width={30} height={30} />
           <span className="brand-name">Exile Focus</span>
         </a>
 
