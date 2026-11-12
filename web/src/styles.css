@@ -501,24 +501,11 @@ button.log:hover {
   margin-bottom: 12px;
 }
 
-.search-combined {
-  padding: 4px 12px;
-  border-radius: 10px;
-  border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--border));
-  background: color-mix(in srgb, var(--accent) 8%, transparent);
-}
-
-.search-combined .search-row {
-  border-bottom: none;
-}
-
 .search-more {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
+  margin-top: 12px;
   font-size: 14px;
   color: var(--muted);
 }
@@ -530,15 +517,6 @@ button.log:hover {
 
 .search-more-link:hover {
   text-decoration: underline;
-}
-
-.search-group {
-  margin: 14px 0 6px;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--muted);
 }
 
 .search-row {
@@ -572,20 +550,6 @@ button.log:hover {
   font-size: 13px;
   color: var(--accent);
   word-break: break-all;
-}
-
-.search-gems {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px 10px;
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.search-gem {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
 }
 
 /* Короткая акцентная черта перед названием акта. */

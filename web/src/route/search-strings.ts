@@ -77,11 +77,6 @@ export function combinedSearchString(colours: ColourCounts | null, size: 3 | 4):
   return { query: `"${ANY_LINKS[size]}|${MOVEMENT[0]}"`, withBuild: false };
 }
 
-/** Только гнёзда цветов билда — для блока «Под основную связку». */
-export function buildLinkString(colours: ColourCounts): string {
-  return `"${colourLinkPattern(colours)}"`;
-}
-
 /** +1 к уровню камней умений (жезлы, скипетры для заклинателей). */
 export function plusGemsString(): string {
   return `"${PLUS_GEMS}"`;
