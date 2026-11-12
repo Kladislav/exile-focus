@@ -57,7 +57,7 @@ export const DEFAULT_SELECTION: RegexSelection = {
 /** Собирает строку из выбранных частей; части через «|», всё в кавычках. */
 export function composeRegex(selection: RegexSelection): string {
   const parts: string[] = [];
-  // «3 связанных» находит и 4–6: берём только самую короткую из отмеченных.
+  // Выбрана одна связка (старое сохранённое состояние могло хранить несколько — берём меньшую).
   const link = LINK_OPTIONS.find((l) => selection.links.includes(l));
   if (link) parts.push(ANY_LINKS[link]);
   for (const tier of MOVEMENT_TIERS) if (selection.movement.includes(tier.id)) parts.push(tier.re);

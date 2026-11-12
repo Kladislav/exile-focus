@@ -31,7 +31,7 @@ export function SearchStrings() {
 
       <RegexGroup title={t("regexLinks")}>
         {LINK_OPTIONS.map((id) => (
-          <Toggle key={id} on={selection.links.includes(id)} onClick={() => selection.toggle("links", id)}>
+          <Toggle key={id} on={selection.links.includes(id)} onClick={() => selection.pickLink(id)}>
             {t("regexAnyLinks", id.slice(3))}
           </Toggle>
         ))}
