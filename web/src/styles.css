@@ -1454,14 +1454,30 @@ select.input {
 }
 
 .gem-hover {
-  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 9px;
   flex: 1;
   min-width: 0;
-  cursor: help;
-  outline: none;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.gem-hover.is-copied .gem-line-name {
+  color: var(--ok);
+}
+
+.gem-pop-copied {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: var(--ok);
 }
 
 .gem-line-name {
@@ -1476,20 +1492,17 @@ select.input {
   text-underline-offset: 3px;
 }
 
-/* Подсказка гема: шириной со строку, чтобы не вылезать из колонки. */
-.gem-pop {
-  width: auto;
-  right: 0;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 1.4;
-}
-
-.gem-hover:hover .gem-pop,
-.gem-hover:focus .gem-pop {
+/* Подсказка гема: в body, поверх страницы (см. GemSourcePop). */
+.opt-pop.gem-pop {
+  position: fixed;
+  z-index: 50;
   display: flex;
   flex-direction: column;
   gap: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.4;
+  pointer-events: none;
 }
 
 .gem-source {

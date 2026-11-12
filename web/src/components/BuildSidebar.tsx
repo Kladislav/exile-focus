@@ -1,12 +1,14 @@
 import { Data, type RouteData } from "common";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import { Check } from "lucide-react";
 import { gemColor, gemCostIcon, icon } from "../assets";
 import { useI18n } from "../i18n";
 import { useProgress, useUi } from "../store";
 import { SetSwitcher, setForAct } from "./SetSwitcher";
 import { SearchStrings } from "./SearchStrings";
 import { TreeViewer } from "./TreeViewer";
-import { CopyButton } from "./CopyButton";
+import { CopyButton, useCopy } from "./CopyButton";
 import { useRoute } from "../route-context";
 import { gemSource, routeGemSources, type GemSource } from "../route/gem-sources";
 
@@ -91,39 +93,88 @@ function GemSet({ groups }: { groups: RouteData.GemLinkGroup[] }) {
   );
 }
 
-/** Строка гема: при наведении — где его взять, справа — копирование названия для поиска у торговца. */
+/** Строка гема: при наведении — где его взять; клик по названию или кнопке — копирование для поиска у торговца. */
 function GemLine({ id, source, support }: { id: string; source: GemSource; support?: boolean }) {
-  const i18n = useI18n();
-  const { t, game } = i18n;
+  const { game } = useI18n();
   const gem = Data.Gems[id];
   const name = game.gem(id);
+  // Название копируется и кликом по нему, и кнопкой справа.
+  const copyState = useCopy(name);
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null);
+  const show = (e: React.SyntheticEvent<HTMLElement>) => setAnchor(e.currentTarget);
+  const hide = () => setAnchor(null);
+
   return (
     <div className={`gem-line ${support ? "is-support" : ""}`}>
-      <span className="gem-hover" tabIndex={0}>
+      <button
+        className={`gem-hover ${copyState[0] ? "is-copied" : ""}`}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onFocus={show}
+        onBlur={hide}
+        onClick={copyState[1]}
+      >
         <span className="gem-dot" style={{ background: gem ? gemColor(gem.primary_attribute) : "var(--faint)" }} />
         <span className="gem-line-name">{name}</span>
-        <span className="opt-pop gem-pop" role="tooltip">
-          {source.kind === "quest" || source.kind === "vendor" ? (
-            <>
-              <span className="opt-sub">
-                {t(source.kind === "quest" ? "gemFromQuest" : "gemFromVendor")} · {t("act", source.act)}
-              </span>
-              <b>{game.quest(source.questId)}</b>
-              <span className="opt-text">{game.term(source.npc)}</span>
-            </>
-          ) : source.kind === "lilly" ? (
-            <>
-              <span className="opt-sub">{t("gemFromLillyTitle")}</span>
-              <span className="opt-text">{t("gemFromLilly", game.term("Lilly Roth"))}</span>
-            </>
-          ) : (
-            <span className="opt-text">{t("gemNotSold")}</span>
-          )}
-        </span>
-      </span>
+      </button>
+      {anchor && createPortal(<GemSourcePop source={source} anchor={anchor} copied={copyState[0]} />, document.body)}
       <GemSourceIcon source={source} requiredLevel={gem?.required_level ?? 1} />
-      <CopyButton text={name} />
+      <CopyButton text={name} state={copyState} />
     </div>
+  );
+}
+
+/** Сколько места нужно подсказке снизу; меньше — открываем вверх. */
+const POP_SPACE = 140;
+
+/**
+ * Подсказка «где взять гем». Рисуется в body с position: fixed:
+ * правая колонка прокручивается сама и обрезала бы её.
+ */
+function GemSourcePop({ source, anchor: el, copied }: { source: GemSource; anchor: HTMLElement; copied: boolean }) {
+  const { t, game } = useI18n();
+  // При прокрутке страницы или колонки подсказка едет вместе со строкой гема.
+  const [, rerender] = useState(0);
+  useEffect(() => {
+    const update = () => rerender((n) => n + 1);
+    window.addEventListener("scroll", update, { capture: true, passive: true });
+    window.addEventListener("resize", update);
+    return () => {
+      window.removeEventListener("scroll", update, { capture: true });
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+  const anchor = el.getBoundingClientRect();
+  const above = window.innerHeight - anchor.bottom < POP_SPACE;
+  const width = Math.min(Math.max(anchor.width, 260), 360);
+  const left = Math.max(8, Math.min(anchor.left, window.innerWidth - width - 8));
+  const style: React.CSSProperties = above
+    ? { left, width, top: "auto", bottom: window.innerHeight - anchor.top + 6 }
+    : { left, width, top: anchor.bottom + 6, bottom: "auto" };
+  return (
+    <span className="opt-pop gem-pop" role="tooltip" style={style}>
+      {copied && (
+        <span className="gem-pop-copied">
+          <Check size={14} strokeWidth={3} /> {t("copied")}
+        </span>
+      )}
+      {source.kind === "quest" || source.kind === "vendor" ? (
+        <>
+          <span className="opt-sub">
+            {t(source.kind === "quest" ? "gemFromQuest" : "gemFromVendor")} · {t("act", source.act)}
+          </span>
+          <b>{game.quest(source.questId)}</b>
+          <span className="opt-text">{game.term(source.npc)}</span>
+        </>
+      ) : source.kind === "lilly" ? (
+        <>
+          <span className="opt-sub">{t("gemFromLillyTitle")}</span>
+          <span className="opt-text">{t("gemFromLilly", game.term("Lilly Roth"))}</span>
+        </>
+      ) : (
+        <span className="opt-text">{t("gemNotSold")}</span>
+      )}
+    </span>
   );
 }
 
