@@ -50,7 +50,7 @@ Hand in {quest|a1q2|a1q2b} #The Caged Brute
 #ifdef LEAGUE_START
     Complete {trial}
         #sub Usually {dir|45}
-        #sub The trial entrance is marked with an open book icon on the map
+        #sub The trial entrance is marked on the map with this icon: {trial}
 #endif
 ➞ {enter|1_1_7_2} #The Upper Prison
 #ifdef LEAGUE_START

@@ -154,8 +154,8 @@ const PHRASES: Record<string, string> = {
     ", поставьте на панель флаконов и пейте на бегу",
   "a narrow bridge means you are heading the right way":
     "Узкий мост — значит, идёте верно",
-  "the trial entrance is marked with an open book icon on the map":
-    "Вход в испытание отмечен на карте значком раскрытой книги",
+  "the trial entrance is marked on the map with this icon:":
+    "Вход в испытание отмечен на карте этим значком:",
   "the waypoint is usually near the start of the zone":
     "Вейпоинт обычно в начале зоны",
   ": click the corpse in":

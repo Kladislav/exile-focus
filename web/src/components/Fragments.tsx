@@ -4,7 +4,6 @@ import {
   CircleDot,
   Hammer,
   House,
-  Landmark,
   LogOut,
   MapPin,
   ScrollText,
@@ -12,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { icon } from "../assets";
 import type { I18n } from "../i18n";
 import { minAreaLevel } from "../route/build";
 import { CopyButton } from "./CopyButton";
@@ -30,14 +30,28 @@ const LAB_LAYOUTS: Record<Fragments.AscendFragment["version"], string> = {
   eternal: "https://www.poelab.com/wfbra",
 };
 
-function Term({ kind, icon: Icon, children }: { kind: string; icon?: LucideIcon; children: ReactNode }) {
+function Term({
+  kind,
+  icon: Icon,
+  img,
+  children,
+}: {
+  kind: string;
+  icon?: LucideIcon;
+  img?: string;
+  children: ReactNode;
+}) {
   return (
     <span className={`term term-${kind}`}>
+      {img && <img className="term-img" src={img} alt="" aria-hidden />}
       {Icon && <Icon className="term-icon" aria-hidden />}
       {children}
     </span>
   );
 }
+
+/** Игровая иконка испытания восхождения (зелёный череп), как на карте в игре. */
+const TRIAL_ICON = icon("trial");
 
 function Area({ id, i18n }: { id: string; i18n: I18n }) {
   const area = Data.Areas[id];
@@ -137,13 +151,13 @@ function renderFragment(f: Fragments.AnyFragment, i18n: I18n, next?: Fragments.A
     case "reward_vendor":
       return { head: <>{t("buy")} <Term kind="generic">{game.term(f.item)}</Term>{f.cost && <> ({f.cost})</>}</> };
     case "trial":
-      return { head: <Term kind="trial" icon={Landmark}>{game.term("Trial of Ascendancy")}</Term> };
+      return { head: <Term kind="trial" img={TRIAL_ICON}>{game.term("Trial of Ascendancy")}</Term> };
     case "ascend":
       return {
         // Глагол — интерфейс, название лабиринта — язык игры (как «Пройти Trial of Ascendancy»).
         head: (
           <>
-            {t("ascendVerb")} <Term kind="trial" icon={Landmark}>{game.term(LAB_NAMES[f.version])}</Term>
+            {t("ascendVerb")} <Term kind="trial" img={TRIAL_ICON}>{game.term(LAB_NAMES[f.version])}</Term>
           </>
         ),
         tail: (

@@ -874,6 +874,14 @@ button.log:hover {
   font-weight: 600;
 }
 
+.term-img {
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.25em;
+  vertical-align: -0.25em;
+  object-fit: contain;
+}
+
 .term-icon {
   width: 0.95em;
   height: 0.95em;
