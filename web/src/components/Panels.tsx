@@ -340,7 +340,6 @@ function Settings() {
     ["?", t("keySettings")],
     ["Esc", t("keyClose")],
   ];
-  const [before, after] = t("creditsText").split("{0}");
 
   return (
     <Drawer title={t("settings")}>
@@ -391,11 +390,11 @@ function Settings() {
       <section className="form-section">
         <h3>{t("credits")}</h3>
         <p className="muted">
-          {before}
+          {t("creditsBefore")}{" "}
           <a href="https://github.com/HeartofPhos/exile-leveling" target="_blank" rel="noreferrer">
             exile-leveling
-          </a>
-          {after}
+          </a>{" "}
+          {t("creditsAfter")}
         </p>
       </section>
     </Drawer>

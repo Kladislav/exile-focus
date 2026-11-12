@@ -72,7 +72,8 @@ const UI = {
     autoProgressText:
       "Click Connect Client.txt (Chrome or Edge) and pick the game log. Each time you enter the next zone of the route, the list moves on by itself. Portals back to town outside the route are ignored. You can also click any step to make it current.",
     credits: "Credits",
-    creditsText: "Route and game data: {0} by HeartofPhos (MIT).",
+    creditsBefore: "Route and game data:",
+    creditsAfter: "by HeartofPhos (MIT license).",
     uiLanguage: "Interface language",
     gameLanguage: "Game language: zone, quest, gem names",
     theme: "Theme",
@@ -197,7 +198,8 @@ const UI = {
     autoProgressText:
       "Нажмите «Подключить Client.txt» (Chrome или Edge) и выберите лог игры. Когда входите в следующую зону маршрута, список сам переходит дальше. Порталы в город вне маршрута не учитываются. Текущий шаг можно выбрать и кликом.",
     credits: "Авторы",
-    creditsText: "Маршрут и данные игры: {0}, автор HeartofPhos (MIT).",
+    creditsBefore: "Маршрут и данные игры:",
+    creditsAfter: "от HeartofPhos (лицензия MIT).",
     uiLanguage: "Язык интерфейса",
     gameLanguage: "Язык игры: зоны, квесты, гемы",
     theme: "Тема",
