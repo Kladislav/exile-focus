@@ -96,8 +96,9 @@ export function plusGemsString(gameLang: Lang): string {
 }
 
 const WEAPON: Record<Lang, { twoHandAxe: string; physMod: string }> = {
-  // «d.+cal d»: d из «Adds»/«increased» перед «Physical Damage» в одной строке (как у poe.re)
-  en: { twoHandAxe: "two hand ax", physMod: "d.+cal d" },
+  // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
+  // (строка уточнена пользователем)
+  en: { twoHandAxe: "two hand ax", physMod: "s \\d+ to \\d+ phys|d.+cal d" },
   ru: { twoHandAxe: "двуручные топ", physMod: "физического урона" },
 };
 
