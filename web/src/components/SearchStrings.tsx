@@ -1,5 +1,6 @@
 import { Data, type RouteData } from "common";
 import { gemColor } from "../assets";
+import { Swords } from "lucide-react";
 import { useMemo } from "react";
 import { useI18n, type UiKey } from "../i18n";
 import { useRegex } from "../regex-store";
@@ -72,9 +73,9 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
       {build.length > 0 && (
         <section className="regex-group is-build">
-          <h4 className="regex-group-title">
-            {t("regexBuild")}
-            {characterClass && <span className="search-tag">{game.term(characterClass)}</span>}
+          <h4 className="regex-group-title build-title">
+            <Swords size={16} />
+            {characterClass && characterClass !== "None" ? game.term(characterClass) : t("regexBuild")}
           </h4>
           {build.map(({ size, sets, query }) => (
             <div key={size} className="build-links">

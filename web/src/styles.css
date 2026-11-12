@@ -595,9 +595,12 @@ button.log:hover {
   background: color-mix(in srgb, var(--warn) 6%, transparent);
 }
 
-.regex-group.is-build .search-tag {
+.build-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
   color: var(--warn);
-  background: color-mix(in srgb, var(--warn) 14%, transparent);
 }
 
 .regex-group.is-build .build-link-set {
@@ -658,16 +661,6 @@ button.log:hover {
 
 
 
-.search-tag {
-  margin-left: 8px;
-  padding: 1px 7px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-  vertical-align: 0.15em;
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-}
 
 .search-main {
   display: flex;
