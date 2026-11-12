@@ -512,10 +512,22 @@ button.log:hover {
   border-bottom: none;
 }
 
-.search-credit {
-  margin: 14px 0 0;
-  font-size: 12px;
-  color: var(--faint);
+.search-more {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.search-more-link {
+  height: 28px;
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
 }
 
 .search-group {
