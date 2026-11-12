@@ -8,7 +8,7 @@
 //  - скорость передвижения: названия модификаторов на волшебных ботинках
 //    (Runner's 10%, Sprinter's 15%, Stallion's 20%);
 //  - +1 к уровню камней: «+1 to Level of all … Skill Gems»;
-//  - оружие: «Item Class: Two Hand Axes» и свойства «Adds # to # Physical Damage»,
+//  - оружие: «Item Class: Two Hand Axes / Two Hand Swords» и свойства «Adds # to # Physical Damage»,
 //    «#% increased Physical Damage» (строка характеристик «Physical Damage: 4-9»
 //    под них не попадает). Несколько условий в кавычках через пробел — «и».
 
@@ -24,7 +24,8 @@ const MOVEMENT = ["Runn", "rint", "tallio"];
 const PLUS_GEMS = "ll g";
 // «s \d+ to \d+ phys» — «Adds 3 to 6 Physical Damage», «d.+cal d» — «increased Physical Damage»
 // (строка уточнена пользователем)
-const TWO_HAND_AXE_PHYS = '"two hand ax" "s \\d+ to \\d+ phys|d.+cal d"';
+// Классы «Two Hand Axes» и «Two Hand Swords».
+const TWO_HAND_AXE_PHYS = '"two hand (ax|sw)" "s \\d+ to \\d+ phys|d.+cal d"';
 
 const ANY_LINKS: Record<3 | 4, string> = { 3: "-\\w-", 4: "-\\w-.-" };
 
@@ -84,7 +85,7 @@ export function plusGemsString(): string {
   return `"${PLUS_GEMS}"`;
 }
 
-/** Двуручные топоры с плоским или процентным физическим уроном. */
+/** Двуручные топоры и мечи с плоским или процентным физическим уроном. */
 export function twoHandAxePhysString(): string {
   return TWO_HAND_AXE_PHYS;
 }
