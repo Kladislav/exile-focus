@@ -36,40 +36,6 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
 
   return (
     <div className="regex">
-      {build.length > 0 && (
-        <section className="regex-group is-build">
-          <h4 className="regex-group-title">
-            {t("regexBuild")}
-            {characterClass && <span className="search-tag">{game.term(characterClass)}</span>}
-          </h4>
-          {build.map(({ size, sets, query }) => (
-            <div key={size} className="build-links">
-              <div className="search-row">
-                <div className="search-main">
-                  <span className="search-label">{t("regexBuildLinks", size)}</span>
-                  <code className="search-query">{query}</code>
-                </div>
-                <CopyButton text={query} />
-              </div>
-              <ul className="build-link-sets">
-                {sets.map((set) => (
-                  <li key={set.colours.join("")} className="build-link-set">
-                    <span className="build-link-gems">
-                      {set.gems.map((id) => (
-                        <span key={id} className="build-link-gem">
-                          <span className="gem-dot" style={{ background: gemColor(Data.Gems[id].primary_attribute) }} />
-                          {game.gem(id)}
-                        </span>
-                      ))}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </section>
-      )}
-
       <div className={`regex-result ${tooLong ? "is-too-long" : ""}`}>
         <code className="search-query">{query || t("regexEmpty")}</code>
         <div className="regex-result-side">
@@ -103,6 +69,40 @@ export function SearchStrings({ groups }: { groups?: RouteData.GemLinkGroup[] })
           </Toggle>
         ))}
       </RegexGroup>
+
+      {build.length > 0 && (
+        <section className="regex-group is-build">
+          <h4 className="regex-group-title">
+            {t("regexBuild")}
+            {characterClass && <span className="search-tag">{game.term(characterClass)}</span>}
+          </h4>
+          {build.map(({ size, sets, query }) => (
+            <div key={size} className="build-links">
+              <div className="search-row">
+                <div className="search-main">
+                  <span className="search-label">{t("regexBuildLinks", size)}</span>
+                  <code className="search-query">{query}</code>
+                </div>
+                <CopyButton text={query} />
+              </div>
+              <ul className="build-link-sets">
+                {sets.map((set) => (
+                  <li key={set.colours.join("")} className="build-link-set">
+                    <span className="build-link-gems">
+                      {set.gems.map((id) => (
+                        <span key={id} className="build-link-gem">
+                          <span className="gem-dot" style={{ background: gemColor(Data.Gems[id].primary_attribute) }} />
+                          {game.gem(id)}
+                        </span>
+                      ))}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </section>
+      )}
 
       <div className="search-more">
         <span>{t("searchMore")}</span>

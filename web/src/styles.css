@@ -588,14 +588,20 @@ button.log:hover {
 }
 
 .regex-group.is-build {
+  margin-top: 20px;
   padding: 10px 12px 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--border));
+  border: 1px solid color-mix(in srgb, var(--warn) 50%, var(--border));
   border-radius: 10px;
-  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  background: color-mix(in srgb, var(--warn) 6%, transparent);
 }
 
-.regex-group.is-build {
-  margin-bottom: 16px;
+.regex-group.is-build .search-tag {
+  color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 14%, transparent);
+}
+
+.regex-group.is-build .build-link-set {
+  background: color-mix(in srgb, var(--warn) 7%, transparent);
 }
 
 .regex-group.is-build .search-row {
