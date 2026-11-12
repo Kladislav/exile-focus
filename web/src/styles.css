@@ -8,6 +8,8 @@
   --text: #1f2226;
   --muted: #5e646c;
   --faint: #a2a7ad;
+  /* Подсказки под шагами: светлее «muted», отделяются полоской, а не бледностью. */
+  --hint: #4a5058;
   --accent: #2f6fde;
   --accent-text: #ffffff;
   --current-bg: #eaf1fd;
@@ -38,74 +40,86 @@
   --layout-w: 2400px;
   --gutter: 24px;
   --font: "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --term-weight: 600;
+  --text-spacing: normal;
+  --current-ring: none;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #16181b;
-    --surface: #1d2024;
-    --surface-2: #25292e;
-    --border: #2f343a;
-    --text: #dde1e6;
-    --muted: #979ea7;
-    --faint: #5f666e;
-    --accent: #7ea6f6;
-    --accent-text: #0f1726;
-    --current-bg: #1f2a3d;
-    --danger: #f08b80;
-    --ok: #7fcf98;
-    --warn: #f3b46b;
+    --bg: #1b1d21;
+    --surface: #222529;
+    --surface-2: #2a2e33;
+    --border: #33383f;
+    --text: #cdd1d6;
+    --muted: #9ca3ab;
+    --faint: #686f78;
+    --hint: #b8bec5;
+    --accent: #88a9ec;
+    --accent-text: #10172a;
+    --current-bg: #272d38;
+    --danger: #e8968c;
+    --ok: #8cc9a0;
+    --warn: #e2b47e;
 
-    --c-area: #8db7f7;
-    --c-kill: #f2928a;
-    --c-quest: #86cf9c;
-    --c-item: #e9c46a;
-    --c-waypoint: #7fd3e3;
-    --c-portal: #c3a3f5;
-    --c-trial: #f4ad78;
-    --gem-str: #ef7d72;
-    --gem-dex: #6cc488;
-    --gem-int: #7ea6f6;
-    --tree-node: #4d545d;
-    --tree-connection: #3a4048;
-    --tree-active: #7ea6f6;
-    --tree-added: #6fdc8c;
-    --tree-removed: #ef7d72;
+    --c-area: #93b1e6;
+    --c-kill: #e39c94;
+    --c-quest: #93c6a2;
+    --c-item: #d8bd80;
+    --c-waypoint: #8dc6d1;
+    --c-portal: #b9a7e2;
+    --c-trial: #e0ad88;
+    --gem-str: #e48b81;
+    --gem-dex: #7fc495;
+    --gem-int: #88a9ec;
+    --tree-node: #50575f;
+    --tree-connection: #3c424a;
+    --tree-active: #88a9ec;
+    --tree-added: #7fd497;
+    --tree-removed: #e48b81;
+    /* Тёмная тема: термины полегче, буквы чуть свободнее, текущий шаг — с тонкой рамкой. */
+    --term-weight: 500;
+    --text-spacing: 0.005em;
+    --current-ring: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
     color-scheme: dark;
   }
 }
 
 :root[data-theme="dark"] {
-  --bg: #16181b;
-  --surface: #1d2024;
-  --surface-2: #25292e;
-  --border: #2f343a;
-  --text: #dde1e6;
-  --muted: #979ea7;
-  --faint: #5f666e;
-  --accent: #7ea6f6;
-  --accent-text: #0f1726;
-  --current-bg: #1f2a3d;
-  --danger: #f08b80;
-  --ok: #7fcf98;
-  --warn: #f3b46b;
+  --bg: #1b1d21;
+  --surface: #222529;
+  --surface-2: #2a2e33;
+  --border: #33383f;
+  --text: #cdd1d6;
+  --muted: #9ca3ab;
+  --faint: #686f78;
+  --hint: #b8bec5;
+  --accent: #88a9ec;
+  --accent-text: #10172a;
+  --current-bg: #272d38;
+  --danger: #e8968c;
+  --ok: #8cc9a0;
+  --warn: #e2b47e;
 
-  --c-area: #8db7f7;
-  --c-kill: #f2928a;
-  --c-quest: #86cf9c;
-  --c-item: #e9c46a;
-  --c-waypoint: #7fd3e3;
-  --c-portal: #c3a3f5;
-  --c-trial: #f4ad78;
-  --gem-str: #ef7d72;
-  --gem-dex: #6cc488;
-  --gem-int: #7ea6f6;
-  --tree-node: #4d545d;
-  --tree-connection: #3a4048;
-  --tree-active: #7ea6f6;
-  --tree-added: #6fdc8c;
-  --tree-removed: #ef7d72;
+  --c-area: #93b1e6;
+  --c-kill: #e39c94;
+  --c-quest: #93c6a2;
+  --c-item: #d8bd80;
+  --c-waypoint: #8dc6d1;
+  --c-portal: #b9a7e2;
+  --c-trial: #e0ad88;
+  --gem-str: #e48b81;
+  --gem-dex: #7fc495;
+  --gem-int: #88a9ec;
+  --tree-node: #50575f;
+  --tree-connection: #3c424a;
+  --tree-active: #88a9ec;
+  --tree-added: #7fd497;
+  --tree-removed: #e48b81;
+  --term-weight: 500;
+  --text-spacing: 0.005em;
+  --current-ring: inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
   color-scheme: dark;
 }
 
@@ -123,6 +137,7 @@ body {
   font-family: var(--font);
   font-size: 17px;
   line-height: 1.6;
+  letter-spacing: var(--text-spacing);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -829,6 +844,7 @@ button.log:hover {
 .step.is-current {
   --dot-y: 30px;
   background: var(--current-bg);
+  box-shadow: var(--current-ring);
   cursor: default;
   padding-top: 14px;
   padding-bottom: 14px;
@@ -869,15 +885,17 @@ button.log:hover {
 }
 
 .step-hints {
-  margin: 6px 0 0;
-  padding-left: 0;
+  margin: 8px 0 0;
+  padding: 1px 0 1px 12px;
   list-style: none;
   font-size: 16px;
-  color: var(--muted);
+  line-height: 1.55;
+  color: var(--hint);
+  border-left: 2px solid color-mix(in srgb, var(--accent) 35%, var(--border));
 }
 
 .step-hints li + li {
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .route-done {
@@ -890,7 +908,7 @@ button.log:hover {
 /* ---------- Terms (game names) ---------- */
 
 .term {
-  font-weight: 600;
+  font-weight: var(--term-weight);
 }
 
 .term-img {
